@@ -10,7 +10,7 @@ setup(
     author='Kevin Johnson',
     author_email='appliedmathkj@gmail.com',
     keywords='AlphaVantage, API, Equities, FOREX, Digital/Crypto, TA, Technicals, Sectors',
-    url='https://github.com/twopirllc/alphaVantageAPI',
+    url='https://github.com/twopirllc/AlphaVantageAPI',
     license='MIT',
     packages=['alphaVantageAPI'],
     install_requires=['requests', 'pandas'],
