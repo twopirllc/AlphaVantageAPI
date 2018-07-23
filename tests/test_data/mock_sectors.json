@@ -1,0 +1,133 @@
+{
+    "Meta Data": {
+        "Information": "US Sector Performance (realtime & historical)",
+        "Last Refreshed": "04:20 PM ET 07/13/2018"
+    },
+    "Rank A: Real-Time Performance": {
+        "Consumer Staples": "0.63%",
+        "Industrials": "0.59%",
+        "Energy": "0.56%",
+        "Consumer Discretionary": "0.25%",
+        "Health Care": "0.23%",
+        "Utilities": "0.06%",
+        "Materials": "-0.01%",
+        "Information Technology": "-0.02%",
+        "Real Estate": "-0.27%",
+        "Financials": "-0.46%",
+        "Telecommunication Services": "-0.75%"
+    },
+    "Rank B: 1 Day Performance": {
+        "Consumer Staples": "0.63%",
+        "Industrials": "0.59%",
+        "Energy": "0.56%",
+        "Consumer Discretionary": "0.25%",
+        "Health Care": "0.23%",
+        "Utilities": "0.06%",
+        "Materials": "-0.01%",
+        "Information Technology": "-0.02%",
+        "Real Estate": "-0.27%",
+        "Financials": "-0.46%",
+        "Telecommunication Services": "-0.75%"
+    },
+    "Rank C: 5 Day Performance": {
+        "Information Technology": "2.32%",
+        "Industrials": "2.23%",
+        "Consumer Discretionary": "2.10%",
+        "Health Care": "1.60%",
+        "Financials": "1.14%",
+        "Consumer Staples": "0.95%",
+        "Energy": "0.79%",
+        "Materials": "0.28%",
+        "Real Estate": "-0.84%",
+        "Utilities": "-1.19%",
+        "Telecommunication Services": "-1.58%"
+    },
+    "Rank D: 1 Month Performance": {
+        "Utilities": "7.77%",
+        "Consumer Staples": "3.17%",
+        "Health Care": "2.91%",
+        "Real Estate": "2.76%",
+        "Consumer Discretionary": "1.77%",
+        "Information Technology": "0.98%",
+        "Energy": "0.23%",
+        "Telecommunication Services": "-1.23%",
+        "Financials": "-3.18%",
+        "Industrials": "-3.31%",
+        "Materials": "-3.55%"
+    },
+    "Rank E: 3 Month Performance": {
+        "Consumer Discretionary": "10.63%",
+        "Information Technology": "9.89%",
+        "Real Estate": "8.63%",
+        "Energy": "8.04%",
+        "Health Care": "6.75%",
+        "Utilities": "6.33%",
+        "Materials": "0.83%",
+        "Consumer Staples": "0.54%",
+        "Industrials": "-0.60%",
+        "Telecommunication Services": "-1.20%",
+        "Financials": "-3.27%"
+    },
+    "Rank F: Year-to-Date (YTD) Performance": {
+        "Information Technology": "15.32%",
+        "Consumer Discretionary": "14.15%",
+        "Health Care": "5.78%",
+        "Energy": "5.75%",
+        "Real Estate": "-0.07%",
+        "Utilities": "-0.32%",
+        "Industrials": "-2.80%",
+        "Materials": "-3.14%",
+        "Financials": "-3.51%",
+        "Consumer Staples": "-7.77%",
+        "Telecommunication Services": "-10.31%"
+    },
+    "Rank G: 1 Year Performance": {
+        "Information Technology": "31.63%",
+        "Consumer Discretionary": "25.38%",
+        "Energy": "18.23%",
+        "Health Care": "10.06%",
+        "Financials": "8.51%",
+        "Materials": "6.42%",
+        "Industrials": "4.89%",
+        "Real Estate": "3.71%",
+        "Utilities": "1.32%",
+        "Telecommunication Services": "-0.46%",
+        "Consumer Staples": "-3.25%"
+    },
+    "Rank H: 3 Year Performance": {
+        "Information Technology": "84.49%",
+        "Consumer Discretionary": "45.53%",
+        "Financials": "34.90%",
+        "Industrials": "32.76%",
+        "Materials": "22.59%",
+        "Utilities": "22.11%",
+        "Health Care": "16.25%",
+        "Consumer Staples": "7.30%",
+        "Energy": "4.80%",
+        "Telecommunication Services": "-2.24%"
+    },
+    "Rank I: 5 Year Performance": {
+        "Information Technology": "148.87%",
+        "Consumer Discretionary": "89.24%",
+        "Health Care": "75.04%",
+        "Financials": "63.16%",
+        "Industrials": "60.91%",
+        "Materials": "45.40%",
+        "Utilities": "35.67%",
+        "Consumer Staples": "26.56%",
+        "Energy": "-6.68%",
+        "Telecommunication Services": "-6.78%"
+    },
+    "Rank J: 10 Year Performance": {
+        "Consumer Discretionary": "324.27%",
+        "Information Technology": "267.15%",
+        "Health Care": "181.02%",
+        "Industrials": "108.56%",
+        "Consumer Staples": "94.54%",
+        "Financials": "77.75%",
+        "Materials": "48.47%",
+        "Utilities": "29.69%",
+        "Telecommunication Services": "13.05%",
+        "Energy": "-7.00%"
+    }
+}

@@ -1,0 +1,13 @@
+alphaVantageAPI.egg-info/
+build/**
+dist/**
+
+.vscode/**
+__pycache__/**
+alphaVantageAPI/__pycache__/**
+tests/__pycache__/**
+env/**
+
+*.pyc
+note.md
+driver.py

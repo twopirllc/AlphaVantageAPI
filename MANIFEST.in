@@ -1,0 +1,4 @@
+include README.md
+include LICENSE.txt
+recursive-include alphaVantageAPI/data *
+recursive-include tests/test_data *
