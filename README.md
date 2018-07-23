@@ -1,4 +1,4 @@
-# alphaVantageAPI
+# AlphaVantageAPI
 *An Opinionated AlphaVantage API Wrapper in Python 3.7*
 
 Access to the AlphaVantage requires a free API key, that can be found at http://www.alphavantage.co/support/#api-key.
