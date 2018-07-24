@@ -3,8 +3,8 @@ from setuptools import setup, find_packages
 long_description = 'An Opinionated AlphaVantage API Wrapper in Python 3.7'
 
 setup(
-    name='alphaVantageAPI',
-    version='1.0.0',
+    name='alphaVantage_api',
+    version='1.0.3',
     description=long_description,
     long_description=long_description,
     author='Kevin Johnson',
@@ -14,6 +14,7 @@ setup(
     license='MIT',
     packages=['alphaVantageAPI'],
     install_requires=['requests', 'pandas'],
+    include_package_data=True,
     classifiers=[
         'Programming Language :: Python :: 3.7',
         'Development Status :: 5 - Production/Stable',
@@ -27,7 +28,7 @@ setup(
         'openpyxl': ['openpyxl'],
     },
     package_data={
-        'alphaVantageAPI': [],
+        'alphaVantageAPI': {'alphaVantageAPI':['data/api.json','data/treasury_curves.csv']},
     },
     zip_safe=False
 )

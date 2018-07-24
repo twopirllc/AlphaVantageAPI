@@ -71,9 +71,6 @@ class AlphaVantage (object):
             proxy: dict = {}
         ): # -> None
 
-        self.__api_file = 'data/api.json'
-        # self.__api_file = Path.cwd() / 'data/api.json'
-
         # self._local_time = time.localtime()
         # self._local_stime = time.strftime("%a, %d %b %Y %H:%M:%S +0000", self._local_time)
         # print(self._local_stime)
@@ -81,7 +78,7 @@ class AlphaVantage (object):
         # Get User and App Directory
         self.__homedir = Path.home()
         self.__appdir = Path.cwd() / 'alphaVantageAPI'
-        self._load_api(self.__api_file)
+        self._load_api(Path('alphaVantageAPI/data/api.json'))
         
         # Initialize Class properties
         self.api_key     = api_key
@@ -111,20 +108,18 @@ class AlphaVantage (object):
                 raise
 
 
-    def _load_api(self, api_file:str): # -> None
+    def _load_api(self, api_file:Path): # -> None
         """Load API from a JSON file."""
 
-        if api_file.lower().endswith('.json'):
-            # API json file is relative to the app's path
-            afile = self.__appdir / api_file
-            with afile.open('r') as content:
+        if api_file.exists():
+            with api_file.open('r') as content:
                 api = json.load(content)
             content.close()
 
             self.__api = api
             self._api_lists()
         else:
-            raise ValueError(f'{api_file} is not a json file')
+            raise ValueError(f'{api_file} does not exist.')
 
 
     def _api_lists(self): # -> None
