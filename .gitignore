@@ -1,4 +1,4 @@
-alphaVantageAPI.egg-info/
+alphaVantage_api.egg-info/**
 build/**
 dist/**
 

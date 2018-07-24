@@ -16,7 +16,7 @@ This API was designed to simplify the process of aquiring *free* financial data 
     * A call_history method to return all successful API calls
 
 ## Python Modules:
-    Required: pandas
+    Required: requests, pandas
     Optional: openpyxl
      *Future: sqlite3
 
@@ -26,7 +26,7 @@ Ensure you are using Python 3.7+ and preferably in a virtual environment.
 
 ```shell
 git clone https://github.com/twopirllc/AlphaVantageAPI.git
-pip install pandas
+pip install alphaVantage-api
 ```
 
 Install 'openpyxl' if you want the option to save the results to an Excel file.
