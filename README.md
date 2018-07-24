@@ -3,9 +3,8 @@
 
 Access to the AlphaVantage requires a free API key, that can be found at http://www.alphavantage.co/support/#api-key.
 
-By default, this wrapper downloads data as 'json' and converts the results into a Pandas DataFrame.
 
-## Another AlphaVantageAPI?
+## Description
 This API was designed to simplify the process of aquiring *free* financial data for retail traders and investors from the financial markets.  While it does require Pandas, Pandas' methods help simplify saving data requests into a variety of file formats such as: csv (default), json, pkl, html, and txt.  If the openpyxl module is also installed, it can be saved as an Excel file: xlsx.
 
 * Main Features
@@ -15,26 +14,26 @@ This API was designed to simplify the process of aquiring *free* financial data 
     * A help method to reduce looking up 'required' and 'optional' parameters for each function.
     * A call_history method to return all successful API calls
 
-## Python Modules:
-    Required: requests, pandas
-    Optional: openpyxl
-     *Future: sqlite3
 
-## Installing
-Currently only available on github and soon to be added to PyPi.
-Ensure you are using Python 3.7+ and preferably in a virtual environment.
-
+## Installation
+Typical installation:
 ```shell
-git clone https://github.com/twopirllc/AlphaVantageAPI.git
 pip install alphaVantage-api
 ```
 
-Install 'openpyxl' if you want the option to save the results to an Excel file.
+Or install with Excel file support:
 ```shell
-pip install openpyxl
+pip install alphaVantage-api, openpyxl
 ```
 
-### AlphaVantage Class Parameter Defaults
+Source installation:
+```shell
+git clone https://github.com/twopirllc/AlphaVantageAPI.git
+pip install -e alphaVantage-api
+```
+
+
+## AlphaVantage Class Parameter Defaults
     api_key: str     = None
     output_size: str = 'compact'
     datatype: str    = 'json'
@@ -44,25 +43,27 @@ pip install openpyxl
     clean: bool      = False
     proxy: dict      = {}
 
-### Parameter Descriptions
 
-#### api_key : *str*
+## Parameter Descriptions
+
+### api_key : *str*
 * Default: None.  If None, set environment variable AV_API_KEY to your free API key. Otherwise set it in the class constructor.
-#### output_size : *str*
+### output_size : *str*
 * Default: 'compact'. The other option is 'full'.  See AlphaVantage API documentation for more details.
-#### datatype : *str*
+### datatype : *str*
 * Default: 'json'. This is the preferred request type.  See AlphaVantage API documentation for more details.
-#### export : *bool*
+### export : *bool*
 * Default: *'~/av_data'*.  Or set it to a path you can write to.
-#### output : *str*
+### output : *str*
 * Default: 'csv'.  Other options are 'json', 'pkl', 'html', and 'txt'.  If openpyxl is installed, then you can use 'xlsz'.
-#### clean : *bool*
+### clean : *bool*
 * Default: True. Simplifies the column header names.
-#### proxy : *dict*
+### proxy : *dict*
 * Default: {}.  See requests API documentation for more details.
 
 
 ## Examples
+
 ### Initialization
 ```python
 from alphaVantage import AlphaVantage
