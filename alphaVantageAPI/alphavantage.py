@@ -10,10 +10,9 @@ import math
 import requests
 import pprint
 
-from pathlib import Path
+from pathlib import Path, PurePath
 from functools import wraps
 from pandas import DataFrame
-# from pandas import read_csv
 
 # import openpyxl if installed to support Excel DataFrame exports
 try:
@@ -71,14 +70,18 @@ class AlphaVantage (object):
             proxy: dict = {}
         ): # -> None
 
+        # Typical versus pathlib way to load a local configuration
+        # api_file = os.path.join(os.path.dirname(__file__), 'data/api.json')
+        api_file = Path(PurePath(__file__).parent / 'data/api.json')
+
+        # *future* May incorporate time to added to successful responses
         # self._local_time = time.localtime()
         # self._local_stime = time.strftime("%a, %d %b %Y %H:%M:%S +0000", self._local_time)
         # print(self._local_stime)
 
-        # Get User and App Directory
+        # Get User Home Directory and load API
         self.__homedir = Path.home()
-        self.__appdir = Path.cwd() / 'alphaVantageAPI'
-        self._load_api(Path('alphaVantageAPI/data/api.json'))
+        self._load_api(api_file)
         
         # Initialize Class properties
         self.api_key     = api_key
