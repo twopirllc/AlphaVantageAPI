@@ -227,15 +227,7 @@ class AlphaVantage (object):
             path = f"{self.export_path}/{parameters['symbol']}_{parameters['interval']}"
         elif short_function.startswith('C') and len(short_function) == 2:
             path = f"{self.export_path}/{parameters['symbol']}{parameters['market']}"
-        # elif function in self.__api_indicator:
-        #     path = f"{self.export_path}/{parameters['symbol']}_{short_function}_{parameters['series_type']}"
-        #     if 'series_type' in df and 'time_period' in df:
-        #         path += f"_{parameters['series_type']}_{parameters['time_period']}"
-        #     elif 'time_period' in df:
-        #         path += f"_{parameters['time_period']}"
-        #     else:
-        #         pass
-        else: # 
+        else:
             path = f"{self.export_path}/{parameters['symbol']}_{short_function}"
         path += f".{self.output}"
 
@@ -277,6 +269,9 @@ class AlphaVantage (object):
             # Else it is a time-series
             df = DataFrame.from_dict(response[key]).T
             df.index.rename('datetime', inplace = True)
+
+        # Reverse the df
+        df = df.iloc[::-1]
 
         if self.clean:
             df = self._simplify_dataframe_columns(function, df)
