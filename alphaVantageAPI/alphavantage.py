@@ -70,10 +70,6 @@ class AlphaVantage (object):
             proxy: dict = {}
         ): # -> None
 
-        # Typical versus pathlib way to load a local configuration
-        # api_file = os.path.join(os.path.dirname(__file__), 'data/api.json')
-        api_file = Path(PurePath(__file__).parent / 'data/api.json')
-
         # *future* May incorporate time to added to successful responses
         # self._local_time = time.localtime()
         # self._local_stime = time.strftime("%a, %d %b %Y %H:%M:%S +0000", self._local_time)
@@ -81,6 +77,7 @@ class AlphaVantage (object):
 
         # Get User Home Directory and load API
         self.__homedir = Path.home()
+        api_file = Path(PurePath(__file__).parent / 'data/api.json')
         self._load_api(api_file)
         
         # Initialize Class properties
@@ -279,7 +276,7 @@ class AlphaVantage (object):
             df.index.rename('date', inplace=True)
 
         if function == 'SECTOR':
-            # Convert to floats
+            # Convert to sector values to floats
             df = df.applymap(lambda x: float(x.strip('%')) / 100)
         else:
             # Reverse the timeseries dfs
@@ -384,7 +381,6 @@ class AlphaVantage (object):
         else:
             return None
 
-        # Call _av_api_call method with requested parameters
         download = self._av_api_call(parameters, **kwargs)
         return download if download is not None else None
 
@@ -392,7 +388,7 @@ class AlphaVantage (object):
     def data(self, function:str, symbol:str = None, **kwargs): # -> df, list of df, None
         """Simple wrapper to _av_api_call method for an equity or indicator."""
 
-        # Process a symbol list
+        # Process a symbol list and return a list of DataFrames
         if isinstance(symbol, list) and len(symbol) > 1:
             # Create list: symbols, with all elements Uppercase from the list: symbol
             symbols = list(map(str.upper, symbol))
