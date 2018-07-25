@@ -15,25 +15,26 @@ This API was designed to simplify the process of aquiring *free* financial data 
     * A call_history method to return all successful API calls
 
 
-## Installation
-Typical installation:
+# Installation
+### Typical installation:
 ```shell
 pip install alphaVantage-api
 ```
 
-Or install with Excel file support:
+### With Excel file support:
 ```shell
 pip install alphaVantage-api, openpyxl
 ```
 
-Source installation:
+### For the most up to date version
+<!-- Source installation: -->
 ```shell
 git clone https://github.com/twopirllc/AlphaVantageAPI.git
 pip install -e alphaVantage-api
 ```
 
-
-## AlphaVantage Class Parameter Defaults
+# API Details
+## Constructor Parameter Defaults
     api_key: str     = None
     output_size: str = 'compact'
     datatype: str    = 'json'
@@ -44,7 +45,7 @@ pip install -e alphaVantage-api
     proxy: dict      = {}
 
 
-## Parameter Descriptions
+## Constructor Parameter Descriptions
 
 ### api_key : *str*
 * Default: None.  If None, set environment variable AV_API_KEY to your free API key. Otherwise set it in the class constructor.
@@ -62,9 +63,9 @@ pip install -e alphaVantage-api
 * Default: {}.  See requests API documentation for more details.
 
 
-## Examples
+# Examples
 
-### Initialization
+## Initialization
 ```python
 from alphaVantageAPI.alphavantage import AlphaVantage
 
@@ -81,18 +82,18 @@ av = AlphaVantage(
     )
 ```
 
-### Save locally
+## Save locally
 ```python
 # Cleans and save requests to the default export_path in 'csv' format
 av = AlphaVantage(export=True, output='csv', clean=True)
 ```
 
-### Display Current settings
+## Display Current settings
 ```python
 print(av)
 ```
 
-### Help
+## Help
 ```python
 # Help: lists all the functions AlphaVantage API supports
 print(av.help())
@@ -108,7 +109,7 @@ print(av.help('BBANDS'))
 ```
 
 
-### Data Acquisition Methods
+## Data Acquisition Methods
 ```python
 # FX / Currency
 # fx(from_currency:str, to_currency:str = 'USD')
@@ -152,16 +153,16 @@ msft_SMA_20_df = av.data(symbol='MSFT', function='SMA', series_type='close', tim
 msft_STOCH_df = av.data('STOCH', symbols[1], interval='daily', series_type='close')
 ```
 
-### Call History
+## Call History
 ```python
 # Returns all successfull calls to the API
 history_list = av.call_history()
 ```
 
-## Contributing
+# Contributing
 Contributions are welcome and I am open to new ideas or implementations.
 
-## Inspiration
+# Inspiration
 Check out additional *AlphaVantage API* Python Wrappers by:
 
 Romel Torres: https://github.com/RomelTorres/alpha_vantage
