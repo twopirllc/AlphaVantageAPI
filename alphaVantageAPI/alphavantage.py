@@ -348,7 +348,6 @@ class AlphaVantage (object):
             'market': market.upper()
         }
 
-        # Call _av_api_call     method with requested parameters
         download = self._av_api_call(parameters, **kwargs)
         return download if download is not None else None
 
@@ -399,7 +398,6 @@ class AlphaVantage (object):
             symbols = list(map(str.upper, symbol))
             # Call self.data for each ticker in the list: symbols
             return [self.data(function, ticker, **kwargs) for ticker in symbols]
-            # return None
 
         # Simple Bandaid for an odd occuring Exception
         try:
@@ -432,7 +430,6 @@ class AlphaVantage (object):
             if option in kwargs:
                 self._validate_parameters(option, parameters, **kwargs)
 
-        # Call _av_api_call method with requested parameters
         download = self._av_api_call(parameters, **kwargs)
         return download if download is not None else None
 
@@ -614,15 +611,9 @@ class AlphaVantage (object):
         # Then set __export_path = value
         if value is not None and isinstance(value, str):
             path = Path(value)
-            # if AlphaVantage.is_home(path):
             if self._is_home(path):
-                # Remove ~ from the path
                 # ~/ab/cd -> /ab/cd
                 user_subdir = '/'.join(path.parts[1:])
-                # Prepend <Path home> to the subdirectory
-                # /ab/cd -> <Path home>/ab/cd
-                # self._user_abs_subdir = self._homedir.joinpath(user_subdir)
-                # self.__export_path = self._user_abs_subdir
                 self.__export_path = self.__homedir.joinpath(user_subdir)
             else:
                 self.__export_path = path
