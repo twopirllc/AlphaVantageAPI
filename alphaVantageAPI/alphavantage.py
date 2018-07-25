@@ -276,7 +276,7 @@ class AlphaVantage (object):
             df.index.rename('date', inplace=True)
 
         if function == 'SECTOR':
-            # Convert to sector values to floats
+            # Convert sector values to floats
             df = df.applymap(lambda x: float(x.strip('%')) / 100)
         else:
             # Reverse the timeseries dfs
