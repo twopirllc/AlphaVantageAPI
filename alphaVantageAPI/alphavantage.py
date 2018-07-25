@@ -278,8 +278,12 @@ class AlphaVantage (object):
             df = DataFrame.from_dict(response[key]).T
             df.index.rename('datetime', inplace = True)
 
-        # Reverse the df
-        df = df.iloc[::-1]
+        if function == 'SECTOR':
+            # Convert to floats
+            df = df.applymap(lambda x: float(x.strip('%')) / 100)
+        else:
+            # Reverse the df
+            df = df.iloc[::-1]
 
         if self.clean:
             df = self._simplify_dataframe_columns(function, df)
