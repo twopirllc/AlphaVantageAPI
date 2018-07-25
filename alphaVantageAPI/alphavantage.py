@@ -266,23 +266,23 @@ class AlphaVantage (object):
         elif function == 'SECTOR':
             df = DataFrame.from_dict(response)
             # Remove 'Information' and 'Last Refreshed' Rows
-            df.dropna(axis = 'index', how='any', thresh = 3, inplace = True)
+            df.dropna(axis='index', how='any', thresh=3, inplace=True)
             # Remove 'Meta Data' Column
-            df.dropna(axis = 'columns', how = 'any', thresh = 3, inplace = True)
+            df.dropna(axis='columns', how='any', thresh=3, inplace=True)
             # Replace 'NaN' with '0%'
-            df.fillna('0%', inplace = True)
+            df.fillna('0%', inplace=True)
         elif function == 'BATCH_STOCK_QUOTES':
-            df = DataFrame(response[key])
+            df = DataFrame(response[key], dtype=float)
         else:
             # Else it is a time-series
-            df = DataFrame.from_dict(response[key]).T
-            df.index.rename('datetime', inplace = True)
+            df = DataFrame.from_dict(response[key], dtype=float).T
+            df.index.rename('date', inplace=True)
 
         if function == 'SECTOR':
             # Convert to floats
             df = df.applymap(lambda x: float(x.strip('%')) / 100)
         else:
-            # Reverse the df
+            # Reverse the timeseries dfs
             df = df.iloc[::-1]
 
         if self.clean:

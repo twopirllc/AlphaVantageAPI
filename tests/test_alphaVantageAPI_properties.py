@@ -29,6 +29,8 @@ class TestAlphaVantageAPIProperties(TestCase):
         self.assertTrue(mock_sys_exit)
         self.assertEqual(mock_sys_exit.call_count, 1)
 
+        # How to mock the print())?
+
 
     def test_export_property(self):
         self.av.export = True
