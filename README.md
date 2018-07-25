@@ -66,7 +66,7 @@ pip install -e alphaVantage-api
 
 ### Initialization
 ```python
-from alphaVantage import AlphaVantage
+from alphaVantageAPI.alphavantage import AlphaVantage
 
 # Initialize the AlphaVantage Class with default values
 av = AlphaVantage(
