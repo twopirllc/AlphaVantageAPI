@@ -13,6 +13,7 @@ import pprint
 from pathlib import Path, PurePath
 from functools import wraps
 from pandas import DataFrame
+from .utils import timed, is_home
 
 # import openpyxl if installed to support Excel DataFrame exports
 try:
@@ -139,18 +140,18 @@ class AlphaVantage (object):
         self.__api_indicator_matype = self.__api['matype']
 
 
-    @staticmethod
-    def _is_home(path:Path): # -> bool
-        """Determines if the path is a User path or not.
-        If the Path begins with '~', then True, else False"""
+    # @staticmethod
+    # def _is_home(path:Path): # -> bool
+    #     """Determines if the path is a User path or not.
+    #     If the Path begins with '~', then True, else False"""
 
-        if isinstance(path, str) and len(path) > 0:
-            path = Path(path)
+    #     if isinstance(path, str) and len(path) > 0:
+    #         path = Path(path)
 
-        if isinstance(path, Path) and len(path.parts) > 0:
-            return path.parts[0] == '~'
-        else:
-            return False
+    #     if isinstance(path, Path) and len(path.parts) > 0:
+    #         return path.parts[0] == '~'
+    #     else:
+    #         return False
 
 
     def _function_alias(self, function:str): # -> str
@@ -171,7 +172,7 @@ class AlphaVantage (object):
                 pass
         return result
 
-
+    @timed
     def _av_api_call(self, parameters:dict, timeout:int = 60, **kwargs): # -> pandas DataFrame, json, None
         """Main method to handle AlphaVantage API call request and response."""
 
@@ -616,7 +617,8 @@ class AlphaVantage (object):
         # Then set __export_path = value
         if value is not None and isinstance(value, str):
             path = Path(value)
-            if self._is_home(path):
+            # if self._is_home(path):
+            if is_home(path):
                 # ~/ab/cd -> /ab/cd
                 user_subdir = '/'.join(path.parts[1:])
                 self.__export_path = self.__homedir.joinpath(user_subdir)
