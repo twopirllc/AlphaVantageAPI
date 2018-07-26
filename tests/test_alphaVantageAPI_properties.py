@@ -147,12 +147,6 @@ class TestAlphaVantageAPIProperties(TestCase):
         self.assertRaises(PermissionError, mock_export_path)
         
 
-    def test_isHome_static_method(self):
-        self.assertFalse(self.av._is_home(Path()))
-        self.assertFalse(self.av._is_home(Path('/tmp')))
-        self.assertTrue(self.av._is_home(Path('~/Documents')))
-
-
     def test_parameters_method(self):
         self.assertIsInstance(self.av._parameters('TIME_SERIES_INTRADAY', 'required'), list)
         self.assertIsInstance(self.av._parameters('TIME_SERIES_INTRADAY', 'optional'), list)

@@ -13,7 +13,7 @@ import pprint
 from pathlib import Path, PurePath
 from functools import wraps
 from pandas import DataFrame
-from .utils import timed, is_home
+from .utils import is_home
 
 # import openpyxl if installed to support Excel DataFrame exports
 try:
@@ -158,7 +158,7 @@ class AlphaVantage (object):
                 pass
         return result
 
-    @timed
+
     def _av_api_call(self, parameters:dict, timeout:int = 60, **kwargs): # -> pandas DataFrame, json, None
         """Main method to handle AlphaVantage API call request and response."""
 
