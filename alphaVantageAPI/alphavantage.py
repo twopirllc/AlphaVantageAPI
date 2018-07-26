@@ -140,20 +140,6 @@ class AlphaVantage (object):
         self.__api_indicator_matype = self.__api['matype']
 
 
-    # @staticmethod
-    # def _is_home(path:Path): # -> bool
-    #     """Determines if the path is a User path or not.
-    #     If the Path begins with '~', then True, else False"""
-
-    #     if isinstance(path, str) and len(path) > 0:
-    #         path = Path(path)
-
-    #     if isinstance(path, Path) and len(path.parts) > 0:
-    #         return path.parts[0] == '~'
-    #     else:
-    #         return False
-
-
     def _function_alias(self, function:str): # -> str
         """Returns the function alias for the given 'function'."""
 
@@ -617,7 +603,6 @@ class AlphaVantage (object):
         # Then set __export_path = value
         if value is not None and isinstance(value, str):
             path = Path(value)
-            # if self._is_home(path):
             if is_home(path):
                 # ~/ab/cd -> /ab/cd
                 user_subdir = '/'.join(path.parts[1:])
