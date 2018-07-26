@@ -91,7 +91,8 @@ class AlphaVantage (object):
         self.proxy       = proxy
         self.clean       = clean
 
-        self.__response_history = []
+        self._requests_session = requests.session()
+        self._response_history = []
 
 
     # Private Methods
@@ -180,12 +181,20 @@ class AlphaVantage (object):
         parameters['apikey'] = self.api_key
 
         # Ready to Go. Format and get request response
-        response = requests.get(
-            AlphaVantage.END_POINT,
-            params = parameters,
-            timeout = timeout,
-            proxies = proxies
-        )
+        try:
+            # response =  self._requests_session.get(
+            response =  requests.get(  # Use till self._requests_session can be mocked in unittests
+                AlphaVantage.END_POINT,
+                params = parameters,
+                timeout = timeout,
+                proxies = proxies
+            )
+        # except requests.RequestException as ex:
+        except requests.exceptions.RequestException as ex:
+            print(f"[X] response.get() exception: {ex}\n    parameters: {parameters}")
+            pass
+        finally:
+            response.close()
 
         if response.status_code != 200:
             print(f"[X] Request Failed: {response.status_code}.\nText:\n{response.text}\n{parameters['function']}")
@@ -196,9 +205,9 @@ class AlphaVantage (object):
         else:
             response = response.text
 
-        self.__response_history.append(parameters)
+        self._response_history.append(parameters)
         # **Underdevelopment
-        # self.__response_history.append({'last': time.localtime(), 'parameters': parameters})
+        # self._response_history.append({'last': time.localtime(), 'parameters': parameters})
         if self.datatype == 'json':
             response = self._to_dataframe(parameters['function'], response)
         return response
@@ -556,7 +565,7 @@ class AlphaVantage (object):
     def call_history(self): # -> list
         """Returns a history of successful response calls."""
 
-        return self.__response_history
+        return self._response_history
 
 
     def last(self, n:int = 1): # -> str
