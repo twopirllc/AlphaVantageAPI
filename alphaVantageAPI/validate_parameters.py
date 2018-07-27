@@ -6,7 +6,7 @@ def _alidate_parameters(api_indicator_matype, option, parameters:dict, **kwargs)
 
     # APO, PPO, BBANDS
     matype = int(math.fabs(kwargs['matype'])) if 'matype' in kwargs else None
-    if option == 'matype' and matype is not None and matype in self.__api_indicator_matype:
+    if option == 'matype' and matype is not None and matype in api_indicator_matype:
         parameters['matype'] = matype
 
     # BBANDS
