@@ -222,9 +222,7 @@ class AlphaVantage (object):
         elif short_function.startswith('C') and len(short_function) == 2:
             path = f"{self.export_path}/{parameters['symbol']}{parameters['market']}"
         elif function in self.__api_indicator:
-            path = f"{self.export_path}/{parameters['symbol']}_{short_function}"
-            if 'interval' in parameters:
-                path += f"_{parameters['interval']}"
+            path = f"{self.export_path}/{parameters['symbol']}_{parameters['interval'][0].upper()}_{short_function}"
             if 'series_type' in parameters:
                 path += f"_{parameters['series_type'][0].upper()}"
             if 'time_period' in parameters:
