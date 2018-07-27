@@ -47,19 +47,19 @@ pip install -e alphaVantage-api
 
 ## Constructor Parameter Descriptions
 
-### api_key : *str*
+#### api_key : *str*
 * Default: None.  If None, set environment variable AV_API_KEY to your free API key. Otherwise set it in the class constructor.
-### output_size : *str*
+#### output_size : *str*
 * Default: 'compact'. The other option is 'full'.  See AlphaVantage API documentation for more details.
-### datatype : *str*
+#### datatype : *str*
 * Default: 'json'. This is the preferred request type.  See AlphaVantage API documentation for more details.
-### export : *bool*
+#### export : *bool*
 * Default: *'~/av_data'*.  Or set it to a path you can write to.
-### output : *str*
+#### output : *str*
 * Default: 'csv'.  Other options are 'json', 'pkl', 'html', and 'txt'.  If openpyxl is installed, then you can use 'xlsz'.
-### clean : *bool*
+#### clean : *bool*
 * Default: True. Simplifies the column header names.
-### proxy : *dict*
+#### proxy : *dict*
 * Default: {}.  See requests API documentation for more details.
 
 
