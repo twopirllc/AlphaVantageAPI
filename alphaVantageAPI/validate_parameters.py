@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# self.__api_indicator_matype
-
 def _alidate_parameters(api_indicator_matype, option, parameters:dict, **kwargs): # -> dict
     """Validates kwargs and attaches them to parameters."""
 
