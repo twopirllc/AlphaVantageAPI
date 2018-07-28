@@ -468,7 +468,7 @@ class AlphaVantage (object):
 
 
     def _saved_symbols(self, kind:str = None): # -> None
-        """Returns a list of save symbols"""
+        """Returns a list of saved symbols"""
 
         if kind and isinstance(kind, str):
             files = Path(self.export_path).glob(f"*.{kind}")
