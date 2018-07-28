@@ -10,8 +10,6 @@ import math
 import requests
 import pprint
 
-import pandas as pd
-
 from pathlib import Path, PurePath
 from functools import wraps
 from pandas import DataFrame
@@ -469,20 +467,23 @@ class AlphaVantage (object):
         return (self.call_history())[-n] if n > 0 else []
 
 
-    # Ideas underdevelopment
     def _saved_symbols(self, kind:str = None): # -> None
-        symbols = set()
+        """Returns a list of save symbols"""
 
         if kind and isinstance(kind, str):
             files = Path(self.export_path).glob(f"*.{kind}")
         else:
             files = Path(self.export_path).glob(f"*.{self.output}")
+        saved_files = sorted(files)
 
+        symbols = set()
         for file in saved_files:
             file_stem_desc = file.stem.split('_')
             if len(file_stem_desc) == 2:
                 symbols.add(f"{file_stem_desc[0]}_{file_stem_desc[1]}")
         return list(symbols)
+
+
 
     # Class Properties
     @property
