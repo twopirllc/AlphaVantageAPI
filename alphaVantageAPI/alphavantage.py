@@ -480,6 +480,8 @@ class AlphaVantage (object):
         for file in saved_files:
             file_stem_desc = file.stem.split('_')
             if len(file_stem_desc) == 2:
+                # ticker = file_stem_desc[0]
+                # interval = file_stem_desc[1]
                 symbols.add(f"{file_stem_desc[0]}_{file_stem_desc[1]}")
         return list(symbols)
 
