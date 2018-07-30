@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 def _alidate_parameters(api_indicator_matype, option, parameters:dict, **kwargs): # -> dict
