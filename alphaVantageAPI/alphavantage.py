@@ -309,6 +309,26 @@ class AlphaVantage (object):
         return df
 
 
+    def _saved_symbols(self, kind:str = None): # -> None
+        """Returns a list of saved symbols"""
+
+        if kind and isinstance(kind, str):
+            files = Path(self.export_path).glob(f"*.{kind}")
+        else:
+            files = Path(self.export_path).glob(f"*.{self.output}")
+        saved_files = sorted(files)
+
+        symbols = set()
+        for file in saved_files:
+            file_stem_desc = file.stem.split('_')
+            if len(file_stem_desc) == 2:
+                # ticker = file_stem_desc[0]
+                # interval = file_stem_desc[1]
+                symbols.add(f"{file_stem_desc[0]}_{file_stem_desc[1]}")
+        return list(symbols)
+
+
+    # Public Methods
     def fx(self, from_currency:str, to_currency:str = 'USD', **kwargs): # -> df, None
         """Simple wrapper to _av_api_call method for currency requests."""
 
@@ -465,25 +485,6 @@ class AlphaVantage (object):
         """Returns the last \'n\' calls as a list."""
 
         return (self.call_history())[-n] if n > 0 else []
-
-
-    def _saved_symbols(self, kind:str = None): # -> None
-        """Returns a list of saved symbols"""
-
-        if kind and isinstance(kind, str):
-            files = Path(self.export_path).glob(f"*.{kind}")
-        else:
-            files = Path(self.export_path).glob(f"*.{self.output}")
-        saved_files = sorted(files)
-
-        symbols = set()
-        for file in saved_files:
-            file_stem_desc = file.stem.split('_')
-            if len(file_stem_desc) == 2:
-                # ticker = file_stem_desc[0]
-                # interval = file_stem_desc[1]
-                symbols.add(f"{file_stem_desc[0]}_{file_stem_desc[1]}")
-        return list(symbols)
 
 
 
