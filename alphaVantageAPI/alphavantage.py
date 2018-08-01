@@ -310,7 +310,7 @@ class AlphaVantage (object):
         return df
 
 
-    def _saved_symbols(self, kind:str = None): # -> None
+    def _saved_symbols(self, kind:str = None): # -> list
         """Returns a list of saved symbols beginning with: 'ticker_interval'"""
 
         if kind and isinstance(kind, str):
