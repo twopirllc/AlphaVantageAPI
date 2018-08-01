@@ -78,8 +78,7 @@ class AlphaVantage (object):
         # self._local_stime = time.strftime("%a, %d %b %Y %H:%M:%S +0000", self._local_time)
         # print(self._local_stime)
 
-        # Get User Home Directory and load API
-        self.__homedir = Path.home()
+        # Load API json file        
         api_file = Path(PurePath(__file__).parent / 'data/api.json')
         self._load_api(api_file)
         
@@ -105,7 +104,7 @@ class AlphaVantage (object):
         if self.export:
             try:
                 if not self.export_path.exists():
-                    self.export_path.mkdir(parents = True)
+                    self.export_path.mkdir(parents=True)
             except OSError as ex:
                 raise
             except PermissionError as ex:
@@ -531,7 +530,7 @@ class AlphaVantage (object):
             if is_home(path):
                 # ~/ab/cd -> /ab/cd
                 user_subdir = '/'.join(path.parts[1:])
-                self.__export_path = self.__homedir.joinpath(user_subdir)
+                self.__export_path = Path.home().joinpath(user_subdir)
             else:
                 self.__export_path = path
             
