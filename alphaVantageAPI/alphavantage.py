@@ -73,7 +73,8 @@ class AlphaVantage (object):
             proxy: dict = {}
         ): # -> None
 
-        # *future* May incorporate time to added to successful responses
+        # *future* May incorporate time to successful responses: self._response_history
+        # Determining best format
         # self._local_time = time.localtime()
         # self._local_stime = time.strftime("%a, %d %b %Y %H:%M:%S +0000", self._local_time)
         # print(self._local_stime)
