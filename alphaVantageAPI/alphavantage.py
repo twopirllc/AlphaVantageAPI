@@ -470,8 +470,8 @@ class AlphaVantage (object):
             optional = self._parameters(keyword, 'optional')
             description = [x for x in self.series + self.indicators if x['function'] == keyword][0]['description']
 
-            print(f'\n   Function: {keyword}')
-            print(f'Description: {description}')
+            print(f"\n   Function: {keyword}")
+            print(f"Description: {description}")
             print(f"   Required: {', '.join(required)}")
             print(f"   Optional: {', '.join(optional)}") if optional else None
 
