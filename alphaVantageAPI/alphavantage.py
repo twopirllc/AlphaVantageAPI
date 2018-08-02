@@ -35,7 +35,7 @@ Set your environment variable AV_API_KEY to your AV API key
 '''
 
 
-class AlphaVantage (object):
+class AlphaVantage(object):
     """AlphaVantage Class
 
     A Class to handle Python 3.6 calls to the AlphaVantage API.  It requires Pandas
@@ -55,7 +55,7 @@ class AlphaVantage (object):
     
     Examples
     --------
-    >>> import AlphaVantage
+    >>> from alphaVantageAPI.alphavantage import AlphaVantage
     >>> av = AlphaVantage(api_key='your API key')"""
 
     API_NAME = 'AlphaVantage'
