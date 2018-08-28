@@ -23,7 +23,7 @@ pip install alphaVantage-api
 
 ### With Excel file support:
 ```shell
-pip install alphaVantage-api, openpyxl
+pip install alphaVantage-api openpyxl
 ```
 
 ### For the most up to date version
