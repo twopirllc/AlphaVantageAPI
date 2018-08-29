@@ -9,7 +9,7 @@ This API was designed to simplify the process of aquiring *free* financial data 
 
 * Main Features
     * Returns a Pandas DataFrame.
-    * Able to simplify column names i.e. "1. open" -> "open".
+    * Simplifies column names i.e. "1. open" -> "open".
     * Available export formats: csv (default), json, pkl, html, txt, xlsz (optional).
     * A help method to reduce looking up 'required' and 'optional' parameters for each function.
     * A call_history method to return all successful API calls
@@ -36,6 +36,7 @@ pip install -e alphaVantage-api
 # API Details
 ## Constructor Parameter Defaults
     api_key: str     = None
+    premium: bool    = False
     output_size: str = 'compact'
     datatype: str    = 'json'
     export: bool     = False
@@ -48,12 +49,16 @@ pip install -e alphaVantage-api
 ## Constructor Parameter Descriptions
 
 #### api_key : *str*
-* Default: None.  If None, set environment variable AV_API_KEY to your free API key. Otherwise set it in the class constructor.
+* Default: None.  If None, then do not forget to set your environment variable AV_API_KEY to API key. Otherwise set it in the class constructor.  If you have a Premium API key, do not forget to set the premium property to True as well.
+#### premium : *bool*
+* Default: False.  Got premium?  Excellent!  You do not need to wait  15.02 seconds between each API call.
 #### output_size : *str*
 * Default: 'compact'. The other option is 'full'.  See AlphaVantage API documentation for more details.
 #### datatype : *str*
 * Default: 'json'. This is the preferred request type.  See AlphaVantage API documentation for more details.
 #### export : *bool*
+* Default: False.  Set it to True if you want to save the file locally according to the export_path property.
+#### export_path : *bool*
 * Default: *'~/av_data'*.  Or set it to a path you can write to.
 #### output : *str*
 * Default: 'csv'.  Other options are 'json', 'pkl', 'html', and 'txt'.  If openpyxl is installed, then you can use 'xlsz'.
@@ -72,6 +77,7 @@ from alphaVantageAPI.alphavantage import AlphaVantage
 # Initialize the AlphaVantage Class with default values
 av = AlphaVantage(
         api_key=None,
+        premium=False,
         output_size='compact',
         datatype='json',
         export=False,
@@ -81,6 +87,18 @@ av = AlphaVantage(
         proxy={}
     )
 ```
+
+## Free API Key
+```python
+# Your FREE API calls are throttled by 15.02 seconds. 
+av = AlphaVantage(premium=False)
+```
+
+## Premium API Key
+```python
+# No API call throttling.
+av = AlphaVantage(premium=True)
+```  
 
 ## Save locally
 ```python
@@ -140,6 +158,7 @@ msft_D_df = av.data(symbol='MSFT', function='D')
 # Daily Adjusted
 msft_DA_df = av.data(symbol='MSFT', function='DA')
 
+
 # List of symbols Daily
 symbols = ['AAPL', 'MSFT', 'XLK']
 tech_list = av.data('D', symbols)  # returns list of DataFrames
@@ -157,6 +176,10 @@ msft_STOCH_df = av.data('STOCH', symbols[1], interval='daily', series_type='clos
 ```python
 # Returns all successfull calls to the API
 history_list = av.call_history()
+
+# Pretty display of Call History
+history_df = pd.DataFrame(history_list)[['symbol', 'function', 'interval', 'time_period']]
+print(history_df)
 ```
 
 # Contributing
