@@ -65,13 +65,13 @@ class AlphaVantage(object):
     def __init__(self,
             api_key:str = None,
             premium:bool = False,
-            output_size:str = 'compact',
-            datatype:str = 'json',
             export:bool = False,
             export_path:str = '~/av_data',
             output:str = 'csv',
-            clean:bool = False,
-            proxy:dict = {}
+            datatype:str = 'json',
+            output_size:str = 'compact',
+            proxy:dict = {},
+            clean:bool = False
         ): # -> None
 
         # *future* May incorporate time to successful responses: self._response_history
