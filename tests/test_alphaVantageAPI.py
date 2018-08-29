@@ -16,7 +16,8 @@ class TestAlphaVantageAPI(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.test_data_path = C.TEST_DATA_PATH
-        av = AlphaVantage(api_key=C.API_KEY_TEST)
+        # Set premium to True to avoid API throttling for testing
+        av = AlphaVantage(api_key=C.API_KEY_TEST, premium=True)
 
         # Minimum parameters
         cls.batch_parameters = {'function':'BATCH_STOCK_QUOTES', 'symbols':C.API_BATCH_TEST}
@@ -378,17 +379,17 @@ class TestAlphaVantageAPI(TestCase):
         self.assertEqual(mock_write_text.call_count, 1)
 
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage.last')
-    @patch('alphaVantageAPI.alphavantage.DataFrame.to_excel')
-    def test_save_df_to_excel(self, mock_to_excel, mock_last):
-        self.av.output = 'xlsx'
-        mock_last.return_value = self.sector_parameters
-        mock_to_excel.return_result = True
+    # @patch('alphaVantageAPI.alphavantage.AlphaVantage.last')
+    # @patch('alphaVantageAPI.alphavantage.DataFrame.to_excel')
+    # def test_save_df_to_excel(self, mock_to_excel, mock_last):
+    #     self.av.output = 'xlsx'
+    #     mock_last.return_value = self.sector_parameters
+    #     mock_to_excel.return_result = True
 
-        self.av._save_df(self.sector_parameters['function'], self.df_sectors)
+    #     self.av._save_df(self.sector_parameters['function'], self.df_sectors)
 
-        self.assertEqual(mock_last.call_count, 1)
-        self.assertEqual(mock_to_excel.call_count, 1)
+    #     self.assertEqual(mock_last.call_count, 1)
+    #     self.assertEqual(mock_to_excel.call_count, 1)
 
 
 

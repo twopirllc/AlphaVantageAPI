@@ -11,7 +11,7 @@ from .utils import Constant as C
 class TestAlphaVantageAPIProperties(TestCase):
     def setUp(self):
         self.API_KEY_TEST = C.API_KEY_TEST
-        self.av = AlphaVantage(api_key = self.API_KEY_TEST)
+        self.av = AlphaVantage(api_key=self.API_KEY_TEST)
 
 
     @patch('os.getenv')
