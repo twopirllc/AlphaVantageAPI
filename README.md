@@ -63,7 +63,7 @@ pip install -e alphaVantage-api
 #### output : *str*
 * Default: 'csv'.  Other options are 'json', 'pkl', 'html', and 'txt'.  If openpyxl is installed, then you can use 'xlsz'.
 #### clean : *bool*
-* Default: True. Simplifies the column header names.
+* Default: False. Simplifies the column header names for instance: "1. open" -> "open".
 #### proxy : *dict*
 * Default: {}.  See requests API documentation for more details.
 
