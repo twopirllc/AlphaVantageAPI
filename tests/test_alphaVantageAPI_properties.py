@@ -119,6 +119,14 @@ class TestAlphaVantageAPIProperties(TestCase):
         self.assertFalse(self.av.clean)
 
 
+    def test_premium_property(self):
+        self.av.premium = True
+        self.assertTrue(self.av.premium)
+
+        self.av.premium = False
+        self.assertFalse(self.av.premium)
+
+
     def test_api_initial_parameters(self):
         self.assertIsInstance(self.av.api_key, str)
         self.assertEqual(self.av.api_key, self.API_KEY_TEST)
