@@ -131,11 +131,8 @@ class TestAlphaVantageAPIProperties(TestCase):
         self.assertIsInstance(self.av.api_key, str)
         self.assertEqual(self.av.api_key, self.API_KEY_TEST)
 
-        self.assertIsInstance(self.av.output_size, str)
-        self.assertEqual(self.av.output_size, 'compact')
-
-        self.assertIsInstance(self.av.datatype, str)
-        self.assertEqual(self.av.datatype, 'json')
+        self.assertIsInstance(self.av.premium, bool)
+        self.assertEqual(self.av.premium, False)
 
         self.assertIsInstance(self.av.export, bool)
         self.assertEqual(self.av.export, False)
@@ -145,6 +142,18 @@ class TestAlphaVantageAPIProperties(TestCase):
 
         self.assertIsInstance(self.av.output, str)
         self.assertEqual(self.av.output, 'csv')
+
+        self.assertIsInstance(self.av.datatype, str)
+        self.assertEqual(self.av.datatype, 'json')
+
+        self.assertIsInstance(self.av.output_size, str)
+        self.assertEqual(self.av.output_size, 'compact')
+
+        self.assertIsInstance(self.av.proxy, dict)
+        self.assertEqual(self.av.proxy, {})
+
+        self.assertIsInstance(self.av.clean, bool)
+        self.assertEqual(self.av.clean, False)
 
 
     @patch('alphaVantageAPI.alphavantage.AlphaVantage.export_path')
