@@ -44,6 +44,7 @@ class AlphaVantage(object):
     Parameters
     ----------
     api_key: str = None
+    premium: bool = False
     output_size: str = 'compact'
     datatype: str = 'json'
     export: bool = False
@@ -62,14 +63,15 @@ class AlphaVantage(object):
     DEBUG = False
 
     def __init__(self,
-            api_key: str = None,
-            output_size: str = 'compact',
-            datatype: str = 'json',
-            export: bool = False,
-            export_path: str = '~/av_data',
-            output: str = 'csv',
-            clean: bool = False,
-            proxy: dict = {}
+            api_key:str = None,
+            premium:bool = False,
+            output_size:str = 'compact',
+            datatype:str = 'json',
+            export:bool = False,
+            export_path:str = '~/av_data',
+            output:str = 'csv',
+            clean:bool = False,
+            proxy:dict = {}
         ): # -> None
 
         # *future* May incorporate time to successful responses: self._response_history
@@ -84,6 +86,7 @@ class AlphaVantage(object):
         
         # Initialize Class properties
         self.api_key     = api_key
+        self.premium     = premium
         self.export      = export
         self.export_path = export_path
 
@@ -95,6 +98,7 @@ class AlphaVantage(object):
 
         self._requests_session = requests.session()
         self._response_history = []
+        self._api_call_count = 0
 
 
     # Private Methods
@@ -167,6 +171,9 @@ class AlphaVantage(object):
 
         # Everything is ok so far, add the AV API Key
         parameters['apikey'] = self.api_key
+
+        if not self.premium:
+            time.sleep(15.01)
 
         # Ready to Go. Format and get request response
         try:
@@ -600,6 +607,17 @@ class AlphaVantage(object):
         else:
             self.__clean = False
 
+
+    @property
+    def premium(self): # -> bool
+        return self.__premium
+
+    @premium.setter
+    def premium(self, value:bool): # -> None
+        if value is not None and isinstance(value, bool):
+            self.__premium = value
+        else:
+            self.__premium = False
 
 
     def __repr__(self): # -> str
