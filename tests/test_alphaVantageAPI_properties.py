@@ -32,6 +32,14 @@ class TestAlphaVantageAPIProperties(TestCase):
         # How to mock the print())?
 
 
+    def test_premium_property(self):
+        self.av.premium = True
+        self.assertTrue(self.av.premium)
+
+        self.av.premium = False
+        self.assertFalse(self.av.premium)
+
+
     def test_export_property(self):
         self.av.export = True
         self.assertTrue(self.av.export)
@@ -54,24 +62,6 @@ class TestAlphaVantageAPIProperties(TestCase):
 
         self.av.export_path = '/tmp/av_test'
         self.assertIsInstance(self.av.export_path, Path)
-
-
-    def test_output_size_property(self):
-        full = 'full'
-        self.av.output_size = full
-        self.assertEqual(self.av.output_size, full)
-
-        compact = 'compact'
-        self.av.output_size = compact
-        self.assertEqual(self.av.output_size, compact)
-
-        compact = 'compacT'
-        self.av.output_size = compact
-        self.assertEqual(self.av.output_size, compact.lower())
-
-        other = None
-        self.av.output_size = other
-        self.assertEqual(self.av.output_size, 'compact')
 
 
     def test_output_property(self):
@@ -103,6 +93,24 @@ class TestAlphaVantageAPIProperties(TestCase):
         self.assertEqual(self.av.datatype, json)
 
 
+    def test_output_size_property(self):
+        full = 'full'
+        self.av.output_size = full
+        self.assertEqual(self.av.output_size, full)
+
+        compact = 'compact'
+        self.av.output_size = compact
+        self.assertEqual(self.av.output_size, compact)
+
+        compact = 'compacT'
+        self.av.output_size = compact
+        self.assertEqual(self.av.output_size, compact.lower())
+
+        other = None
+        self.av.output_size = other
+        self.assertEqual(self.av.output_size, 'compact')
+
+
     def test_proxy_property(self):
         self.assertIsInstance(self.av.proxy, dict)
 
@@ -117,14 +125,6 @@ class TestAlphaVantageAPIProperties(TestCase):
 
         self.av.clean = False
         self.assertFalse(self.av.clean)
-
-
-    def test_premium_property(self):
-        self.av.premium = True
-        self.assertTrue(self.av.premium)
-
-        self.av.premium = False
-        self.assertFalse(self.av.premium)
 
 
     def test_api_initial_parameters(self):
