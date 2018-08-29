@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-def _alidate_parameters(api_indicator_matype, option, parameters:dict, **kwargs): # -> dict
+def _validate_parameters(api_indicator_matype, option, parameters:dict, **kwargs): # -> dict
     """Validates kwargs and attaches them to parameters."""
 
     # APO, PPO, BBANDS
