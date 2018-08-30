@@ -15,18 +15,24 @@ This API was designed to simplify the process of aquiring *free* financial data 
     * A call_history method to return all successful API calls
 
 
+
 # Installation
-### Typical installation:
+## Required
+```shell
+pip install pandas
+```
+
+## Typical installation:
 ```shell
 pip install alphaVantage-api
 ```
 
-### With Excel file support:
+## With Excel file support:
 ```shell
 pip install alphaVantage-api openpyxl
 ```
 
-### For the most up to date version
+## For the most up to date version
 <!-- Source installation: -->
 ```shell
 git clone https://github.com/twopirllc/AlphaVantageAPI.git
