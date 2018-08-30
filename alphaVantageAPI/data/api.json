@@ -96,6 +96,13 @@
         "function": "SECTOR",
         "alias": "S",
         "description": "This API returns the realtime and historical sector performances calculated from S&P500 incumbents."
+    },
+    {
+        "function": "GLOBAL_QUOTE",
+        "alias": "GQ",
+        "description": "A lightweight alternative to the time series APIs, this service returns the latest price and volume information for a global security of your choice.",
+        "required": ["symbol"],
+        "optional": ["datatype"]
     }],
 "indicator":[
     {
