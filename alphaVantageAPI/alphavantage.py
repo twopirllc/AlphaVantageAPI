@@ -13,7 +13,7 @@ from pathlib import Path, PurePath
 from functools import wraps
 from pandas import DataFrame
 from .utils import is_home
-from .validate_parameters import *
+from .validate_parameters import _validate_parameters
 
 # import openpyxl if installed to support Excel DataFrame exports
 try:
@@ -446,7 +446,7 @@ class AlphaVantage(object):
         optional_parameters = self._parameters(parameters['function'], 'optional')
         for option in optional_parameters:
             if option in kwargs:
-                validate_parameters(self.__api_indicator_matype, option, parameters, **kwargs)
+                _validate_parameters(self.__api_indicator_matype, option, parameters, **kwargs)
 
         download = self._av_api_call(parameters, **kwargs)
         return download if download is not None else None
