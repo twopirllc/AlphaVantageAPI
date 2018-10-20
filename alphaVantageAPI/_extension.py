@@ -9,29 +9,32 @@ from os import getenv as os_getenv
 from ._base_pandas_object import *
 from alphaVantageAPI.alphavantage import AlphaVantage
 
+
+
 # Load an instance of AV with user's environment variable 'AV_API_KEY'
 # Force Clean
-_AV_ = AlphaVantage(api_key=None, clean=True) # To Singleton?
+_AV_ = AlphaVantage(api_key=None, clean=True)
+
 
 @pd.api.extensions.register_dataframe_accessor('av')
 class AlphaVantageDownloader(BasePandasObject):
     # def __call__(self, kind=None, output_size='compact', alias=None, timed=False, *args, **kwargs):
-    def __call__(self, q=None, output_size='compact',  *args, **kwargs):    
+    def __call__(self, q=None, output_size='compact', timed=False, *args, **kwargs):
         try:
-            if isinstance(kind, str):
+            if isinstance(q, str):
                 q = q.lower()
                 fn = getattr(self, q)
 
-                # if timed:
-                #     stime = time.time()
+                if timed:
+                    stime = time.time()
 
-                # Run the API call
+                # Run the query
                 query = fn(**kwargs)
 
-                # if timed:
-                #     time_diff = time.time() - stime
-                #     ms = time_diff * 1000
-                #     query.timed = f"{ms:2.3f} ms ({time_diff:2.3f} s)"
+                if timed:
+                    time_diff = time.time() - stime
+                    ms = time_diff * 1000
+                    query.timed = f"{ms:2.3f} ms ({time_diff:2.3f} s)"
 
                 # Add an alias if passed
                 # if alias:
@@ -113,9 +116,54 @@ class AlphaVantageDownloader(BasePandasObject):
 
 
     @property
+    def clean(self): # -> bool
+        return _AV_.clean
+
+    @clean.setter
+    def clean(self, value:str): # -> None
+        _AV_.clean = value
+
+
+    @property
+    def export(self): # -> bool
+        return _AV_.export
+
+    @clean.setter
+    def export(self, value:str): # -> None
+        _AV_.export = value
+
+
+    @property
+    def output(self): # -> str
+        return _AV_.output
+
+    @output.setter
+    def output(self, value:str): # -> None
+        _AV_.output = value
+
+
+    @property
     def output_size(self): # -> str
         return _AV_.output_size
 
     @output_size.setter
     def output_size(self, value:str): # -> None
         _AV_.output_size = value
+
+
+    @property
+    def premium(self): # -> bool
+        return _AV_.premium
+
+    @premium.setter
+    def premium(self, value:str): # -> None
+        _AV_.premium = value
+
+
+    @property
+    def proxy(self): # -> dict
+        return _AV_.proxy
+
+    @proxy.setter
+    def proxy(self, value:str): # -> None
+        _AV_.proxy = value

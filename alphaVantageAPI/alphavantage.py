@@ -34,6 +34,31 @@ Set your environment variable AV_API_KEY to your AV API key
 '''
 
 
+# May convert AV Class to a Singleton
+# # Singleton/ClassVariableSingleton.py
+# class SingleTone(object):
+#     """Source: https://python-3-patterns-idioms-test.readthedocs.io/en/latest/Singleton.html"""
+#     __instance = None
+#     def __new__(cls, val):
+#         if SingleTone.__instance is None:
+#             SingleTone.__instance = object.__new__(cls)
+#         SingleTone.__instance.val = val
+#         return SingleTone.__instance
+
+# class Borg:
+#     """Source: https://python-3-patterns-idioms-test.readthedocs.io/en/latest/Singleton.html"""
+#     _shared_state = {}
+#     def __init__(self):
+#         self.__dict__ = self._shared_state
+
+# class Singleton(Borg):
+#     """Source: https://python-3-patterns-idioms-test.readthedocs.io/en/latest/Singleton.html"""
+#     def __init__(self, arg):
+#         Borg.__init__(self)
+#         self.val = arg
+#     def __str__(self): return self.val
+
+
 class AlphaVantage(object):
     """AlphaVantage Class
 
