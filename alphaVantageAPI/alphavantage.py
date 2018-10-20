@@ -70,8 +70,8 @@ class AlphaVantage(object):
             output:str = 'csv',
             datatype:str = 'json',
             output_size:str = 'compact',
-            proxy:dict = {},
-            clean:bool = False
+            clean:bool = False,
+            proxy:dict = {}
         ): # -> None
 
         # *future* May incorporate time to successful responses: self._response_history
@@ -273,16 +273,16 @@ class AlphaVantage(object):
         elif function == 'BATCH_STOCK_QUOTES':
             df = DataFrame(response[key], dtype=float)
         else:
-            # Else it is a time-series
+            # Otherwise it is a time-series, also calls df = df.iloc[::-1] below
             df = DataFrame.from_dict(response[key], dtype=float).T
             df.index.rename('date', inplace=True)
 
+        # If a 'sector', convert to float otherwise reverse the DataFrame
         if function == 'SECTOR':
-            # Convert sector values to floats
             df = df.applymap(lambda x: float(x.strip('%')) / 100)
         else:
-            # Reverse the timeseries dfs
             df = df.iloc[::-1]
+            df.reset_index(inplace=True)
 
         if self.clean:
             df = self._simplify_dataframe_columns(function, df)
