@@ -8,11 +8,14 @@ Access to the AlphaVantage requires a free API key, that can be found at http://
 This API was designed to simplify the process of aquiring *free* financial data for retail traders and investors from the financial markets.  While it does require Pandas, Pandas' methods help simplify saving data requests into a variety of file formats such as: csv (default), json, pkl, html, and txt.  If the openpyxl module is also installed, it can be saved as an Excel file: xlsx.
 
 * Main Features
+    * **New Feature:** Extended the Pandas DataFrame with extension 'av'.  See the _*Extension Example*_ below.
+    * **New Feature:** The extension has some aliases to simplify the download process. * _However indicators have not been implemented yet._
+    * **New Feature:** Can modify most properties of the AV class with the extension.
     * Returns a Pandas DataFrame.
     * Simplifies column names i.e. "1. open" -> "open".
     * Available export formats: csv (default), json, pkl, html, txt, xlsz (optional).
     * A help method to reduce looking up 'required' and 'optional' parameters for each function.
-    * A call_history method to return all successful API calls
+    * A call_history method to return all successful API calls.  
 
 
 
@@ -74,14 +77,14 @@ pip install -e alphaVantage-api
 * Default: {}.  See requests API documentation for more details.
 
 
-# Examples
+# Original Example
 
 ## Initialization
 ```python
 from alphaVantageAPI.alphavantage import AlphaVantage
 
 # Initialize the AlphaVantage Class with default values
-av = AlphaVantage(
+AV = AlphaVantage(
         api_key=None,
         premium=False,
         output_size='compact',
@@ -97,95 +100,158 @@ av = AlphaVantage(
 ## Free API Key
 ```python
 # Your FREE API calls are throttled by 15.02 seconds. 
-av = AlphaVantage(premium=False)
+AV = AlphaVantage(premium=False)
 ```
 
 ## Premium API Key
 ```python
 # No API call throttling.
-av = AlphaVantage(premium=True)
+AV = AlphaVantage(premium=True)
 ```  
 
 ## Save locally
 ```python
 # Cleans and save requests to the default export_path in 'csv' format
-av = AlphaVantage(export=True, output='csv', clean=True)
+AV = AlphaVantage(export=True, output='csv', clean=True)
 ```
 
 ## Display Current settings
 ```python
-print(av)
+print(AV)
 ```
 
 ## Help
 ```python
-# Help: lists all the functions AlphaVantage API supports
-print(av.help())
+# Help: lists all the functions and indicators AlphaVantage API supports
+AV.help()
 
 # Print 'function' aliases
-print(av.help('aliases'))
+AV.help('aliases')
 
 # Help with a specific API function
-print(av.help('TIME_SERIES_DAILY'))
+AV.help('TIME_SERIES_DAILY')
 
 # Help with an indicator
-print(av.help('BBANDS'))
+AV.help('BBANDS')
 ```
 
 
 ## Data Acquisition Methods
 ```python
-# FX / Currency
-# fx(from_currency:str, to_currency:str = 'USD')
-fx_usd_cad_df = av.fx(from_currency='USD', to_currency='CAD')
-
-
 # Sectors
-sectors_df = av.sectors()
+sectors_df = AV.sectors()
+
+
+# FX / Currency
+usd_cad_rate_df = AV.fxrate(from_currency='USD', to_currency='CAD') # Rate
+usd_cad_I5_df = AV.fx(from_currency='USD', to_currency='CAD', function='FXI', interval=5) # Intraday as int
+usd_cad_I60_df = AV.fx(from_currency='USD', to_currency='CAD', function='FXI', interval='60min') # Intraday as str
+usd_cad_D_df = AV.fx(from_currency='USD', to_currency='CAD', function='FXD') # Daily
+usd_cad_W_df = AV.fx(from_currency='USD', to_currency='CAD', function='FXW') # Weekly
+usd_cad_M_df = AV.fx(from_currency='USD', to_currency='CAD', function='FXM') # Monthly
 
 
 ## Digital/Crypto
-# digital(symbol:str, market:str = 'USD', function:str = 'CD')
-digital_btc_usd_df = av.digital(symbol='BTC', market='USD', function='CD')
-
-
-## Intraday
-# Intervals as integers or strings
-# intraday(symbol:str, interval=5)
-msft_I5_df = av.intraday(symbol='MSFT', interval=5)
-msft_I60_df = av.intraday(symbol='MSFT', interval='60min')
+btc_usd_df = AV.digital(symbol='BTC', market='USD', function='CD')
 
 
 ## Generic Equity/ETF calls
-# data(function:str, symbol:str = None, **kwargs)
-# Daily
-msft_D_df = av.data(symbol='MSFT', function='D')
-
-# Daily Adjusted
-msft_DA_df = av.data(symbol='MSFT', function='DA')
+msft_I5_df = AV.intraday(symbol='MSFT', interval=5) # Intraday as int
+msft_I60_df = AV.intraday(symbol='MSFT', interval='60min') # Intraday as str
+msft_D_df = AV.data(symbol='MSFT', function='D') # Daily
+msft_DA_df = AV.data(symbol='MSFT', function='DA') # Daily Adjusted
+msft_W_df = AV.data(symbol='MSFT', function='W') # Weekly
+msft_WA_df = AV.data(symbol='MSFT', function='WA') # Weekly Adjusted
+msft_M_df = AV.data(symbol='MSFT', function='M') # Monthly
+msft_MA_df = AV.data(symbol='MSFT', function='MA') # Monthly Adjusted
 
 
 # List of symbols Daily
 symbols = ['AAPL', 'MSFT', 'XLK']
-tech_list = av.data('D', symbols)  # returns list of DataFrames
+tech_list = AV.data('D', symbols)  # returns list of DataFrames
 
 
 ## Indicators
-# SMA close 20 Indicator
-msft_SMA_20_df = av.data(symbol='MSFT', function='SMA', series_type='close', time_period=20)
+# SMA(close, 20)
+msft_SMA_20_df = AV.data(symbol='MSFT', function='SMA', series_type='close', time_period=20)
 
-# Daily Stochastic Indicator
-msft_STOCH_df = av.data('STOCH', symbols[1], interval='daily', series_type='close')
+# STOCH(close)
+msft_STOCH_df = AV.data('STOCH', symbols[1], interval='daily', series_type='close')
 ```
 
 ## Call History
 ```python
 # Returns all successfull calls to the API
-history_list = av.call_history()
+history_list = AV.call_history()
 
 # Pretty display of Call History
 history_df = pd.DataFrame(history_list)[['symbol', 'function', 'interval', 'time_period']]
 print(history_df)
+```
+
+
+# Extension Example
+
+## Initialization
+*For simplicity and protection of your AV API key, the extension uses the environment variable AV_API_KEY upon import of the module.*
+```python
+import pandas as pd
+import alphaVantageAPI
+```
+
+## Empty DataFrame: No current data, no problem!
+Since 'av' is an extension of a Pandas DataFrame, we need a DataFrame to work from.  Simply create an empty DataFrame, it's contents will be replaced anyhow.
+```python
+e = pd.DataFrame()
+```
+
+## Help
+```python
+# Help: lists all the functions and indicators AlphaVantage API supports
+e.av.help()
+
+# Print 'function' aliases
+e.av.help('aliases')
+
+# Help with a specific API function
+e.av.help('TIME_SERIES_DAILY')
+
+# Help with an indicator
+e.av.help('BBANDS')
+```
+
+## Data Acquisition Methods
+```python
+# Sectors
+sectors_df = e.av.sectors()
+
+
+# FX / Currency
+usd_cad_rate_df = e.av.fx('USD', to_currency='EUR')
+usd_cad_I5_df = e.av.fx_intraday('USD', to_currency='EUR', interval=5) # Intraday as int
+usd_cad_I60_df = e.av.fx_intraday('USD', to_currency='EUR', interval='60min') # Intraday as str
+usd_cad_D_df = e.av.fx_daily('USD', to_currency='EUR') # Daily
+usd_cad_W_df = e.av.fx_weekly('USD', to_currency='EUR') # Weekly
+usd_cad_M_df = e.av.fx_monthly('USD', to_currency='EUR') # Monthly
+
+
+## Digital/Crypto
+btc_usd_I5_df = e.av.digital_intraday('BTC', market='USD', interval=5) # Intraday as int
+btc_usd_I60_df = e.av.digital_intraday('BTC', market='USD', interval='60min') # Intraday as str
+btc_usd_D_df = e.av.digital_daily('BTC', market='USD') # Daily
+btc_usd_M_df = e.av.digital_monthly('BTC', market='USD') # Monthly
+btc_usd_W_df = e.av.digital_weekly('BTC', market='USD') # Weekly
+
+
+## Equities/ ETFs
+msft_I5_df = e.av.intraday('MSFT', interval=5) # Intraday as int
+msft_I60_df = e.av.intraday('MSFT', interval='60min') # Intraday as str
+msft_D_df = e.av.daily('MSFT') # Daily
+msft_DA_df = e.av.daily_adjusted('MSFT') # Daily Adjusted
+msft_W_df = e.av.weekly('MSFT') # Weekly
+msft_WA_df = e.av.weekly_adjusted('MSFT') # Weekly Adjusted
+msft_M_df = e.av.monthly('MSFT') # Monthly
+msft_MA_df = e.av.monthly_adjusted('MSFT') # Monthly Adjusted
 ```
 
 # Contributing

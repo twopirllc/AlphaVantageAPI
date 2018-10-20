@@ -66,21 +66,63 @@ class AlphaVantageDownloader(BasePandasObject):
         return self._df
 
 
-    def digital(self, symbol:str, market:str = 'USD', function:str = 'CD', **kwargs): # -> df
-        self._df = _AV_.digital(symbol, market=market, function=function, **kwargs)
-        print(f"[c]  df[{type(self._df)}]\n{self._df.index}\n{self._df}")
+    def digital_daily(self, symbol:str, market:str = 'USD', **kwargs): # -> df
+        self._df = _AV_.digital(symbol, market=market, function='CD', **kwargs)
+        print(f"[cd]  df[{type(self._df)}]\n{self._df.index}\n{self._df}")
+        return self._df
+
+
+    def digital_intraday(self, symbol:str, market:str = 'USD', **kwargs): # -> df
+        self._df = _AV_.digital(symbol, market=market, function='CI', **kwargs)
+        print(f"[ci]  df[{type(self._df)}]\n{self._df.index}\n{self._df}")
+        return self._df
+
+
+    def digital_monthly(self, symbol:str, market:str = 'USD', **kwargs): # -> df
+        self._df = _AV_.digital(symbol, market=market, function='CM', **kwargs)
+        print(f"[cm]  df[{type(self._df)}]\n{self._df.index}\n{self._df}")
+        return self._df
+
+
+    def digital_weekly(self, symbol:str, market:str = 'USD', **kwargs): # -> df
+        self._df = _AV_.digital(symbol, market=market, function='CW', **kwargs)
+        print(f"[cw]  df[{type(self._df)}]\n{self._df.index}\n{self._df}")
+        return self._df
+
+
+    def fx(self, from_currency:str, to_currency:str = 'USD', **kwargs): # -> df
+        self._df = _AV_.fxrate(from_currency=from_currency, to_currency=to_currency, **kwargs)
+        print(f"[fx]  df[{type(self._df)}]:\n{self._df}")
+        return self._df
+
+
+    def fx_daily(self, from_symbol:str, to_symbol:str = 'USD', **kwargs): # -> df
+        self._df = _AV_.fx('FXD', from_symbol=from_symbol, to_symbol=to_symbol, **kwargs)
+        print(f"[fd]  df[{type(self._df)}]:\n{self._df}")
+        return self._df
+
+
+    def fx_intraday(self, from_symbol:str, to_symbol:str = 'USD', interval=5, **kwargs): # -> df
+        self._df = _AV_.fx('FXI', from_symbol=from_symbol, to_symbol=to_symbol, interval=interval, **kwargs)
+        print(f"[fi]  df[{type(self._df)}]:\n{self._df}")
+        return self._df
+
+
+    def fx_monthly(self, from_symbol:str, to_symbol:str = 'USD', **kwargs): # -> df
+        self._df = _AV_.fx('FXM', from_symbol=from_symbol, to_symbol=to_symbol, **kwargs)
+        print(f"[fm]  df[{type(self._df)}]:\n{self._df}")
+        return self._df
+
+
+    def fx_weekly(self, from_symbol:str, to_symbol:str = 'USD', **kwargs): # -> df
+        self._df = _AV_.fx('FXW', from_symbol=from_symbol, to_symbol=to_symbol, **kwargs)
+        print(f"[fw]  df[{type(self._df)}]:\n{self._df}")
         return self._df
 
 
     def intraday(self, symbol:str, interval=5, **kwargs): # -> df
         self._df = _AV_.intraday(symbol, interval=interval, **kwargs)
         print(f"[i]  df[{type(self._df)}]\n{self._df.index}\n{self._df}")
-        return self._df
-
-
-    def fx(self, from_currency:str, to_currency:str = 'USD', **kwargs): # -> df
-        self._df = _AV_.fx(from_currency=from_currency, to_currency=to_currency, **kwargs)
-        print(f"[f]  df[{type(self._df)}]:\n{self._df}")
         return self._df
 
 

@@ -299,6 +299,7 @@ class AlphaVantage(object):
             df = DataFrame(response[key], dtype=float)
         else:
             # Otherwise it is a time-series, also calls df = df.iloc[::-1] below
+            print(f"AHHH!!!\n{response[key]}\n\n")
             df = DataFrame.from_dict(response[key], dtype=float).T
             df.index.rename('date', inplace=True)
 
@@ -321,9 +322,11 @@ class AlphaVantage(object):
     def _simplify_dataframe_columns(self, function:str, df:DataFrame): # -> df, None
         """Simplifies DataFrame Column Names given a 'function'."""
 
+        # print(f"simplfiydf: df.columns: {df.columns}")
+        # print(f"df[{type(df)}]:\n{df}")
+
         if function == 'CURRENCY_EXCHANGE_RATE':
-            column_names = ['from', 'from_name', 'to', 'to_name', 'rate', 'tz']
-            df.index.rename('datetime', inplace = True)
+            column_names = ['refreshed', 'from', 'from_name', 'to', 'to_name', 'rate', 'tz']
         elif function == 'SECTOR':
             column_names = ['RT', '1D', '5D', '1M', '3M', 'YTD', '1Y', '3Y', '5Y', '10Y']
         elif function == 'BATCH_STOCK_QUOTES':
@@ -361,7 +364,7 @@ class AlphaVantage(object):
 
 
     # Public Methods
-    def fx(self, from_currency:str, to_currency:str = 'USD', **kwargs): # -> df, None
+    def fxrate(self, from_currency:str, to_currency:str = 'USD', **kwargs): # -> df, None
         """Simple wrapper to _av_api_call method for currency requests."""
 
         parameters = {
@@ -369,6 +372,35 @@ class AlphaVantage(object):
             'from_currency': from_currency.upper(),
             'to_currency': to_currency.upper()
         }
+
+        download = self._av_api_call(parameters, **kwargs)
+        return download if download is not None else None
+
+
+    def fx(self, function:str, from_symbol:str = 'EUR', to_symbol:str = 'USD', **kwargs): # -> df, None
+        """Simple wrapper to _av_api_call method for currency requests."""
+
+        if function.upper() not in ['FXD', 'FXI', 'FXM', 'FXW', 'FX_DAILY', 'FX_INTRADAY', 'FX_MONTHLY', 'FX_WEEKLY']:
+            return None
+        else:
+            function = self.__api_function[function]
+
+        parameters = {
+            'function': function.upper(),
+            'from_symbol': from_symbol.upper(),
+            'to_symbol': to_symbol.upper()
+        }
+
+        interval = kwargs.pop('interval', None)
+        if interval is not None:
+            if isinstance(interval, str) and interval in self.__api_series_interval:
+                parameters['interval'] = interval
+            elif isinstance(interval, int) and interval in [int(re.sub(r'min', '', x)) for x in self.__api_series_interval]:
+                parameters['interval'] = '{}min'.format(interval)
+            else:
+                return None
+
+        print(f"parameters 1: {parameters}")
 
         download = self._av_api_call(parameters, **kwargs)
         return download if download is not None else None
