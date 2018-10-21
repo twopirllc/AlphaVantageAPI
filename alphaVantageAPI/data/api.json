@@ -126,6 +126,13 @@
         "description": "This API returns the realtime and historical sector performances calculated from S&P500 incumbents."
     },
     {
+        "function": "SYMBOL_SEARCH",
+        "alias": "SS",
+        "description": "The Search Endpoint returns the best-matching symbols and market information based on keywords of your choice. The search results also contain match scores that provide you with the full flexibility to develop your own search and filtering logic.",
+        "required": ["keywords"],
+        "optional": ["datatype"]
+    },
+    {
         "function": "GLOBAL_QUOTE",
         "alias": "GQ",
         "description": "A lightweight alternative to the time series APIs, this service returns the latest price and volume information for a global security of your choice.",

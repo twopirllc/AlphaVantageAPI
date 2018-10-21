@@ -417,6 +417,15 @@ class AlphaVantage(object):
         return download if download is not None else None
 
 
+    def global_quote(self, symbol:str, **kwargs): # -> df, None
+        """Simple wrapper to _av_api_call method for global_quote requests."""
+
+        parameters = {'function': 'GLOBAL_QUOTE', 'symbol': symbol.upper()}
+
+        download = self._av_api_call(parameters, **kwargs)
+        return download if download is not None else None
+
+
     def sectors(self, **kwargs): # -> df, None
         """Simple wrapper to _av_api_call method to request sector performances."""
 
