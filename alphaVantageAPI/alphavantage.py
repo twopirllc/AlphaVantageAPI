@@ -293,6 +293,7 @@ class AlphaVantage(object):
             df.set_index('6. Last Refreshed', inplace=True)
         elif function == 'GLOBAL_QUOTE':
             df = DataFrame.from_dict(response, orient='index')
+            # Convert change_percent to decimal (float)
             df.iloc[0, -1] = float(df.iloc[0, -1].strip('%')) / 100
         elif function == 'SECTOR':
             df = DataFrame.from_dict(response)
