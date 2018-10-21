@@ -99,7 +99,7 @@ AV = AlphaVantage(
 
 ## Free API Key
 ```python
-# Your FREE API calls are throttled by 15.02 seconds. 
+# Your FREE API calls are throttled by 15.01 seconds. 
 AV = AlphaVantage(premium=False)
 ```
 

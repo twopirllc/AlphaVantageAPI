@@ -54,108 +54,125 @@ class AlphaVantageDownloader(BasePandasObject):
 
 
 
+    # Sectors
+    def global_quote(self, symbol:str, **kwargs): # -> df
+        self._df = _AV_.global_quote(symbol, **kwargs)
+        # print(f"global_quote.stub")
+        # self._df = pd.DataFrame()
+        return self._df
+
+
+    # Sectors
+    def sectors(self, **kwargs): # -> df
+        self._df = _AV_.sectors(**kwargs)
+        return self._df
+
+
+    # Securities
     def daily(self, symbol:str, **kwargs): # -> df
         self._df = _AV_.data(function='D', symbol=symbol, **kwargs)
-        print(f"[d]  df[{type(self._df)}]\n{self._df.index}\n{self._df}")
         return self._df
 
 
     def daily_adjusted(self, symbol:str, **kwargs): # -> df
         self._df = _AV_.data(function='DA', symbol=symbol, **kwargs)
-        print(f"[da] df[{type(self._df)}]\n{self._df.index}\n{self._df}")
-        return self._df
-
-
-    def digital_daily(self, symbol:str, market:str = 'USD', **kwargs): # -> df
-        self._df = _AV_.digital(symbol, market=market, function='CD', **kwargs)
-        print(f"[cd]  df[{type(self._df)}]\n{self._df.index}\n{self._df}")
-        return self._df
-
-
-    def digital_intraday(self, symbol:str, market:str = 'USD', **kwargs): # -> df
-        self._df = _AV_.digital(symbol, market=market, function='CI', **kwargs)
-        print(f"[ci]  df[{type(self._df)}]\n{self._df.index}\n{self._df}")
-        return self._df
-
-
-    def digital_monthly(self, symbol:str, market:str = 'USD', **kwargs): # -> df
-        self._df = _AV_.digital(symbol, market=market, function='CM', **kwargs)
-        print(f"[cm]  df[{type(self._df)}]\n{self._df.index}\n{self._df}")
-        return self._df
-
-
-    def digital_weekly(self, symbol:str, market:str = 'USD', **kwargs): # -> df
-        self._df = _AV_.digital(symbol, market=market, function='CW', **kwargs)
-        print(f"[cw]  df[{type(self._df)}]\n{self._df.index}\n{self._df}")
-        return self._df
-
-
-    def fx(self, from_currency:str, to_currency:str = 'USD', **kwargs): # -> df
-        self._df = _AV_.fxrate(from_currency=from_currency, to_currency=to_currency, **kwargs)
-        print(f"[fx]  df[{type(self._df)}]:\n{self._df}")
-        return self._df
-
-
-    def fx_daily(self, from_symbol:str, to_symbol:str = 'USD', **kwargs): # -> df
-        self._df = _AV_.fx('FXD', from_symbol=from_symbol, to_symbol=to_symbol, **kwargs)
-        print(f"[fd]  df[{type(self._df)}]:\n{self._df}")
-        return self._df
-
-
-    def fx_intraday(self, from_symbol:str, to_symbol:str = 'USD', interval=5, **kwargs): # -> df
-        self._df = _AV_.fx('FXI', from_symbol=from_symbol, to_symbol=to_symbol, interval=interval, **kwargs)
-        print(f"[fi]  df[{type(self._df)}]:\n{self._df}")
-        return self._df
-
-
-    def fx_monthly(self, from_symbol:str, to_symbol:str = 'USD', **kwargs): # -> df
-        self._df = _AV_.fx('FXM', from_symbol=from_symbol, to_symbol=to_symbol, **kwargs)
-        print(f"[fm]  df[{type(self._df)}]:\n{self._df}")
-        return self._df
-
-
-    def fx_weekly(self, from_symbol:str, to_symbol:str = 'USD', **kwargs): # -> df
-        self._df = _AV_.fx('FXW', from_symbol=from_symbol, to_symbol=to_symbol, **kwargs)
-        print(f"[fw]  df[{type(self._df)}]:\n{self._df}")
         return self._df
 
 
     def intraday(self, symbol:str, interval=5, **kwargs): # -> df
         self._df = _AV_.intraday(symbol, interval=interval, **kwargs)
-        print(f"[i]  df[{type(self._df)}]\n{self._df.index}\n{self._df}")
         return self._df
 
 
     def monthly(self, symbol:str, **kwargs): # -> df
         self._df = _AV_.data(function='M', symbol=symbol, **kwargs)
-        print(f"[m]  df[{type(self._df)}]\n{self._df.index}\n{self._df}")
         return self._df
 
 
     def monthly_adjusted(self, symbol:str, **kwargs): # -> df
         self._df = _AV_.data(function='MA', symbol=symbol, **kwargs)
-        print(f"[ma] df[{type(self._df)}]\n{self._df.index}\n{self._df}")
-        return self._df
-
-
-    def sectors(self, **kwargs): # -> df
-        self._df = _AV_.sectors(**kwargs)
-        print(f"[s]  df[{type(self._df)}]:\n{self._df}")
         return self._df
 
 
     def weekly(self, symbol:str, **kwargs): # -> df
         self._df = _AV_.data(function='W', symbol=symbol, **kwargs)
-        print(f"[w]  df[{type(self._df)}]\n{self._df.index}\n{self._df}")
         return self._df
 
 
     def weekly_adjusted(self, symbol:str, **kwargs): # -> df
         self._df = _AV_.data(function='WA', symbol=symbol, **kwargs)
-        print(f"[wa] df[{type(self._df)}]\n{self._df.index}\n{self._df}")
         return self._df
 
 
+    # Crypto/Digital
+    def digital_daily(self, symbol:str, market:str = 'USD', **kwargs): # -> df
+        self._df = _AV_.digital(symbol, market=market, function='CD', **kwargs)
+        return self._df
+
+
+    def digital_intraday(self, symbol:str, market:str = 'USD', **kwargs): # -> df
+        self._df = _AV_.digital(symbol, market=market, function='CI', **kwargs)
+        return self._df
+
+
+    def digital_monthly(self, symbol:str, market:str = 'USD', **kwargs): # -> df
+        self._df = _AV_.digital(symbol, market=market, function='CM', **kwargs)
+        return self._df
+
+
+    def digital_weekly(self, symbol:str, market:str = 'USD', **kwargs): # -> df
+        self._df = _AV_.digital(symbol, market=market, function='CW', **kwargs)
+        return self._df
+
+
+    # FX
+    def fx(self, from_currency:str, to_currency:str = 'USD', **kwargs): # -> df
+        self._df = _AV_.fxrate(from_currency=from_currency, to_currency=to_currency, **kwargs)
+        return self._df
+
+
+    def fx_daily(self, from_symbol:str, to_symbol:str = 'USD', **kwargs): # -> df
+        self._df = _AV_.fx('FXD', from_symbol=from_symbol, to_symbol=to_symbol, **kwargs)
+        return self._df
+
+
+    def fx_intraday(self, from_symbol:str, to_symbol:str = 'USD', interval=5, **kwargs): # -> df
+        self._df = _AV_.fx('FXI', from_symbol=from_symbol, to_symbol=to_symbol, interval=interval, **kwargs)
+        return self._df
+
+
+    def fx_monthly(self, from_symbol:str, to_symbol:str = 'USD', **kwargs): # -> df
+        self._df = _AV_.fx('FXM', from_symbol=from_symbol, to_symbol=to_symbol, **kwargs)
+        return self._df
+
+
+    def fx_weekly(self, from_symbol:str, to_symbol:str = 'USD', **kwargs): # -> df
+        self._df = _AV_.fx('FXW', from_symbol=from_symbol, to_symbol=to_symbol, **kwargs)
+        return self._df
+
+
+    # Aliases
+    # GQ = global_quote
+    S = sectors    
+
+    D = daily
+    DA = daily_adjusted
+    I = intraday
+    M = monthly
+    MA = monthly_adjusted
+    W = weekly
+    WA = weekly_adjusted
+
+    CD = digital_daily
+    CI = digital_intraday
+    CM = digital_monthly
+    CW = digital_weekly
+
+    FX = fx
+    FXD = fx_daily
+    FXI = fx_intraday
+    FXM = fx_monthly
+    FXW = fx_weekly
 
     @property
     def clean(self): # -> bool

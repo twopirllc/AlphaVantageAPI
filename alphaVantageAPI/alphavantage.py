@@ -197,8 +197,8 @@ class AlphaVantage(object):
         # Everything is ok so far, add the AV API Key
         parameters['apikey'] = self.api_key
 
-        if not self.premium:
-            time.sleep(15.01)
+        if not self.premium and self._api_call_count > 0:
+                time.sleep(15.01)
 
         # Ready to Go. Format and get request response
         try:
@@ -230,6 +230,10 @@ class AlphaVantage(object):
         # self._response_history.append({'last': time.localtime(), 'parameters': parameters})
         if self.datatype == 'json':
             response = self._to_dataframe(parameters['function'], response)
+
+        if self._api_call_count < 1:
+            self._api_call_count += 1
+
         return response
 
 
@@ -287,6 +291,9 @@ class AlphaVantage(object):
         if function == 'CURRENCY_EXCHANGE_RATE':
             df = DataFrame.from_dict(response, orient='index')
             df.set_index('6. Last Refreshed', inplace=True)
+        elif function == 'GLOBAL_QUOTE':
+            df = DataFrame.from_dict(response, orient='index')
+            df.iloc[0, -1] = float(df.iloc[0, -1].strip('%')) / 100
         elif function == 'SECTOR':
             df = DataFrame.from_dict(response)
             # Remove 'Information' and 'Last Refreshed' Rows
@@ -299,7 +306,6 @@ class AlphaVantage(object):
             df = DataFrame(response[key], dtype=float)
         else:
             # Otherwise it is a time-series, also calls df = df.iloc[::-1] below
-            print(f"AHHH!!!\n{response[key]}\n\n")
             df = DataFrame.from_dict(response[key], dtype=float).T
             df.index.rename('date', inplace=True)
 
@@ -400,7 +406,16 @@ class AlphaVantage(object):
             else:
                 return None
 
-        print(f"parameters 1: {parameters}")
+        # print(f"parameters 1: {parameters}")
+
+        download = self._av_api_call(parameters, **kwargs)
+        return download if download is not None else None
+
+
+    def global_quote(self, symbol:str, **kwargs): # -> df, None
+        """Simple wrapper to _av_api_call method for global_quote requests."""
+
+        parameters = {'function': 'GLOBAL_QUOTE', 'symbol': symbol.upper()}
 
         download = self._av_api_call(parameters, **kwargs)
         return download if download is not None else None
