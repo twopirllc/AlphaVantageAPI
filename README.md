@@ -120,7 +120,7 @@ AV = AlphaVantage(export=True, output='csv', clean=True)
 print(AV)
 ```
 
-## Help
+## Help!
 ```python
 # Help: lists all the functions and indicators AlphaVantage API supports
 AV.help()
@@ -138,9 +138,11 @@ AV.help('BBANDS')
 
 ## Data Acquisition Methods
 ```python
+# Global Quote
+quote_df = AV.global_quote('MSFT')
+
 # Sectors
 sectors_df = AV.sectors()
-
 
 # FX / Currency
 usd_cad_rate_df = AV.fxrate(from_currency='USD', to_currency='CAD') # Rate
@@ -150,10 +152,12 @@ usd_cad_D_df = AV.fx(from_currency='USD', to_currency='CAD', function='FXD') # D
 usd_cad_W_df = AV.fx(from_currency='USD', to_currency='CAD', function='FXW') # Weekly
 usd_cad_M_df = AV.fx(from_currency='USD', to_currency='CAD', function='FXM') # Monthly
 
-
 ## Digital/Crypto
-btc_usd_df = AV.digital(symbol='BTC', market='USD', function='CD')
-
+btc_usd_I5_df = AV.digital(symbol='BTC', market='USD', function='CI', interval=5) # Intraday as int
+btc_usd_I60_df = AV.digital(symbol='BTC', market='USD', function='CI', interval='60min') # Intraday as str
+btc_usd_D_df = AV.digital(symbol='BTC', market='USD', function='CD') # Daily
+btc_usd_W_df = AV.digital(symbol='BTC', market='USD', function='CW') # Weekly
+btc_usd_M_df = AV.digital(symbol='BTC', market='USD', function='CM') # Monthly
 
 ## Generic Equity/ETF calls
 msft_I5_df = AV.intraday(symbol='MSFT', interval=5) # Intraday as int
@@ -190,7 +194,7 @@ print(history_df)
 ```
 
 
-# Extension Example
+# Example: DataFrame Extension 'av'
 
 ## Initialization
 *For simplicity and protection of your AV API key, the extension uses the environment variable AV_API_KEY upon import of the module.*
@@ -205,7 +209,7 @@ Since 'av' is an extension of a Pandas DataFrame, we need a DataFrame to work fr
 e = pd.DataFrame()
 ```
 
-## Help
+## Help!
 ```python
 # Help: lists all the functions and indicators AlphaVantage API supports
 e.av.help()
@@ -222,9 +226,11 @@ e.av.help('BBANDS')
 
 ## Data Acquisition Methods
 ```python
+# Global Quote
+quote_df = e.av.global_quote('MSFT')
+
 # Sectors
 sectors_df = e.av.sectors()
-
 
 # FX / Currency
 usd_cad_rate_df = e.av.fx('USD', to_currency='EUR')
@@ -234,14 +240,12 @@ usd_cad_D_df = e.av.fx_daily('USD', to_currency='EUR') # Daily
 usd_cad_W_df = e.av.fx_weekly('USD', to_currency='EUR') # Weekly
 usd_cad_M_df = e.av.fx_monthly('USD', to_currency='EUR') # Monthly
 
-
 ## Digital/Crypto
 btc_usd_I5_df = e.av.digital_intraday('BTC', market='USD', interval=5) # Intraday as int
 btc_usd_I60_df = e.av.digital_intraday('BTC', market='USD', interval='60min') # Intraday as str
 btc_usd_D_df = e.av.digital_daily('BTC', market='USD') # Daily
-btc_usd_M_df = e.av.digital_monthly('BTC', market='USD') # Monthly
 btc_usd_W_df = e.av.digital_weekly('BTC', market='USD') # Weekly
-
+btc_usd_M_df = e.av.digital_monthly('BTC', market='USD') # Monthly
 
 ## Equities/ ETFs
 msft_I5_df = e.av.intraday('MSFT', interval=5) # Intraday as int
@@ -258,7 +262,7 @@ msft_MA_df = e.av.monthly_adjusted('MSFT') # Monthly Adjusted
 Contributions are welcome and I am open to new ideas or implementations.
 
 # Inspiration
-Check out additional *AlphaVantage API* Python Wrappers by:
+If this module does not suit your style or workflow, consider some of the following *AlphaVantage API Python Wrapper* implementations by:
 
 Romel Torres: https://github.com/RomelTorres/alpha_vantage
 
