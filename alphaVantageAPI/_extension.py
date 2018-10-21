@@ -46,6 +46,8 @@ class AlphaVantageDownloader(BasePandasObject):
 
         except:
             self.help(keyword=kwargs.pop('help', None), *args, **kwargs)
+        finally:
+            self._df = None
 
 
     def help(self, keyword=None, **kwargs):
@@ -57,8 +59,12 @@ class AlphaVantageDownloader(BasePandasObject):
     # Sectors
     def global_quote(self, symbol:str, **kwargs): # -> df
         self._df = _AV_.global_quote(symbol, **kwargs)
-        # print(f"global_quote.stub")
-        # self._df = pd.DataFrame()
+        return self._df
+
+
+    # Search
+    def search(self, keywords:str, **kwargs): # -> df
+        self._df = _AV_.search(keywords, **kwargs)
         return self._df
 
 

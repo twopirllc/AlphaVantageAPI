@@ -295,6 +295,10 @@ class AlphaVantage(object):
             df = DataFrame.from_dict(response, orient='index')
             # Convert change_percent to decimal (float)
             df.iloc[0, -1] = float(df.iloc[0, -1].strip('%')) / 100
+        elif function == 'SYMBOL_SEARCH':
+            df = DataFrame(response[key])
+            print(f"df.index={df.index}")
+            print(f"df:\n{df}")
         elif function == 'SECTOR':
             df = DataFrame.from_dict(response)
             # Remove 'Information' and 'Last Refreshed' Rows
@@ -311,7 +315,8 @@ class AlphaVantage(object):
             df.index.rename('date', inplace=True)
 
         # If a 'sector', convert to float otherwise reverse the DataFrame
-        if function == 'SECTOR':
+        if function == 'SYMBOL_SEARCH':  pass
+        elif function == 'SECTOR':
             df = df.applymap(lambda x: float(x.strip('%')) / 100)
         else:
             df = df.iloc[::-1]
@@ -338,6 +343,8 @@ class AlphaVantage(object):
             # Greedy but only 4 columns
             column_names = [re.sub(r'timestamp', 'datetime', name) for name in column_names]
             column_names = [re.sub(r'price', 'last', name) for name in column_names]
+        elif function == 'SYMBOL_SEARCH':
+            column_names = ['symbol', 'name', 'type', 'region', 'market_open', 'market_close', 'tz', 'currency', 'match']
         else:
             column_names = [re.sub(r'\d+(|\w). ', '', name) for name in df.columns]
             column_names = [re.sub(r' amount', '', name) for name in column_names]
@@ -345,6 +352,7 @@ class AlphaVantage(object):
             column_names = [re.sub(r' ', '_', name) for name in column_names]
 
         df.columns = column_names
+        print(f"df[final]:\n{df}")
         return df
 
 
@@ -417,12 +425,13 @@ class AlphaVantage(object):
         return download if download is not None else None
 
 
-    def global_quote(self, symbol:str, **kwargs): # -> df, None
-        """Simple wrapper to _av_api_call method for global_quote requests."""
+    def search(self, keywords:str, **kwargs): # -> df, None
+        """Simple wrapper to _av_api_call method for search requests."""
 
-        parameters = {'function': 'GLOBAL_QUOTE', 'symbol': symbol.upper()}
+        parameters = {'function': 'SYMBOL_SEARCH', 'keywords': keywords}
 
         download = self._av_api_call(parameters, **kwargs)
+        print(f"dl:\n{download}")
         return download if download is not None else None
 
 
