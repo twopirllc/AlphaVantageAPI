@@ -11,6 +11,7 @@ This API was designed to simplify the process of aquiring *free* financial data 
     * **New Feature:** Extended the Pandas DataFrame with extension 'av'.  See the _*Extension Example*_ below.
     * **New Feature:** The extension has some aliases to simplify the download process. **However indicators have _not_ been implemented yet.**
     * **New Feature:** Can modify most properties of the AV class with the 'av' extension.
+    * **New Feature:** New access points: GLOBAL_QUOTE and SYMBOL_SEARCH added to the AlphaVantageAPI and it's 'av' extension.
     * Returns a Pandas DataFrame.
     * Simplifies column names i.e. "1. open" -> "open".
     * Available export formats: csv (default), json, pkl, html, txt, xlsz (optional).
@@ -136,6 +137,12 @@ AV.help('BBANDS')
 ```
 
 
+## Symbol Search
+```python
+found_symbol = AV.search('AA')
+```
+
+
 ## Data Acquisition Methods
 ```python
 # Global Quote
@@ -209,6 +216,7 @@ Since 'av' is an extension of a Pandas DataFrame, we need a DataFrame to work fr
 e = pd.DataFrame()
 ```
 
+
 ## Help!
 ```python
 # Help: lists all the functions and indicators AlphaVantage API supports
@@ -223,6 +231,13 @@ e.av.help('TIME_SERIES_DAILY')
 # Help with an indicator
 e.av.help('BBANDS')
 ```
+
+
+## Symbol Search
+```python
+found_symbol = e.av.search('AA')
+```
+
 
 ## Data Acquisition Methods
 ```python
@@ -257,6 +272,8 @@ msft_WA_df = e.av.weekly_adjusted('MSFT') # Weekly Adjusted
 msft_M_df = e.av.monthly('MSFT') # Monthly
 msft_MA_df = e.av.monthly_adjusted('MSFT') # Monthly Adjusted
 ```
+
+
 
 # Contributing
 Contributions are welcome and I am open to new ideas or implementations.

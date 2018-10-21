@@ -296,9 +296,8 @@ class AlphaVantage(object):
             # Convert change_percent to decimal (float)
             df.iloc[0, -1] = float(df.iloc[0, -1].strip('%')) / 100
         elif function == 'SYMBOL_SEARCH':
+            if len(response[key]) < 1:  return None
             df = DataFrame(response[key])
-            print(f"df.index={df.index}")
-            print(f"df:\n{df}")
         elif function == 'SECTOR':
             df = DataFrame.from_dict(response)
             # Remove 'Information' and 'Last Refreshed' Rows
@@ -352,7 +351,6 @@ class AlphaVantage(object):
             column_names = [re.sub(r' ', '_', name) for name in column_names]
 
         df.columns = column_names
-        print(f"df[final]:\n{df}")
         return df
 
 
@@ -431,7 +429,6 @@ class AlphaVantage(object):
         parameters = {'function': 'SYMBOL_SEARCH', 'keywords': keywords}
 
         download = self._av_api_call(parameters, **kwargs)
-        print(f"dl:\n{download}")
         return download if download is not None else None
 
 
