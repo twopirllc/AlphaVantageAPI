@@ -328,9 +328,6 @@ class AlphaVantage(object):
     def _simplify_dataframe_columns(self, function:str, df:DataFrame): # -> df, None
         """Simplifies DataFrame Column Names given a 'function'."""
 
-        # print(f"simplfiydf: df.columns: {df.columns}")
-        # print(f"df[{type(df)}]:\n{df}")
-
         if function == 'CURRENCY_EXCHANGE_RATE':
             column_names = ['refreshed', 'from', 'from_name', 'to', 'to_name', 'rate', 'tz']
         elif function == 'SECTOR':
@@ -405,8 +402,6 @@ class AlphaVantage(object):
                 parameters['interval'] = '{}min'.format(interval)
             else:
                 return None
-
-        # print(f"parameters 1: {parameters}")
 
         download = self._av_api_call(parameters, **kwargs)
         return download if download is not None else None
@@ -693,31 +688,18 @@ class AlphaVantage(object):
 
 
     def __repr__(self): # -> str
-        s = '{}(end_point={}, api_key={}, export={}, export_path={}, output_size={}, output={}, datatype={}, clean={}, proxy={})'.format(
-                AlphaVantage.API_NAME,
-                AlphaVantage.END_POINT,
-                self.api_key,
-                self.export,
-                self.export_path,
-                self.output_size,
-                self.output,
-                self.datatype,
-                self.clean,
-                self.proxy
-            )
+        s  = f"{AlphaVantage.API_NAME}(\n  end_point:str = {AlphaVantage.END_POINT},\n"
+        s += f"api_key:str = {self.api_key},\n  export:bool = {self.export},\n"
+        s += f"  export_path:str = {self.export_path},\n  output_size:str = {self.output_size},\n"
+        s += f"  output:str = {self.output},\n  datatype:str = {self.datatype},\n"
+        s += f"  clean:bool = {self.clean},\n  proxy:dict = {self.proxy}\n)"
         return s
 
+
     def __str__(self): # -> str
-        s = '{}(\n  end_point:str = {},\n  api_key:str = {},\n  export:bool = {},\n  export_path:str = {},\n  output_size:str = {},\n  output:str = {},\n  datatype:str = {},\n  clean:bool = {},\n  proxy:dict = {}\n)'.format(
-                AlphaVantage.API_NAME,
-                AlphaVantage.END_POINT,
-                self.api_key,
-                self.export,
-                self.export_path,
-                self.output_size,
-                self.output,
-                self.datatype,
-                self.clean,
-                self.proxy
-            )
+        s  = f"{AlphaVantage.API_NAME}(\n  end_point:str = {AlphaVantage.END_POINT},\n"
+        s += f"api_key:str = {self.api_key},\n  export:bool = {self.export},\n"
+        s += f"  export_path:str = {self.export_path},\n  output_size:str = {self.output_size},\n"
+        s += f"  output:str = {self.output},\n  datatype:str = {self.datatype},\n"
+        s += f"  clean:bool = {self.clean},\n  proxy:dict = {self.proxy}\n)"
         return s
