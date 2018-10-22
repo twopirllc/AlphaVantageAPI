@@ -28,7 +28,7 @@ setup(
         'openpyxl': ['openpyxl'],
     },
     package_data={
-        'alphaVantageAPI': {'alphaVantageAPI':['data/api.json','data/treasury_curves.csv']},
+        'alphaVantageAPI': {'alphaVantageAPI':['data/api.json']},
     },
     zip_safe=False
 )
