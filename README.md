@@ -12,6 +12,7 @@ This API was designed to simplify the process of aquiring *free* financial data 
     * **New Feature:** The extension has some aliases to simplify the download process. **However indicators have _not_ been implemented yet.**
     * **New Feature:** Can modify most properties of the AV class with the 'av' extension.
     * **New Feature:** Added new access points: GLOBAL_QUOTE and SYMBOL_SEARCH added to the AlphaVantageAPI and it's 'av' extension.
+    * **New Feature:** Like terse commands?  The 'av' extension also includes their alias.  For example: df.av.daily_adjusted('aapl') = df.av.DA('aapl').  See help('aliases') for more shorter length commands.
     * Returns a Pandas DataFrame.
     * Simplifies column names i.e. "1. open" -> "open".
     * Available export formats: csv (default), json, pkl, html, txt, xlsz (optional).
