@@ -296,7 +296,8 @@ class AlphaVantage(object):
             # Convert change_percent to decimal (float)
             df.iloc[0, -1] = float(df.iloc[0, -1].strip('%')) / 100
         elif function == 'SYMBOL_SEARCH':
-            if len(response[key]) < 1:  return None
+            if len(response[key]) < 1:
+                return None
             df = DataFrame(response[key])
         elif function == 'SECTOR':
             df = DataFrame.from_dict(response)
