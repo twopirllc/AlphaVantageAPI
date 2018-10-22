@@ -11,7 +11,7 @@ This API was designed to simplify the process of aquiring *free* financial data 
     * **New Feature:** Extended the Pandas DataFrame with extension 'av'.  See the _*Extension Example*_ below.
     * **New Feature:** The extension has some aliases to simplify the download process. **However indicators have _not_ been implemented yet.**
     * **New Feature:** Can modify most properties of the AV class with the 'av' extension.
-    * **New Feature:** New access points: GLOBAL_QUOTE and SYMBOL_SEARCH added to the AlphaVantageAPI and it's 'av' extension.
+    * **New Feature:** Added new access points: GLOBAL_QUOTE and SYMBOL_SEARCH added to the AlphaVantageAPI and it's 'av' extension.
     * Returns a Pandas DataFrame.
     * Simplifies column names i.e. "1. open" -> "open".
     * Available export formats: csv (default), json, pkl, html, txt, xlsz (optional).
