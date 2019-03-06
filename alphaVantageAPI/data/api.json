@@ -182,6 +182,12 @@
         "optional": ["fastlimit", "slowlimit"]
     },
     {
+        "function": "VWAP",
+        "description": "Volume Weighted Moving Average",
+        "required": ["symbol", "interval"],
+        "optional": ["datatype"]
+    },
+    {
         "function": "T3",
         "description": "https://www.fmlabs.com/reference/default.htm?url=T3.htm",
         "required": ["symbol", "interval", "series_type", "time_period"]

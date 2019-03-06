@@ -285,8 +285,12 @@ class AlphaVantage(object):
     def _to_dataframe(self, function:str, response:dict): # -> df
         """Converts json response into a Pandas DataFrame given a 'function'"""
 
-        json_keys = response.keys()
-        key = [x for x in json_keys if not x.startswith('Meta Data')].pop() or None
+        try:
+            json_keys = response.keys()
+            key = [x for x in json_keys if not x.startswith('Meta Data')].pop()# or None
+        except IndexError as ie:
+            print(f" [X] Download failed.  Check the AV documentation for correct parameters: https://www.alphavantage.co/documentation/")
+            sys.exit(1)
 
         if function == 'CURRENCY_EXCHANGE_RATE':
             df = DataFrame.from_dict(response, orient='index')
@@ -706,7 +710,7 @@ class AlphaVantage(object):
 
     def __repr__(self): # -> str
         s  = f"{AlphaVantage.API_NAME}(\n  end_point:str = {AlphaVantage.END_POINT},\n"
-        s += f"api_key:str = {self.api_key},\n  export:bool = {self.export},\n"
+        s += f"  api_key:str = {self.api_key},\n  export:bool = {self.export},\n"
         s += f"  export_path:str = {self.export_path},\n  output_size:str = {self.output_size},\n"
         s += f"  output:str = {self.output},\n  datatype:str = {self.datatype},\n"
         s += f"  clean:bool = {self.clean},\n  proxy:dict = {self.proxy}\n)"
@@ -715,7 +719,7 @@ class AlphaVantage(object):
 
     def __str__(self): # -> str
         s  = f"{AlphaVantage.API_NAME}(\n  end_point:str = {AlphaVantage.END_POINT},\n"
-        s += f"api_key:str = {self.api_key},\n  export:bool = {self.export},\n"
+        s += f"  api_key:str = {self.api_key},\n  export:bool = {self.export},\n"
         s += f"  export_path:str = {self.export_path},\n  output_size:str = {self.output_size},\n"
         s += f"  output:str = {self.output},\n  datatype:str = {self.datatype},\n"
         s += f"  clean:bool = {self.clean},\n  proxy:dict = {self.proxy}\n)"

@@ -32,12 +32,12 @@ def is_home(path:Path): # -> bool
     else:
         return False
 
-def _requests_get(self, url:str = None, timeout:int = 60, **kwargs): # -> None
-    """* Returns a standard requests get response given a url
-    * Underdevelopment"""
+# def _requests_get(self, url:str = None, timeout:int = 60, **kwargs): # -> None
+#     """* Returns a standard requests get response given a url
+#     * Underdevelopment"""
 
-    response = None
-    if not url:
-        proxies = kwargs['proxy'] or {}
-        response = requests.get(url, timeout=timeout, proxies=proxies)
-    return response
+#     response = None
+#     if not url:
+#         proxies = kwargs['proxy'] or {}
+#         response = requests.get(url, timeout=timeout, proxies=proxies)
+#     return response
