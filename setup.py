@@ -4,7 +4,7 @@ long_description = 'An Opinionated AlphaVantage API Wrapper in Python 3.7'
 
 setup(
     name='alphaVantage_api',
-    version='1.0.14',
+    version='1.0.15',
     description=long_description,
     long_description=long_description,
     author='Kevin Johnson',
