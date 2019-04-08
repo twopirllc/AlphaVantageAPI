@@ -97,7 +97,7 @@ class AlphaVantage(object):
             output_size:str = 'compact',
             clean:bool = False,
             proxy:dict = {}
-        ): # -> None
+        ) -> None:
 
         # *future* May incorporate time to successful responses: self._response_history
         # Determining best format
@@ -127,7 +127,7 @@ class AlphaVantage(object):
 
 
     # Private Methods
-    def _init_export_path(self): # -> str
+    def _init_export_path(self) -> str:
         """Create the export_path directory if it does not exist."""
 
         if self.export:
@@ -140,7 +140,7 @@ class AlphaVantage(object):
                 raise
 
 
-    def _load_api(self, api_file:Path): # -> None
+    def _load_api(self, api_file:Path) -> None:
         """Load API from a JSON file."""
 
         if api_file.exists():
@@ -154,7 +154,7 @@ class AlphaVantage(object):
             raise ValueError(f'{api_file} does not exist.')
 
 
-    def _api_lists(self): # -> None
+    def _api_lists(self) -> None:
         """Initialize lists based on API."""
 
         self.series = [x for x in self.__api['series']]
@@ -170,13 +170,13 @@ class AlphaVantage(object):
         self.__api_indicator_matype = self.__api['matype']
 
 
-    def _function_alias(self, function:str): # -> str
+    def _function_alias(self, function:str) -> str:
         """Returns the function alias for the given 'function'."""
 
         return self.__api_function_inv[function] if function in self.__api_function_inv else function
 
 
-    def _parameters(self, function:str, kind:str): # -> list
+    def _parameters(self, function:str, kind:str) -> list:
         """Returns 'required' or 'optional' parameters for a 'function'."""
 
         result = []
@@ -189,7 +189,7 @@ class AlphaVantage(object):
         return result
 
 
-    def _av_api_call(self, parameters:dict, timeout:int = 60, **kwargs): # -> pandas DataFrame, json, None
+    def _av_api_call(self, parameters:dict, timeout:int = 60, **kwargs) -> DataFrame or json or None:
         """Main method to handle AlphaVantage API call request and response."""
 
         proxies = kwargs['proxies'] if 'proxies' in kwargs else self.proxy
@@ -237,7 +237,7 @@ class AlphaVantage(object):
         return response
 
 
-    def _save_df(self, function:str, df:DataFrame): # -> None
+    def _save_df(self, function:str, df:DataFrame) -> None:
         """Save Pandas DataFrame to a file type given a 'function'."""
 
         # Get the alias for the 'function' so filenames are short
@@ -282,7 +282,7 @@ class AlphaVantage(object):
             df.to_excel(path, sheet_name = parameters['function'])
 
 
-    def _to_dataframe(self, function:str, response:dict): # -> df
+    def _to_dataframe(self, function:str, response:dict) -> DataFrame:
         """Converts json response into a Pandas DataFrame given a 'function'"""
 
         try:
@@ -335,7 +335,7 @@ class AlphaVantage(object):
         return df
 
 
-    def _simplify_dataframe_columns(self, function:str, df:DataFrame): # -> df, None
+    def _simplify_dataframe_columns(self, function:str, df:DataFrame) -> DataFrame or None:
         """Simplifies DataFrame Column Names given a 'function'."""
 
         if function == 'CURRENCY_EXCHANGE_RATE':
@@ -359,7 +359,7 @@ class AlphaVantage(object):
         return df
 
 
-    def _saved_symbols(self, kind:str = None): # -> list
+    def _saved_symbols(self, kind:str = None) -> list:
         """Returns a list of saved symbols beginning with: 'ticker_interval'"""
 
         if kind and isinstance(kind, str):
@@ -379,7 +379,7 @@ class AlphaVantage(object):
 
 
     # Public Methods
-    def fxrate(self, from_currency:str, to_currency:str = 'USD', **kwargs): # -> df, None
+    def fxrate(self, from_currency:str, to_currency:str = 'USD', **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for currency requests."""
 
         parameters = {
@@ -392,7 +392,7 @@ class AlphaVantage(object):
         return download if download is not None else None
 
 
-    def fx(self, function:str, from_symbol:str = 'EUR', to_symbol:str = 'USD', **kwargs): # -> df, None
+    def fx(self, function:str, from_symbol:str = 'EUR', to_symbol:str = 'USD', **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for currency requests."""
 
         if function.upper() not in ['FXD', 'FXI', 'FXM', 'FXW', 'FX_DAILY', 'FX_INTRADAY', 'FX_MONTHLY', 'FX_WEEKLY']:
@@ -415,11 +415,25 @@ class AlphaVantage(object):
             else:
                 return None
 
+        if function not in self.__api_indicator:
+            parameters['datatype'] = self.datatype
+            parameters['outputsize'] = self.output_size
+
+        required_parameters = self._parameters(parameters['function'], 'required')
+        for required in required_parameters:
+            if required in kwargs:
+                parameters[required] = kwargs[required]
+
+        optional_parameters = self._parameters(parameters['function'], 'optional')
+        for option in optional_parameters:
+            if option in kwargs:
+                _validate_parameters(self.__api_indicator_matype, option, parameters, **kwargs)
+
         download = self._av_api_call(parameters, **kwargs)
         return download if download is not None else None
 
 
-    def global_quote(self, symbol:str, **kwargs): # -> df, None
+    def global_quote(self, symbol:str, **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for global_quote requests."""
 
         parameters = {'function': 'GLOBAL_QUOTE', 'symbol': symbol.upper()}
@@ -428,7 +442,7 @@ class AlphaVantage(object):
         return download if download is not None else None
 
 
-    def search(self, keywords:str, **kwargs): # -> df, None
+    def search(self, keywords:str, **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for search requests."""
 
         parameters = {'function': 'SYMBOL_SEARCH', 'keywords': keywords}
@@ -437,7 +451,7 @@ class AlphaVantage(object):
         return download if download is not None else None
 
 
-    def sectors(self, **kwargs): # -> df, None
+    def sectors(self, **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method to request sector performances."""
 
         parameters = {'function':'SECTOR'}
@@ -446,7 +460,7 @@ class AlphaVantage(object):
         return download if download is not None else None
 
 
-    def digital(self, symbol:str, market:str = 'USD', function:str = 'CD', **kwargs): # -> df, None
+    def digital(self, symbol:str, market:str = 'USD', function:str = 'CD', **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for digital currency requests."""
 
         parameters = {
@@ -459,7 +473,7 @@ class AlphaVantage(object):
         return download if download is not None else None
 
 
-    def batch(self, symbols:list, **kwargs): # -> df, None
+    def batch(self, symbols:list, **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for a batch of symbols"""
     
         if not isinstance(symbols, list):
@@ -474,7 +488,7 @@ class AlphaVantage(object):
         return download if download is not None else None
 
 
-    def intraday(self, symbol:str, interval=5, **kwargs): # -> df, None
+    def intraday(self, symbol:str, interval=5, **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for intraday requests."""
 
         parameters = {
@@ -495,7 +509,7 @@ class AlphaVantage(object):
         return download if download is not None else None
 
 
-    def data(self, function:str, symbol:str = None, **kwargs): # -> df, list of df, None
+    def data(self, function:str, symbol:str = None, **kwargs) -> DataFrame or list or None:
         """Simple wrapper to _av_api_call method for an equity or indicator."""
 
         # Process a symbol list and return a list of DataFrames
@@ -540,7 +554,7 @@ class AlphaVantage(object):
         return download if download is not None else None
 
 
-    def help(self, keyword:str = None): # -> None
+    def help(self, keyword:str = None) -> None:
         """Simple help system to print 'required' or 'optional' parameters based on a keyword."""
 
         def _functions(): print(f"   Functions:\n    {', '.join(self.__api_series)}")
@@ -570,13 +584,13 @@ class AlphaVantage(object):
             print(f"   Optional: {', '.join(optional)}") if optional else None
 
 
-    def call_history(self): # -> list
+    def call_history(self) -> list:
         """Returns a history of successful response calls."""
 
         return self._response_history
 
 
-    def last(self, n:int = 1): # -> str
+    def last(self, n:int = 1) -> str:
         """Returns the last \'n\' calls as a list."""
 
         return (self.call_history())[-n] if n > 0 else []
@@ -585,11 +599,11 @@ class AlphaVantage(object):
 
     # Class Properties
     @property
-    def api_key(self): # -> str
+    def api_key(self) -> str:
         return self.__apikey
 
     @api_key.setter
-    def api_key(self, value:str): # -> None
+    def api_key(self, value:str) -> None:
         if value is None:
             self.__apikey = os.getenv('AV_API_KEY')
         elif isinstance(value, str) and value:
@@ -601,11 +615,11 @@ class AlphaVantage(object):
 
 
     @property
-    def export(self): # -> bool
+    def export(self) -> bool:
         return self.__export
 
     @export.setter
-    def export(self, value:bool): # -> None
+    def export(self, value:bool) -> None:
         if value is not None and isinstance(value, bool):
             self.__export = value
         else:
@@ -613,11 +627,11 @@ class AlphaVantage(object):
 
 
     @property
-    def export_path(self): # -> str
+    def export_path(self) -> str:
         return self.__export_path
 
     @export_path.setter
-    def export_path(self, value:str): # -> None
+    def export_path(self, value:str) -> None:
         # If using <Path home> /User, then set absolute path to the __export_path variable
         # Then set __export_path = value
         if value is not None and isinstance(value, str):
@@ -634,11 +648,11 @@ class AlphaVantage(object):
 
 
     @property
-    def output_size(self): # -> str
+    def output_size(self) -> str:
         return self.__output_size
 
     @output_size.setter
-    def output_size(self, value:str): # -> None
+    def output_size(self, value:str) -> None:
         if value is not None and value.lower() in self.__api_outputsize:
             self.__output_size = value.lower()
         else:
@@ -646,11 +660,11 @@ class AlphaVantage(object):
 
 
     @property
-    def output(self): # -> str
+    def output(self) -> str:
         return self.__output
 
     @output.setter
-    def output(self, value:str): # -> None
+    def output(self, value:str) -> None:
         output_type = ['csv', 'json', 'pkl', 'html', 'txt']
         output_type.append('xlsx') if _EXCEL_ else None
 
@@ -661,11 +675,11 @@ class AlphaVantage(object):
 
 
     @property
-    def datatype(self): # -> str
+    def datatype(self) -> str:
         return self.__datatype
 
     @datatype.setter
-    def datatype(self, value:str): # -> None
+    def datatype(self, value:str) -> None:
         if value is not None and value.lower() in self.__api_datatype:
             self.__datatype = value.lower()
         else:
@@ -673,11 +687,11 @@ class AlphaVantage(object):
 
 
     @property
-    def proxy(self): # -> dict
+    def proxy(self) -> dict:
         return self.__proxy
 
     @proxy.setter
-    def proxy(self, value:dict):# = {}): # -> None
+    def proxy(self, value:dict) -> None:
         if value is not None and isinstance(value, dict):
             self.__proxy = value
         else:
@@ -685,11 +699,11 @@ class AlphaVantage(object):
 
 
     @property
-    def clean(self): # -> bool
+    def clean(self) -> bool:
         return self.__clean
 
     @clean.setter
-    def clean(self, value:bool): # -> None
+    def clean(self, value:bool) -> None:
         if value is not None and isinstance(value, bool):
             self.__clean = value
         else:
@@ -697,18 +711,18 @@ class AlphaVantage(object):
 
 
     @property
-    def premium(self): # -> bool
+    def premium(self) -> bool:
         return self.__premium
 
     @premium.setter
-    def premium(self, value:bool): # -> None
+    def premium(self, value:bool) -> None:
         if value is not None and isinstance(value, bool):
             self.__premium = value
         else:
             self.__premium = False
 
 
-    def __repr__(self): # -> str
+    def __repr__(self) -> str:
         s  = f"{AlphaVantage.API_NAME}(\n  end_point:str = {AlphaVantage.END_POINT},\n"
         s += f"  api_key:str = {self.api_key},\n  export:bool = {self.export},\n"
         s += f"  export_path:str = {self.export_path},\n  output_size:str = {self.output_size},\n"
@@ -717,7 +731,7 @@ class AlphaVantage(object):
         return s
 
 
-    def __str__(self): # -> str
+    def __str__(self) -> str:
         s  = f"{AlphaVantage.API_NAME}(\n  end_point:str = {AlphaVantage.END_POINT},\n"
         s += f"  api_key:str = {self.api_key},\n  export:bool = {self.export},\n"
         s += f"  export_path:str = {self.export_path},\n  output_size:str = {self.output_size},\n"
