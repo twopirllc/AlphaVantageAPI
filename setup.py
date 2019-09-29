@@ -4,7 +4,7 @@ long_description = 'An Opinionated AlphaVantage API Wrapper in Python 3.7'
 
 setup(
     name='alphaVantage_api',
-    version='1.0.16',
+    version='1.0.17',
     description=long_description,
     long_description=long_description,
     author='Kevin Johnson',
@@ -28,7 +28,7 @@ setup(
         'openpyxl': ['openpyxl'],
     },
     package_data={
-        'alphaVantageAPI': {'alphaVantageAPI':['data/api.json']},
+        'alphaVantageAPI':['data/api.json'],
     },
     zip_safe=False
 )

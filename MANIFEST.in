@@ -1,5 +1,6 @@
 include README.md
 include LICENSE.txt
 include setup.py
+include requirements.txt
 recursive-include alphaVantageAPI *
 recursive-include tests *
