@@ -90,6 +90,12 @@
         "optional": ["datatype"]
     },
     {
+        "function": "CRYPTO_RATING",
+        "alias": "CR",
+        "description": "Fundamental Crypto Asset Score (FCAS) is a comparative metric used to assess the fundamental health of crypto projects. The score is derived from the interactivity between primary project life-cycle factors: User Activity/Utility, Developer Behavior, and Market Maturity. Each crypto asset is given a composite numerical score, 0-1000. Powered by Flipside Crypto, the inventor of the FCAS system and an industry-leading \"rating agency\" for cryptocurrencies. For more information, please visit https://flipsidecrypto.com/fcas/. ",
+        "required": ["symbol"]
+    },
+    {
         "function": "DIGITAL_CURRENCY_INTRADAY",
         "alias": "CI",
         "description": "This API returns the realtime intraday time series (in 5-minute intervals) for any digital currency (e.g., BTC) traded on a specific market (e.g., CNY/Chinese Yuan). Prices and volumes are quoted in both the market-specific currency and USD.",
