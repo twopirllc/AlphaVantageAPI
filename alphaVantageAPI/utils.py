@@ -4,6 +4,7 @@ import time
 from functools import wraps
 from pathlib import Path
 
+
 def is_home(path:Path): # -> bool
     """Determines if the path is a User path or not.
     If the Path begins with '~', then True, else False"""

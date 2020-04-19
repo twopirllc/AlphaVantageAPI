@@ -10,7 +10,6 @@ from ._base_pandas_object import *
 from alphaVantageAPI.alphavantage import AlphaVantage
 
 
-
 # Load an instance of AV with user's environment variable 'AV_API_KEY'
 # Force Clean
 _AV_ = AlphaVantage(api_key=None, clean=True)
@@ -18,7 +17,6 @@ _AV_ = AlphaVantage(api_key=None, clean=True)
 
 @pd.api.extensions.register_dataframe_accessor('av')
 class AlphaVantageDownloader(BasePandasObject):
-    # def __call__(self, kind=None, output_size='compact', alias=None, timed=False, *args, **kwargs):
     def __call__(self, q=None, output_size='compact', timed=False, *args, **kwargs):
         try:
             if isinstance(q, str):
@@ -156,9 +154,8 @@ class AlphaVantageDownloader(BasePandasObject):
         self._df = _AV_.fx('FXW', from_symbol=from_symbol, to_symbol=to_symbol, **kwargs)
         return self._df
 
-
     # Aliases
-    # GQ = global_quote
+    GQ = global_quote
     S = sectors    
 
     D = daily
@@ -170,7 +167,6 @@ class AlphaVantageDownloader(BasePandasObject):
     WA = weekly_adjusted
 
     CD = digital_daily
-    CI = digital_intraday
     CM = digital_monthly
     CW = digital_weekly
 
@@ -180,55 +176,56 @@ class AlphaVantageDownloader(BasePandasObject):
     FXM = fx_monthly
     FXW = fx_weekly
 
+
     @property
     def clean(self) -> bool:
         return _AV_.clean
 
     @clean.setter
-    def clean(self, value:str): # -> None
+    def clean(self, value:str) -> None:
         _AV_.clean = value
 
 
     @property
-    def export(self): # -> bool
+    def export(self) -> bool:
         return _AV_.export
 
     @clean.setter
-    def export(self, value:str): # -> None
+    def export(self, value:str) -> None:
         _AV_.export = value
 
 
     @property
-    def output(self): # -> str
+    def output(self) -> str:
         return _AV_.output
 
     @output.setter
-    def output(self, value:str): # -> None
+    def output(self, value:str) -> None:
         _AV_.output = value
 
 
     @property
-    def output_size(self): # -> str
+    def output_size(self) -> str:
         return _AV_.output_size
 
     @output_size.setter
-    def output_size(self, value:str): # -> None
+    def output_size(self, value:str) -> None:
         _AV_.output_size = value
 
 
     @property
-    def premium(self): # -> bool
+    def premium(self) -> bool:
         return _AV_.premium
 
     @premium.setter
-    def premium(self, value:str): # -> None
+    def premium(self, value:str) -> None:
         _AV_.premium = value
 
 
     @property
-    def proxy(self): # -> dict
+    def proxy(self) -> dict:
         return _AV_.proxy
 
     @proxy.setter
-    def proxy(self, value:str): # -> None
+    def proxy(self, value:str) -> None:
         _AV_.proxy = value

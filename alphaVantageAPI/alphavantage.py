@@ -22,6 +22,7 @@ try:
 except ImportError:
     _EXCEL_ = False
 
+
 # Missing API Key Message
 MISSING_API_KEY = '''
 [X] The AlphaVantage API key must be provided.
