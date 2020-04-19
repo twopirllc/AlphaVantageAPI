@@ -79,14 +79,7 @@ class TestAlphaVantageAPI(TestCase):
         del self.av
 
 
-    # tests of: batch, fx, sectors, data, intraday, and digital
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._av_api_call')
-    def test_batch(self, mock_av_api_call):
-        mock_av_api_call.side_effect = [None, self.df_batch, self.json_batch]
-        self.assertIsNone(self.av.batch(C.API_BATCH_TEST))
-        self.assertIsInstance(self.av.batch(C.API_BATCH_TEST), DataFrame)
-        self.assertIsInstance(self.av.batch(C.API_BATCH_TEST), dict)
-
+    # tests of: fx, sectors, data, intraday, and digital
     @patch('alphaVantageAPI.alphavantage.AlphaVantage._av_api_call')
     def test_fx(self, mock_av_api_call):
         mock_av_api_call.side_effect = [None, self.df_fx, self.json_fx]

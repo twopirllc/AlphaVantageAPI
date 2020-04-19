@@ -33,32 +33,6 @@ OR
 Set your environment variable AV_API_KEY to your AV API key
 '''
 
-
-# May convert AV Class to a Singleton
-# # Singleton/ClassVariableSingleton.py
-# class SingleTone(object):
-#     """Source: https://python-3-patterns-idioms-test.readthedocs.io/en/latest/Singleton.html"""
-#     __instance = None
-#     def __new__(cls, val):
-#         if SingleTone.__instance is None:
-#             SingleTone.__instance = object.__new__(cls)
-#         SingleTone.__instance.val = val
-#         return SingleTone.__instance
-
-# class Borg:
-#     """Source: https://python-3-patterns-idioms-test.readthedocs.io/en/latest/Singleton.html"""
-#     _shared_state = {}
-#     def __init__(self):
-#         self.__dict__ = self._shared_state
-
-# class Singleton(Borg):
-#     """Source: https://python-3-patterns-idioms-test.readthedocs.io/en/latest/Singleton.html"""
-#     def __init__(self, arg):
-#         Borg.__init__(self)
-#         self.val = arg
-#     def __str__(self): return self.val
-
-
 class AlphaVantage(object):
     """AlphaVantage Class
 
@@ -99,12 +73,6 @@ class AlphaVantage(object):
             proxy:dict = {}
         ) -> None:
 
-        # *future* May incorporate time to successful responses: self._response_history
-        # Determining best format
-        # self._local_time = time.localtime()
-        # self._local_stime = time.strftime("%a, %d %b %Y %H:%M:%S +0000", self._local_time)
-        # print(self._local_stime)
-
         # Load API json file        
         api_file = Path(PurePath(__file__).parent / 'data/api.json')
         self._load_api(api_file)
@@ -129,7 +97,6 @@ class AlphaVantage(object):
     # Private Methods
     def _init_export_path(self) -> str:
         """Create the export_path directory if it does not exist."""
-
         if self.export:
             try:
                 if not self.export_path.exists():
@@ -142,7 +109,6 @@ class AlphaVantage(object):
 
     def _load_api(self, api_file:Path) -> None:
         """Load API from a JSON file."""
-
         if api_file.exists():
             with api_file.open('r') as content:
                 api = json.load(content)
@@ -156,7 +122,6 @@ class AlphaVantage(object):
 
     def _api_lists(self) -> None:
         """Initialize lists based on API."""
-
         self.series = [x for x in self.__api['series']]
         self.__api_series = [x['function'] for x in self.series]
         self.__api_function = {x['alias']: x['function'] for x in self.__api['series']}
@@ -172,13 +137,11 @@ class AlphaVantage(object):
 
     def _function_alias(self, function:str) -> str:
         """Returns the function alias for the given 'function'."""
-
         return self.__api_function_inv[function] if function in self.__api_function_inv else function
 
 
     def _parameters(self, function:str, kind:str) -> list:
         """Returns 'required' or 'optional' parameters for a 'function'."""
-
         result = []
         if kind in ['required', 'optional']:
             try:
@@ -191,7 +154,6 @@ class AlphaVantage(object):
 
     def _av_api_call(self, parameters:dict, timeout:int = 60, **kwargs) -> DataFrame or json or None:
         """Main method to handle AlphaVantage API call request and response."""
-
         proxies = kwargs['proxies'] if 'proxies' in kwargs else self.proxy
 
         # Everything is ok so far, add the AV API Key
@@ -239,7 +201,6 @@ class AlphaVantage(object):
 
     def _save_df(self, function:str, df:DataFrame) -> None:
         """Save Pandas DataFrame to a file type given a 'function'."""
-
         # Get the alias for the 'function' so filenames are short
         short_function = self._function_alias(function)
 
@@ -284,7 +245,6 @@ class AlphaVantage(object):
 
     def _to_dataframe(self, function:str, response:dict) -> DataFrame:
         """Converts json response into a Pandas DataFrame given a 'function'"""
-
         try:
             json_keys = response.keys()
             key = [x for x in json_keys if not x.startswith('Meta Data')].pop()# or None
@@ -337,7 +297,6 @@ class AlphaVantage(object):
 
     def _simplify_dataframe_columns(self, function:str, df:DataFrame) -> DataFrame or None:
         """Simplifies DataFrame Column Names given a 'function'."""
-
         if function == 'CURRENCY_EXCHANGE_RATE':
             column_names = ['refreshed', 'from', 'from_name', 'to', 'to_name', 'rate', 'tz']
         elif function == 'SECTOR':
@@ -361,7 +320,6 @@ class AlphaVantage(object):
 
     def _saved_symbols(self, kind:str = None) -> list:
         """Returns a list of saved symbols beginning with: 'ticker_interval'"""
-
         if kind and isinstance(kind, str):
             files = Path(self.export_path).glob(f"*.{kind}")
         else:
@@ -381,7 +339,6 @@ class AlphaVantage(object):
     # Public Methods
     def fxrate(self, from_currency:str, to_currency:str = 'USD', **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for currency requests."""
-
         parameters = {
             'function': 'CURRENCY_EXCHANGE_RATE',
             'from_currency': from_currency.upper(),
@@ -394,7 +351,6 @@ class AlphaVantage(object):
 
     def fx(self, function:str, from_symbol:str = 'EUR', to_symbol:str = 'USD', **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for currency requests."""
-
         if function.upper() not in ['FXD', 'FXI', 'FXM', 'FXW', 'FX_DAILY', 'FX_INTRADAY', 'FX_MONTHLY', 'FX_WEEKLY']:
             return None
         else:
@@ -435,7 +391,6 @@ class AlphaVantage(object):
 
     def global_quote(self, symbol:str, **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for global_quote requests."""
-
         parameters = {'function': 'GLOBAL_QUOTE', 'symbol': symbol.upper()}
 
         download = self._av_api_call(parameters, **kwargs)
@@ -444,7 +399,6 @@ class AlphaVantage(object):
 
     def search(self, keywords:str, **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for search requests."""
-
         parameters = {'function': 'SYMBOL_SEARCH', 'keywords': keywords}
 
         download = self._av_api_call(parameters, **kwargs)
@@ -453,7 +407,6 @@ class AlphaVantage(object):
 
     def sectors(self, **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method to request sector performances."""
-
         parameters = {'function':'SECTOR'}
 
         download = self._av_api_call(parameters, **kwargs)
@@ -462,7 +415,6 @@ class AlphaVantage(object):
 
     def digital(self, symbol:str, market:str = 'USD', function:str = 'CD', **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for digital currency requests."""
-
         parameters = {
             'function': self.__api_function[function.upper()],
             'symbol': symbol.upper(),
@@ -473,24 +425,8 @@ class AlphaVantage(object):
         return download if download is not None else None
 
 
-    def batch(self, symbols:list, **kwargs) -> DataFrame or None:
-        """Simple wrapper to _av_api_call method for a batch of symbols"""
-    
-        if not isinstance(symbols, list):
-            symbols = [symbols]
-        
-        parameters = {
-            'function': 'BATCH_STOCK_QUOTES',
-            'symbols': ','.join([x.upper() for x in symbols][:100])
-        }
-
-        download = self._av_api_call(parameters, **kwargs)
-        return download if download is not None else None
-
-
     def intraday(self, symbol:str, interval=5, **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for intraday requests."""
-
         parameters = {
             'function': 'TIME_SERIES_INTRADAY',
             'symbol': symbol.upper(),
@@ -511,7 +447,6 @@ class AlphaVantage(object):
 
     def data(self, function:str, symbol:str = None, **kwargs) -> DataFrame or list or None:
         """Simple wrapper to _av_api_call method for an equity or indicator."""
-
         # Process a symbol list and return a list of DataFrames
         if isinstance(symbol, list) and len(symbol) > 1:
             # Create list: symbols, with all elements Uppercase from the list: symbol
@@ -556,7 +491,6 @@ class AlphaVantage(object):
 
     def help(self, keyword:str = None) -> None:
         """Simple help system to print 'required' or 'optional' parameters based on a keyword."""
-
         def _functions(): print(f"   Functions:\n    {', '.join(self.__api_series)}")
         def _indicators(): print(f"  Indicators:\n    {', '.join(self.__api_indicator)}")
         def _aliases(): pprint.pprint(self.__api_function, indent=4)
@@ -586,15 +520,12 @@ class AlphaVantage(object):
 
     def call_history(self) -> list:
         """Returns a history of successful response calls."""
-
         return self._response_history
 
 
     def last(self, n:int = 1) -> str:
         """Returns the last \'n\' calls as a list."""
-
         return (self.call_history())[-n] if n > 0 else []
-
 
 
     # Class Properties

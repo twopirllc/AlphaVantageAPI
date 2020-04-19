@@ -189,8 +189,6 @@ class TestAlphaVantageAPIProperties(TestCase):
         self.assertEqual(self.av._function_alias('DIGITAL_CURRENCY_WEEKLY'), 'CW')
         self.assertEqual(self.av._function_alias('DIGITAL_CURRENCY_MONTHLY'), 'CM')
 
-        self.assertEqual(self.av._function_alias('BATCH_STOCK_QUOTES'), 'B')
-
         self.assertEqual(self.av._function_alias('CURRENCY_EXCHANGE_RATE'), 'FX')
 
         self.assertEqual(self.av._function_alias('SECTOR'), 'S')
