@@ -7,18 +7,23 @@ Access to the AlphaVantage requires a free API key, that can be found at http://
 ## Description
 This API was designed to simplify the process of aquiring *free* financial data for retail traders and investors from the financial markets.  While it does require Pandas, Pandas' methods help simplify saving data requests into a variety of file formats such as: csv (default), json, pkl, html, and txt.  If the openpyxl module is also installed, it can be saved as an Excel file: xlsx.
 
-* Main Features
-    * **New Feature:** Extended the Pandas DataFrame with extension 'av'.  See the _*Extension Example*_ below.
-    * **New Feature:** The extension has some aliases to simplify the download process. **However indicators have _not_ been implemented yet.**
-    * **New Feature:** Can modify most properties of the AV class with the 'av' extension.
-    * **New Feature:** Added new access points: GLOBAL_QUOTE and SYMBOL_SEARCH added to the AlphaVantageAPI and it's 'av' extension.
-    * **New Feature:** Like terse commands?  The 'av' extension also includes their alias.  For example: df.av.daily_adjusted('aapl') = df.av.DA('aapl').  See help('aliases') for more shorter length commands.
-    * Returns a Pandas DataFrame.
-    * Simplifies column names i.e. "1. open" -> "open".
-    * Available export formats: csv (default), json, pkl, html, txt, xlsz (optional).
-    * A help method to reduce looking up 'required' and 'optional' parameters for each function.
-    * A call_history method to return all successful API calls.  
+### Main Features
+* Extended the Pandas DataFrame with extension 'av'.  See the _*Extension Example*_ below.
+* The extension has some aliases to simplify the download process.
+* Can modify most properties of the AV class with the 'av' extension.
+* Like terse commands?  The 'av' extension also includes their alias.  For example: df.av.daily_adjusted('aapl') = df.av.DA('aapl').  See help('aliases') for more shorter length commands.
+* Returns a Pandas DataFrame for a simplified ETL pipeline.
+* Simplifies column names i.e. "1. open" -> "open" when
+"```clean=True```"
+* Available export formats: csv (default), json, pkl, html, txt, xlsz (optional).
+* A help method to reduce looking up 'required' and 'optional' parameters for each function.
+* A call_history method to return all successful API calls.
 
+
+## What's New?
+* AlphaVantage has depreciated ```batch``` and ```digital_intraday```.  
+* Looking for Realtime Intraday data, AlphaVantage has partnered with [Polygon.io](https://polygon.io/) with partner code: ```ALPHAV```.
+* **New Feature:** AlphaVantage has added a new API endpoint: [CRYPTO_RATING](https://www.alphavantage.co/documentation/#crypto-ratings).
 
 
 # Installation
@@ -160,6 +165,9 @@ usd_cad_D_df = AV.fx(from_currency='USD', to_currency='CAD', function='FXD') # D
 usd_cad_W_df = AV.fx(from_currency='USD', to_currency='CAD', function='FXW') # Weekly
 usd_cad_M_df = AV.fx(from_currency='USD', to_currency='CAD', function='FXM') # Monthly
 
+## Crypto Rating
+btc_rating_df = AV.crypto_rating(symbol='BTC')
+
 ## Digital/Crypto
 btc_usd_I5_df = AV.digital(symbol='BTC', market='USD', function='CI', interval=5) # Intraday as int
 btc_usd_I60_df = AV.digital(symbol='BTC', market='USD', function='CI', interval='60min') # Intraday as str
@@ -256,9 +264,10 @@ usd_cad_D_df = e.av.fx_daily('USD', to_currency='EUR') # Daily
 usd_cad_W_df = e.av.fx_weekly('USD', to_currency='EUR') # Weekly
 usd_cad_M_df = e.av.fx_monthly('USD', to_currency='EUR') # Monthly
 
+# Crypto Rating
+btc_rating_df = e.av.crypto_rating('BTC')
+
 ## Digital/Crypto
-btc_usd_I5_df = e.av.digital_intraday('BTC', market='USD', interval=5) # Intraday as int
-btc_usd_I60_df = e.av.digital_intraday('BTC', market='USD', interval='60min') # Intraday as str
 btc_usd_D_df = e.av.digital_daily('BTC', market='USD') # Daily
 btc_usd_W_df = e.av.digital_weekly('BTC', market='USD') # Weekly
 btc_usd_M_df = e.av.digital_monthly('BTC', market='USD') # Monthly

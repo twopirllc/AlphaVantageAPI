@@ -213,8 +213,8 @@ class AlphaVantage(object):
             path = f"{self.export_path}/{parameters['from_currency']}{parameters['to_currency']}"
         elif function == 'SECTOR': # ok
             path = f"{self.export_path}/sectors"
-        elif function == 'BATCH_STOCK_QUOTES': #
-            path = f"{self.export_path}/batch"
+        elif function == 'CRYPTO_RATING': #
+            path = f"{self.export_path}/{parameters['symbol']}_RATING"
         elif function == 'TIME_SERIES_INTRADAY': #
             path = f"{self.export_path}/{parameters['symbol']}_{parameters['interval']}"
         elif short_function.startswith('C') and len(short_function) == 2:
@@ -260,6 +260,8 @@ class AlphaVantage(object):
             df = DataFrame.from_dict(response, orient='index')
             # Convert change_percent to decimal (float)
             df.iloc[0, -1] = float(df.iloc[0, -1].strip('%')) / 100
+        elif function == 'CRYPTO_RATING':
+            df = DataFrame.from_dict(response, orient='index')
         elif function == 'SYMBOL_SEARCH':
             if len(response[key]) < 1:
                 return None
@@ -272,8 +274,6 @@ class AlphaVantage(object):
             df.dropna(axis='columns', how='any', thresh=3, inplace=True)
             # Replace 'NaN' with '0%'
             df.fillna('0%', inplace=True)
-        elif function == 'BATCH_STOCK_QUOTES':
-            df = DataFrame(response[key], dtype=float)
         else:
             # Otherwise it is a time-series, also calls df = df.iloc[::-1] below
             df = DataFrame.from_dict(response[key], dtype=float).T
@@ -302,11 +302,8 @@ class AlphaVantage(object):
             column_names = ['refreshed', 'from', 'from_name', 'to', 'to_name', 'rate', 'tz']
         elif function == 'SECTOR':
             column_names = ['RT', '1D', '5D', '1M', '3M', 'YTD', '1Y', '3Y', '5Y', '10Y']
-        elif function == 'BATCH_STOCK_QUOTES':
+        elif function == 'CRYPTO_RATING':
             column_names = [re.sub(r'\d+(|\w). ', '', name) for name in df.columns]
-            # Greedy but only 4 columns
-            column_names = [re.sub(r'timestamp', 'datetime', name) for name in column_names]
-            column_names = [re.sub(r'price', 'last', name) for name in column_names]
         elif function == 'SYMBOL_SEARCH':
             column_names = ['symbol', 'name', 'type', 'region', 'market_open', 'market_close', 'tz', 'currency', 'match']
         else:
@@ -420,6 +417,17 @@ class AlphaVantage(object):
             'function': self.__api_function[function.upper()],
             'symbol': symbol.upper(),
             'market': market.upper()
+        }
+
+        download = self._av_api_call(parameters, **kwargs)
+        return download if download is not None else None
+
+
+    def crypto_rating(self, symbol:str, function:str = 'CR', **kwargs) -> DataFrame or None:
+        """Simple wrapper to _av_api_call method for digital currency rating requests."""
+        parameters = {
+            'function': self.__api_function[function.upper()],
+            'symbol': symbol.upper(),
         }
 
         download = self._av_api_call(parameters, **kwargs)

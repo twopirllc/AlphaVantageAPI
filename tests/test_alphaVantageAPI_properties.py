@@ -29,8 +29,6 @@ class TestAlphaVantageAPIProperties(TestCase):
         self.assertTrue(mock_sys_exit)
         self.assertEqual(mock_sys_exit.call_count, 1)
 
-        # How to mock the print())?
-
 
     def test_premium_property(self):
         self.av.premium = True
@@ -184,13 +182,14 @@ class TestAlphaVantageAPIProperties(TestCase):
         self.assertEqual(self.av._function_alias('TIME_SERIES_MONTHLY'), 'M')
         self.assertEqual(self.av._function_alias('TIME_SERIES_MONTHLY_ADJUSTED'), 'MA')
 
-        self.assertEqual(self.av._function_alias('DIGITAL_CURRENCY_INTRADAY'), 'CI')
         self.assertEqual(self.av._function_alias('DIGITAL_CURRENCY_DAILY'), 'CD')
         self.assertEqual(self.av._function_alias('DIGITAL_CURRENCY_WEEKLY'), 'CW')
         self.assertEqual(self.av._function_alias('DIGITAL_CURRENCY_MONTHLY'), 'CM')
 
         self.assertEqual(self.av._function_alias('CURRENCY_EXCHANGE_RATE'), 'FX')
 
+        self.assertEqual(self.av._function_alias('GLOBAL_QUOTE'), 'GQ')
+        self.assertEqual(self.av._function_alias('CRYPTO_RATING'), 'CR')
         self.assertEqual(self.av._function_alias('SECTOR'), 'S')
 
         self.assertEqual(self.av._function_alias('SMA'), 'SMA')
@@ -198,7 +197,3 @@ class TestAlphaVantageAPIProperties(TestCase):
         ### and more indicators ...
 
         self.assertEqual(self.av._function_alias('Qwerty'), 'Qwerty')
-
-
-if __name__ == '__main__':
-    unittest.main(verbosity=2)

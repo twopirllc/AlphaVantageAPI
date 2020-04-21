@@ -114,8 +114,8 @@ class AlphaVantageDownloader(BasePandasObject):
         return self._df
 
 
-    def digital_intraday(self, symbol:str, market:str = 'USD', **kwargs) -> pd.DataFrame:
-        self._df = _AV_.digital(symbol, market=market, function='CI', **kwargs)
+    def crypto_rating(self, symbol:str, **kwargs) -> pd.DataFrame:
+        self._df = _AV_.crypto_rating(symbol, function='CR', **kwargs)
         return self._df
 
 
@@ -155,6 +155,7 @@ class AlphaVantageDownloader(BasePandasObject):
         return self._df
 
     # Aliases
+    CR = crypto_rating
     GQ = global_quote
     S = sectors    
 
@@ -190,7 +191,7 @@ class AlphaVantageDownloader(BasePandasObject):
     def export(self) -> bool:
         return _AV_.export
 
-    @clean.setter
+    @export.setter
     def export(self, value:str) -> None:
         _AV_.export = value
 

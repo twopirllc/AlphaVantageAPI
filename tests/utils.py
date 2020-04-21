@@ -12,7 +12,6 @@ class Constant(object):
     API_DATA_TEST = 'MSFT'
     API_DIGITAL_TEST = 'BTC'
     API_FX_TEST = 'EUR'
-    API_BATCH_TEST = ['MSFT', 'FB', 'AAPL']
 
 
 def load_json(file: str):
