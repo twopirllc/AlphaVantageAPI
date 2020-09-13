@@ -14,10 +14,10 @@ class TestAlphaVantageAPIProperties(TestCase):
         self.av = AlphaVantage(api_key=self.API_KEY_TEST)
 
 
-    @patch('os.getenv')
-    @patch('sys.exit')
+    @patch("os.getenv")
+    @patch("sys.exit")
     def test_apikey(self, mock_sys_exit, mock_os_getenv):
-        self.assertEqual(self.API_KEY_TEST, 'demo')
+        self.assertEqual(self.API_KEY_TEST, "demo")
 
         mock_os_getenv.return_value = None
         self.av.api_key = None
@@ -50,63 +50,63 @@ class TestAlphaVantageAPIProperties(TestCase):
         self.av.export_path = None
         self.assertIsInstance(self.av.export_path, Path)
 
-        self.av.export_path = ''
+        self.av.export_path = ""
         self.assertIsInstance(self.av.export_path, Path)
 
-        subdir = 'av_test'
-        self.av.export_path = '~/{}'.format(subdir)
+        subdir = "av_test"
+        self.av.export_path = "~/{}".format(subdir)
         self.assertIsInstance(self.av.export_path, Path)
         self.assertEqual(str(self.av.export_path), str(Path().home() / subdir))
 
-        self.av.export_path = '/tmp/av_test'
+        self.av.export_path = "/tmp/av_test"
         self.assertIsInstance(self.av.export_path, Path)
 
 
     def test_output_property(self):
-        json = 'json'
+        json = "json"
         self.av.output = json
         self.assertEqual(self.av.output, json)
 
-        csv = 'csv'
+        csv = "csv"
         self.av.output = csv
         self.assertEqual(self.av.output, csv)
 
-        other = 'other'
+        other = "other"
         self.av.output = other
         self.assertNotEqual(self.av.output, other)
         self.assertEqual(self.av.output, csv)
 
 
     def test_datatype_property(self):
-        csv = 'csv'
+        csv = "csv"
         self.av.datatype = csv
         self.assertEqual(self.av.datatype, csv)
 
-        json = 'json'
+        json = "json"
         self.av.datatype = json
         self.assertEqual(self.av.datatype, json)
 
-        other = 'other'
+        other = "other"
         self.av.datatype = other
         self.assertEqual(self.av.datatype, json)
 
 
     def test_output_size_property(self):
-        full = 'full'
+        full = "full"
         self.av.output_size = full
         self.assertEqual(self.av.output_size, full)
 
-        compact = 'compact'
+        compact = "compact"
         self.av.output_size = compact
         self.assertEqual(self.av.output_size, compact)
 
-        compact = 'compacT'
+        compact = "compacT"
         self.av.output_size = compact
         self.assertEqual(self.av.output_size, compact.lower())
 
         other = None
         self.av.output_size = other
-        self.assertEqual(self.av.output_size, 'compact')
+        self.assertEqual(self.av.output_size, "compact")
 
 
     def test_proxy_property(self):
@@ -136,16 +136,16 @@ class TestAlphaVantageAPIProperties(TestCase):
         self.assertEqual(self.av.export, False)
 
         self.assertIsInstance(self.av.export_path, Path)
-        self.assertEqual(self.av.export_path, Path().home() / 'av_data')
+        self.assertEqual(self.av.export_path, Path().home() / "av_data")
 
         self.assertIsInstance(self.av.output, str)
-        self.assertEqual(self.av.output, 'csv')
+        self.assertEqual(self.av.output, "csv")
 
         self.assertIsInstance(self.av.datatype, str)
-        self.assertEqual(self.av.datatype, 'json')
+        self.assertEqual(self.av.datatype, "json")
 
         self.assertIsInstance(self.av.output_size, str)
-        self.assertEqual(self.av.output_size, 'compact')
+        self.assertEqual(self.av.output_size, "compact")
 
         self.assertIsInstance(self.av.proxy, dict)
         self.assertEqual(self.av.proxy, {})
@@ -154,7 +154,7 @@ class TestAlphaVantageAPIProperties(TestCase):
         self.assertEqual(self.av.clean, False)
 
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage.export_path')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage.export_path")
     def test_init_export_path_method(self, mock_export_path):
         mock_export_path.side_effect = [OSError, PermissionError]
 
@@ -163,37 +163,36 @@ class TestAlphaVantageAPIProperties(TestCase):
         
 
     def test_parameters_method(self):
-        self.assertIsInstance(self.av._parameters('TIME_SERIES_INTRADAY', 'required'), list)
-        self.assertIsInstance(self.av._parameters('TIME_SERIES_INTRADAY', 'optional'), list)
+        self.assertIsInstance(self.av._parameters("TIME_SERIES_INTRADAY", "required"), list)
+        self.assertIsInstance(self.av._parameters("TIME_SERIES_INTRADAY", "optional"), list)
 
-        self.assertIsInstance(self.av._parameters('SMA', 'required'), list)
-        self.assertIsInstance(self.av._parameters('SMA', 'optional'), list)
+        self.assertIsInstance(self.av._parameters("SMA", "required"), list)
+        self.assertIsInstance(self.av._parameters("SMA", "optional"), list)
 
 
     def test_function_alias_method(self):
-        self.assertEqual(self.av._function_alias('TIME_SERIES_INTRADAY'), 'I')
+        self.assertEqual(self.av._function_alias("TIME_SERIES_INTRADAY"), "I")
 
-        self.assertEqual(self.av._function_alias('TIME_SERIES_DAILY'), 'D')
-        self.assertEqual(self.av._function_alias('TIME_SERIES_DAILY_ADJUSTED'), 'DA')
+        self.assertEqual(self.av._function_alias("TIME_SERIES_DAILY"), "D")
+        self.assertEqual(self.av._function_alias("TIME_SERIES_DAILY_ADJUSTED"), "DA")
 
-        self.assertEqual(self.av._function_alias('TIME_SERIES_WEEKLY'), 'W')
-        self.assertEqual(self.av._function_alias('TIME_SERIES_WEEKLY_ADJUSTED'), 'WA')
+        self.assertEqual(self.av._function_alias("TIME_SERIES_WEEKLY"), "W")
+        self.assertEqual(self.av._function_alias("TIME_SERIES_WEEKLY_ADJUSTED"), "WA")
 
-        self.assertEqual(self.av._function_alias('TIME_SERIES_MONTHLY'), 'M')
-        self.assertEqual(self.av._function_alias('TIME_SERIES_MONTHLY_ADJUSTED'), 'MA')
+        self.assertEqual(self.av._function_alias("TIME_SERIES_MONTHLY"), "M")
+        self.assertEqual(self.av._function_alias("TIME_SERIES_MONTHLY_ADJUSTED"), "MA")
 
-        self.assertEqual(self.av._function_alias('DIGITAL_CURRENCY_DAILY'), 'CD')
-        self.assertEqual(self.av._function_alias('DIGITAL_CURRENCY_WEEKLY'), 'CW')
-        self.assertEqual(self.av._function_alias('DIGITAL_CURRENCY_MONTHLY'), 'CM')
+        self.assertEqual(self.av._function_alias("DIGITAL_CURRENCY_DAILY"), "CD")
+        self.assertEqual(self.av._function_alias("DIGITAL_CURRENCY_WEEKLY"), "CW")
+        self.assertEqual(self.av._function_alias("DIGITAL_CURRENCY_MONTHLY"), "CM")
 
-        self.assertEqual(self.av._function_alias('CURRENCY_EXCHANGE_RATE'), 'FX')
+        self.assertEqual(self.av._function_alias("CURRENCY_EXCHANGE_RATE"), "FX")
 
-        self.assertEqual(self.av._function_alias('GLOBAL_QUOTE'), 'GQ')
-        self.assertEqual(self.av._function_alias('CRYPTO_RATING'), 'CR')
-        self.assertEqual(self.av._function_alias('SECTOR'), 'S')
+        self.assertEqual(self.av._function_alias("GLOBAL_QUOTE"), "GQ")
+        self.assertEqual(self.av._function_alias("CRYPTO_RATING"), "CR")
 
-        self.assertEqual(self.av._function_alias('SMA'), 'SMA')
-        self.assertEqual(self.av._function_alias('DEMA'), 'DEMA')
+        self.assertEqual(self.av._function_alias("SMA"), "SMA")
+        self.assertEqual(self.av._function_alias("DEMA"), "DEMA")
         ### and more indicators ...
 
-        self.assertEqual(self.av._function_alias('Qwerty'), 'Qwerty')
+        self.assertEqual(self.av._function_alias("Qwerty"), "Qwerty")

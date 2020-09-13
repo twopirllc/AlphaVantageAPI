@@ -10,7 +10,7 @@ from .utils import load_json, _mock_response
 
 ## Python 3.7 + Pandas DeprecationWarning
 # /alphaVantageAPI/env/lib/python3.7/site-packages/pandas/core/frame.py:7476:
-# DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated, and in 3.8 it will stop working  elif isinstance(data[0], collections.Mapping):
+# DeprecationWarning: Using or importing the ABCs from "collections" instead of from "collections.abc" is deprecated, and in 3.8 it will stop working  elif isinstance(data[0], collections.Mapping):
 
 class TestAlphaVantageAPI(TestCase):
     @classmethod
@@ -20,32 +20,32 @@ class TestAlphaVantageAPI(TestCase):
         av = AlphaVantage(api_key=C.API_KEY_TEST, premium=True)
 
         # Minimum parameters
-        cls.fx_parameters = {'function':'CURRENCY_EXCHANGE_RATE', 'from_currency':'USD', 'to_currency':'JPY'}
-        cls.sector_parameters = {'function':'SECTOR'}
-        cls.data_parameters = {'function':'TIME_SERIES_DAILY_ADJUSTED', 'symbol':C.API_DATA_TEST}
-        cls.intraday_parameters = {'function':'TIME_SERIES_INTRADAY', 'symbol':C.API_DATA_TEST}
-        cls.indicator_parameters = {'function':'RSI', 'symbol':C.API_DATA_TEST, 'interval':'weekly', 'series_type':'open', 'time_period':10}
-        cls.digital_parameters = {'function':'DIGITAL_CURRENCY_DAILY', 'symbol':C.API_DIGITAL_TEST, 'market':'CNY'}
-        cls.digital_rating_parameters = {'function':'CRYPTO_RATING', 'symbols':C.API_DIGITAL_TEST}
-        cls.global_quote_parameters = {'function':'GLOBAL_QUOTE', 'symbols':C.API_DIGITAL_TEST}
+        cls.fx_parameters = {"function":"CURRENCY_EXCHANGE_RATE", "from_currency":"USD", "to_currency":"JPY"}
+        cls.sector_parameters = {"function":"SECTOR"}
+        cls.data_parameters = {"function":"TIME_SERIES_DAILY_ADJUSTED", "symbol":C.API_DATA_TEST}
+        cls.intraday_parameters = {"function":"TIME_SERIES_INTRADAY", "symbol":C.API_DATA_TEST}
+        cls.indicator_parameters = {"function":"RSI", "symbol":C.API_DATA_TEST, "interval":"weekly", "series_type":"open", "time_period":10}
+        cls.digital_parameters = {"function":"DIGITAL_CURRENCY_DAILY", "symbol":C.API_DIGITAL_TEST, "market":"CNY"}
+        cls.digital_rating_parameters = {"function":"CRYPTO_RATING", "symbols":C.API_DIGITAL_TEST}
+        cls.global_quote_parameters = {"function":"GLOBAL_QUOTE", "symbols":C.API_DIGITAL_TEST}
 
         # json files of sample data
-        cls.json_fx = load_json(cls.test_data_path / 'mock_fx.json')
-        cls.json_sectors = load_json(cls.test_data_path / 'mock_sectors.json')
-        cls.json_data = load_json(cls.test_data_path / 'mock_data.json')
-        cls.json_indicator = load_json(cls.test_data_path / 'mock_indicator.json')
-        cls.json_digital = load_json(cls.test_data_path / 'mock_digital.json')
-        cls.json_digital_rating = load_json(cls.test_data_path / 'mock_digital_rating.json')
-        cls.json_global_quote = load_json(cls.test_data_path / 'mock_global_quote.json')
+        cls.json_fx = load_json(cls.test_data_path / "mock_fx.json")
+        cls.json_sectors = load_json(cls.test_data_path / "mock_sectors.json")
+        cls.json_data = load_json(cls.test_data_path / "mock_data.json")
+        cls.json_indicator = load_json(cls.test_data_path / "mock_indicator.json")
+        cls.json_digital = load_json(cls.test_data_path / "mock_digital.json")
+        cls.json_digital_rating = load_json(cls.test_data_path / "mock_digital_rating.json")
+        cls.json_global_quote = load_json(cls.test_data_path / "mock_global_quote.json")
 
         # Pandas DataFrames of sample data
-        cls.df_fx = av._to_dataframe('CURRENCY_EXCHANGE_RATE', cls.json_fx)
-        cls.df_sectors = av._to_dataframe('SECTOR', cls.json_sectors)
-        cls.df_data = av._to_dataframe('TIME_SERIES_DAILY_ADJUSTED', cls.json_data)
-        cls.df_indicator = av._to_dataframe('RSI', cls.json_indicator)
-        cls.df_digital = av._to_dataframe('DIGITAL_CURRENCY_DAILY', cls.json_digital)
-        cls.df_digital_rating = av._to_dataframe('CRYPTO_RATING', cls.json_digital_rating)
-        cls.df_global_quote = av._to_dataframe('GLOBAL_QUOTE', cls.json_global_quote)
+        cls.df_fx = av._to_dataframe("CURRENCY_EXCHANGE_RATE", cls.json_fx)
+        cls.df_sectors = av._to_dataframe("SECTOR", cls.json_sectors)
+        cls.df_data = av._to_dataframe("TIME_SERIES_DAILY_ADJUSTED", cls.json_data)
+        cls.df_indicator = av._to_dataframe("RSI", cls.json_indicator)
+        cls.df_digital = av._to_dataframe("DIGITAL_CURRENCY_DAILY", cls.json_digital)
+        cls.df_digital_rating = av._to_dataframe("CRYPTO_RATING", cls.json_digital_rating)
+        cls.df_global_quote = av._to_dataframe("GLOBAL_QUOTE", cls.json_global_quote)
 
 
     @classmethod
@@ -86,7 +86,7 @@ class TestAlphaVantageAPI(TestCase):
 
 
     # tests of: fx, sectors, data, intraday, and digital
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._av_api_call')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._av_api_call")
     def test_fx(self, mock_av_api_call):
         mock_av_api_call.side_effect = [None, self.df_fx, self.json_fx]
         self.assertIsNone(self.av.fx(C.API_FX_TEST))
@@ -94,38 +94,38 @@ class TestAlphaVantageAPI(TestCase):
         # self.assertIsInstance(self.av.fx(C.API_FX_TEST), DataFrame)
         # self.assertIsInstance(self.av.fx(C.API_FX_TEST), dict)
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._av_api_call')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._av_api_call")
     def test_sectors(self, mock_av_api_call):
         mock_av_api_call.side_effect = [None, self.df_sectors, self.json_sectors]
         self.assertIsNone(self.av.sectors())
         self.assertIsInstance(self.av.sectors(), DataFrame)
         self.assertIsInstance(self.av.sectors(), dict)
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._av_api_call')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._av_api_call")
     def test_digital(self, mock_av_api_call):
         mock_av_api_call.side_effect = [None, self.df_digital, self.json_digital]
         self.assertIsNone(self.av.digital(C.API_DIGITAL_TEST))
         self.assertIsInstance(self.av.digital(C.API_DIGITAL_TEST), DataFrame)
         self.assertIsInstance(self.av.digital(C.API_DIGITAL_TEST), dict)
         
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._av_api_call')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._av_api_call")
     def test_intraday(self, mock_av_api_call):
         mock_av_api_call.side_effect = [None, self.df_sectors, self.json_sectors]
         self.assertIsNone(self.av.intraday(C.API_DATA_TEST))
         self.assertIsInstance(self.av.intraday(C.API_DATA_TEST), DataFrame)
         self.assertIsInstance(self.av.intraday(C.API_DATA_TEST), dict)
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._av_api_call')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._av_api_call")
     def test_data(self, mock_av_api_call):
         mock_av_api_call.side_effect = [None, self.df_data, self.json_data]
-        self.assertIsNone(self.av.data('D', C.API_DATA_TEST))
-        self.assertIsInstance(self.av.data('D', C.API_DATA_TEST), DataFrame)
-        self.assertIsInstance(self.av.data('D', C.API_DATA_TEST), dict)
+        self.assertIsNone(self.av.data("D", C.API_DATA_TEST))
+        self.assertIsInstance(self.av.data("D", C.API_DATA_TEST), DataFrame)
+        self.assertIsInstance(self.av.data("D", C.API_DATA_TEST), dict)
 
 
     # av_api_call tests
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe')
-    @patch('alphaVantageAPI.alphavantage.requests.get')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
+    @patch("alphaVantageAPI.alphavantage.requests.get")
     def test_av_api_call_fx(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_fx)
         mock_to_dataframe.return_value = self.df_fx
@@ -137,10 +137,10 @@ class TestAlphaVantageAPI(TestCase):
         self.assertIsInstance(mock_to_dataframe(), DataFrame)
 
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe')
-    @patch('alphaVantageAPI.alphavantage.requests.get')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
+    @patch("alphaVantageAPI.alphavantage.requests.get")
     def test_av_api_call_fx_csv(self, mock_requests_get, mock_to_dataframe):
-        self.av.datatype = 'csv'
+        self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.json_fx)
 
@@ -151,8 +151,8 @@ class TestAlphaVantageAPI(TestCase):
         self.assertIsInstance(av_api_call(), dict)
 
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe')
-    @patch('alphaVantageAPI.alphavantage.requests.get')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
+    @patch("alphaVantageAPI.alphavantage.requests.get")
     def test_av_api_call_sectors(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_sectors)
         mock_to_dataframe.return_value = self.df_sectors
@@ -164,10 +164,10 @@ class TestAlphaVantageAPI(TestCase):
         self.assertIsInstance(mock_to_dataframe(), DataFrame)
 
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe')
-    @patch('alphaVantageAPI.alphavantage.requests.get')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
+    @patch("alphaVantageAPI.alphavantage.requests.get")
     def test_av_api_call_sectors_csv(self, mock_requests_get, mock_to_dataframe):
-        self.av.datatype = 'csv'
+        self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.json_sectors)
 
@@ -178,8 +178,8 @@ class TestAlphaVantageAPI(TestCase):
         self.assertIsInstance(av_api_call(), dict)
 
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe')
-    @patch('alphaVantageAPI.alphavantage.requests.get')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
+    @patch("alphaVantageAPI.alphavantage.requests.get")
     def test_av_api_call_data(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_data)
         mock_to_dataframe.return_value = self.df_data
@@ -191,10 +191,10 @@ class TestAlphaVantageAPI(TestCase):
         self.assertIsInstance(mock_to_dataframe(), DataFrame)
 
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe')
-    @patch('alphaVantageAPI.alphavantage.requests.get')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
+    @patch("alphaVantageAPI.alphavantage.requests.get")
     def test_av_api_call_data_csv(self, mock_requests_get, mock_to_dataframe):
-        self.av.datatype = 'csv'
+        self.av.datatype = "csv"
         mock_requests_get.return_value = _mock_response(text_data=self.json_data)
 
         av_api_call = self.av._av_api_call(self.data_parameters)
@@ -204,8 +204,8 @@ class TestAlphaVantageAPI(TestCase):
         self.assertIsInstance(av_api_call(), dict)
 
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe')
-    @patch('alphaVantageAPI.alphavantage.requests.get')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
+    @patch("alphaVantageAPI.alphavantage.requests.get")
     def test_av_api_call_intraday(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_data)
         mock_to_dataframe.return_value = self.df_data
@@ -217,10 +217,10 @@ class TestAlphaVantageAPI(TestCase):
         self.assertIsInstance(mock_to_dataframe(), DataFrame)
 
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe')
-    @patch('alphaVantageAPI.alphavantage.requests.get')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
+    @patch("alphaVantageAPI.alphavantage.requests.get")
     def test_av_api_call_intraday_csv(self, mock_requests_get, mock_to_dataframe):
-        self.av.datatype = 'csv'
+        self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.json_data)
 
@@ -231,8 +231,8 @@ class TestAlphaVantageAPI(TestCase):
         self.assertIsInstance(av_api_call(), dict)
 
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe')
-    @patch('alphaVantageAPI.alphavantage.requests.get')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
+    @patch("alphaVantageAPI.alphavantage.requests.get")
     def test_av_api_call_indicator(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_indicator)
         mock_to_dataframe.return_value = self.df_indicator
@@ -244,10 +244,10 @@ class TestAlphaVantageAPI(TestCase):
         self.assertIsInstance(mock_to_dataframe(), DataFrame)
 
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe')
-    @patch('alphaVantageAPI.alphavantage.requests.get')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
+    @patch("alphaVantageAPI.alphavantage.requests.get")
     def test_av_api_call_indicator_csv(self, mock_requests_get, mock_to_dataframe):
-        self.av.datatype = 'csv'
+        self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.json_indicator)
 
@@ -258,8 +258,8 @@ class TestAlphaVantageAPI(TestCase):
         self.assertIsInstance(av_api_call(), dict)
 
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe')
-    @patch('alphaVantageAPI.alphavantage.requests.get')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
+    @patch("alphaVantageAPI.alphavantage.requests.get")
     def test_av_api_call_digital(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_digital)
         mock_to_dataframe.return_value = self.df_digital
@@ -271,10 +271,10 @@ class TestAlphaVantageAPI(TestCase):
         self.assertIsInstance(mock_to_dataframe(), DataFrame)
 
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe')
-    @patch('alphaVantageAPI.alphavantage.requests.get')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
+    @patch("alphaVantageAPI.alphavantage.requests.get")
     def test_av_api_call_digital_csv(self, mock_requests_get, mock_to_dataframe):
-        self.av.datatype = 'csv'
+        self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.json_digital)
 
@@ -285,8 +285,8 @@ class TestAlphaVantageAPI(TestCase):
         self.assertIsInstance(av_api_call(), dict)
 
 # 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe')
-    @patch('alphaVantageAPI.alphavantage.requests.get')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
+    @patch("alphaVantageAPI.alphavantage.requests.get")
     def test_av_api_call_digital_rating(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_digital_rating)
         mock_to_dataframe.return_value = self.df_digital_rating
@@ -298,10 +298,10 @@ class TestAlphaVantageAPI(TestCase):
         self.assertIsInstance(mock_to_dataframe(), DataFrame)
 
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe')
-    @patch('alphaVantageAPI.alphavantage.requests.get')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
+    @patch("alphaVantageAPI.alphavantage.requests.get")
     def test_av_api_call_digital_rating_csv(self, mock_requests_get, mock_to_dataframe):
-        self.av.datatype = 'csv'
+        self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.json_digital_rating)
 
@@ -312,8 +312,8 @@ class TestAlphaVantageAPI(TestCase):
         self.assertIsInstance(av_api_call(), dict)
 
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe')
-    @patch('alphaVantageAPI.alphavantage.requests.get')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
+    @patch("alphaVantageAPI.alphavantage.requests.get")
     def test_av_api_call_global_quote(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_global_quote)
         mock_to_dataframe.return_value = self.df_global_quote
@@ -325,10 +325,10 @@ class TestAlphaVantageAPI(TestCase):
         self.assertIsInstance(mock_to_dataframe(), DataFrame)
 
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe')
-    @patch('alphaVantageAPI.alphavantage.requests.get')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
+    @patch("alphaVantageAPI.alphavantage.requests.get")
     def test_av_api_call_global_quote_csv(self, mock_requests_get, mock_to_dataframe):
-        self.av.datatype = 'csv'
+        self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.json_global_quote)
 
@@ -340,69 +340,69 @@ class TestAlphaVantageAPI(TestCase):
 
 
     # save_df tests
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage.last')
-    @patch('alphaVantageAPI.alphavantage.DataFrame.to_csv')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage.last")
+    @patch("alphaVantageAPI.alphavantage.DataFrame.to_csv")
     def test_save_df_to_csv(self, mock_to_csv, mock_last):
-        self.av.output = 'csv'
+        self.av.output = "csv"
         mock_last.return_value = self.sector_parameters
         mock_to_csv.return_result = True
 
-        self.av._save_df(self.sector_parameters['function'], self.df_sectors)
+        self.av._save_df(self.sector_parameters["function"], self.df_sectors)
 
         self.assertEqual(mock_last.call_count, 1)
         self.assertEqual(mock_to_csv.call_count, 1)
 
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage.last')
-    @patch('alphaVantageAPI.alphavantage.DataFrame.to_json')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage.last")
+    @patch("alphaVantageAPI.alphavantage.DataFrame.to_json")
     def test_save_df_to_json(self, mock_to_json, mock_last):
-        self.av.output = 'json'
+        self.av.output = "json"
         mock_last.return_value = self.sector_parameters
         mock_to_json.return_result = True
 
-        self.av._save_df(self.sector_parameters['function'], self.df_sectors)
+        self.av._save_df(self.sector_parameters["function"], self.df_sectors)
 
         self.assertEqual(mock_last.call_count, 1)
         self.assertEqual(mock_to_json.call_count, 1)
 
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage.last')
-    @patch('alphaVantageAPI.alphavantage.DataFrame.to_pickle')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage.last")
+    @patch("alphaVantageAPI.alphavantage.DataFrame.to_pickle")
     def test_save_df_to_pickle(self, mock_to_pickle, mock_last):
-        self.av.output = 'pkl'
+        self.av.output = "pkl"
         mock_last.return_value = self.sector_parameters
         mock_to_pickle.return_result = True
 
-        self.av._save_df(self.sector_parameters['function'], self.df_sectors)
+        self.av._save_df(self.sector_parameters["function"], self.df_sectors)
 
         self.assertEqual(mock_last.call_count, 1)
         self.assertEqual(mock_to_pickle.call_count, 1)
 
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage.last')
-    @patch('alphaVantageAPI.alphavantage.DataFrame.to_html')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage.last")
+    @patch("alphaVantageAPI.alphavantage.DataFrame.to_html")
     def test_save_df_to_html(self, mock_to_html, mock_last):
-        self.av.output = 'html'
+        self.av.output = "html"
         mock_last.return_value = self.sector_parameters
         mock_to_html.return_result = True
 
-        self.av._save_df(self.sector_parameters['function'], self.df_sectors)
+        self.av._save_df(self.sector_parameters["function"], self.df_sectors)
 
         self.assertEqual(mock_last.call_count, 1)
         self.assertEqual(mock_to_html.call_count, 1)
 
 
-    @patch('alphaVantageAPI.alphavantage.AlphaVantage.last')
-    @patch('alphaVantageAPI.alphavantage.Path.write_text')
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage.last")
+    @patch("alphaVantageAPI.alphavantage.Path.write_text")
     def test_save_df_to_txt(self, mock_write_text, mock_last):
-        self.av.output = 'txt'
+        self.av.output = "txt"
         mock_last.return_value = self.sector_parameters
         mock_write_text.return_result = True
 
-        self.av._save_df(self.sector_parameters['function'], self.df_sectors)
+        self.av._save_df(self.sector_parameters["function"], self.df_sectors)
 
         self.assertEqual(mock_last.call_count, 1)
         self.assertEqual(mock_write_text.call_count, 1)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main(verbosity=2)
