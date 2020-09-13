@@ -9,56 +9,56 @@
     {
         "function": "TIME_SERIES_INTRADAY",
         "alias": "I",
-        "description": "Real Time (timestamp, open, high, low, close, volume)",
+        "description": "This API returns intraday time series of the equity specified, covering extended trading hours where applicable (e.g., 4:00am to 8:00pm Eastern Time for the US market). The intraday data (open, high, low, close, volume) is computed directly from the Securities Information Processor (SIP) market-aggregated data feed.",
         "required": ["symbol", "interval"],
         "optional": ["outputsize", "datatype"]
     },
     {
         "function": "TIME_SERIES_DAILY",
         "alias": "D",
-        "description": "This API returns daily time series (date, daily open, daily high, daily low, daily close, daily volume) of the equity specified, covering up to 20 years of historical data.  The most recent data point is the cumulative prices and volume information of the current trading day, updated realtime.",
+        "description": "This API returns daily time series (date, daily open, daily high, daily low, daily close, daily volume) of the global equity specified, covering 20+ years of historical data.",
         "required": ["symbol"],
         "optional": ["outputsize", "datatype"]
     },
     {
         "function": "TIME_SERIES_DAILY_ADJUSTED",
         "alias": "DA",
-        "description": "This API returns daily time series (date, daily open, daily high, daily low, daily close, daily volume, daily adjusted close, and split/dividend events) of the equity specified, covering up to 20 years of historical data.  The most recent data point is the cumulative prices and volume information of the current trading day, updated realtime.",
+        "description": "This API returns daily time series (date, daily open, daily high, daily low, daily close, daily volume, daily adjusted close, and split/dividend events) of the global equity specified, covering 20+ years of historical data.",
         "required": ["symbol"],
         "optional": ["outputsize", "datatype"]
     },
     {
         "function": "TIME_SERIES_WEEKLY",
         "alias": "W",
-        "description": "This API returns weekly time series (last trading day of each week, weekly open, weekly high, weekly low, weekly close, weekly volume) of the equity specified, covering up to 20 years of historical data.  The latest data point is the cumulative prices and volume information for the week (or partial week) that contains the current trading day, updated realtime.",
+        "description": "This API returns weekly time series (last trading day of each week, weekly open, weekly high, weekly low, weekly close, weekly volume) of the global equity specified, covering 20+ years of historical data.",
         "required": ["symbol"],
         "optional": ["datatype"]
     },
     {
         "function": "TIME_SERIES_WEEKLY_ADJUSTED",
         "alias": "WA",
-        "description": "This API returns weekly adjusted time series (last trading day of each week, weekly open, weekly high, weekly low, weekly close, weekly adjusted close, weekly volume, weekly dividend) of the equity specified, covering up to 20 years of historical data.  The latest data point is the cumulative prices and volume information for the week (or partial week) that contains the current trading day, updated realtime.",
+        "description": "This API returns weekly adjusted time series (last trading day of each week, weekly open, weekly high, weekly low, weekly close, weekly adjusted close, weekly volume, weekly dividend) of the global equity specified, covering 20+ years of historical data.",
         "required": ["symbol"],
         "optional": ["datatype"]
     },
     {
         "function": "TIME_SERIES_MONTHLY",
         "alias": "M",
-        "description": "This API returns monthly time series (last trading day of each month, monthly open, monthly high, monthly low, monthly close, monthly volume) of the equity specified, covering up to 20 years of historical data.  The latest data point is the cumulative prices and volume information for the month (or partial month) that contains the current trading day, updated realtime.",
+        "description": "This API returns monthly time series (last trading day of each month, monthly open, monthly high, monthly low, monthly close, monthly volume) of the global equity specified, covering 20+ years of historical data. ",
         "required": ["symbol"],
         "optional": ["datatype"]
     },
     {
         "function": "TIME_SERIES_MONTHLY_ADJUSTED",
         "alias": "MA",
-        "description": "This API returns monthly adjusted time series (last trading day of each month, monthly open, monthly high, monthly low, monthly close, monthly adjusted close, monthly volume, monthly dividend) of the equity specified, covering up to 20 years of historical data.  The latest data point is the cumulative prices and volume information for the month (or partial month) that contains the current trading day, updated realtime.",
+        "description": "This API returns monthly adjusted time series (last trading day of each month, monthly open, monthly high, monthly low, monthly close, monthly adjusted close, monthly volume, monthly dividend) of the equity specified, covering 20+ years of historical data.",
         "required": ["symbol"],
         "optional": ["datatype"]
     },
     {
         "function": "CURRENCY_EXCHANGE_RATE",
         "alias": "FX",
-        "description": "This API returns the realtime exchange rate for any pair of digital currency (e.g., Bitcoin) or physical currency (e.g., USD).",
+        "description": "This API returns the realtime exchange rate for a pair of digital currency (e.g., Bitcoin) and physical currency (e.g., USD).",
         "required": ["from_currency", "to_currency"]
     },
     {
@@ -78,28 +78,22 @@
     {
         "function": "FX_MONTHLY",
         "alias": "FXM",
-        "description": "This API returns the monthly time series (timestamp, open, high, low, close) of the FX currency pair specified, updated realtime.  The latest data point is the cumulative prices information for the month (or partial month) containing the current trading day, updated realtime.",
+        "description": "This API returns the monthly time series (timestamp, open, high, low, close) of the FX currency pair specified, updated realtime. The latest data point is the prices information for the month (or partial month) containing the current trading day, updated realtime.",
         "required": ["from_symbol", "to_symbol"],
         "optional": ["datatype"]
     },
     {
         "function": "FX_WEEKLY",
         "alias": "FXW",
-        "description": "This API returns the weekly time series (timestamp, open, high, low, close) of the FX currency pair specified, updated realtime. The latest data point is the cumulative price information for the week (or partial week) containing the current trading day, updated realtime.",
+        "description": "This API returns the weekly time series (timestamp, open, high, low, close) of the FX currency pair specified, updated realtime. The latest data point is the price information for the week (or partial week) containing the current trading day, updated realtime.",
         "required": ["from_symbol", "to_symbol"],
         "optional": ["datatype"]
     },
     {
         "function": "CRYPTO_RATING",
         "alias": "CR",
-        "description": "Fundamental Crypto Asset Score (FCAS) is a comparative metric used to assess the fundamental health of crypto projects. The score is derived from the interactivity between primary project life-cycle factors: User Activity/Utility, Developer Behavior, and Market Maturity. Each crypto asset is given a composite numerical score, 0-1000. Powered by Flipside Crypto, the inventor of the FCAS system and an industry-leading \"rating agency\" for cryptocurrencies. For more information, please visit https://flipsidecrypto.com/fcas/. ",
+        "description": "Fundamental Crypto Asset Score (FCAS) is a comparative metric used to assess the fundamental health of crypto projects. The score is derived from the interactivity between primary project life-cycle factors: User Activity/Utility, Developer Behavior, and Market Maturity. Each crypto asset is given a composite numerical score, 0-1000, and an associated rating. Powered by Flipside Crypto, the inventor of the FCAS system and an industry-leading \"rating agency\" for cryptocurrencies. For more information, please visit https://flipsidecrypto.com/fcas/.",
         "required": ["symbol"]
-    },
-    {
-        "function": "DIGITAL_CURRENCY_INTRADAY",
-        "alias": "CI",
-        "description": "This API returns the realtime intraday time series (in 5-minute intervals) for any digital currency (e.g., BTC) traded on a specific market (e.g., CNY/Chinese Yuan). Prices and volumes are quoted in both the market-specific currency and USD.",
-        "required": ["symbol", "market"]
     },
     {
         "function": "DIGITAL_CURRENCY_DAILY",
@@ -120,11 +114,6 @@
         "required": ["symbol", "market"]
     },
     {
-        "function": "SECTOR",
-        "alias": "S",
-        "description": "This API returns the realtime and historical sector performances calculated from S&P500 incumbents."
-    },
-    {
         "function": "SYMBOL_SEARCH",
         "alias": "SS",
         "description": "The Search Endpoint returns the best-matching symbols and market information based on keywords of your choice. The search results also contain match scores that provide you with the full flexibility to develop your own search and filtering logic.",
@@ -134,7 +123,7 @@
     {
         "function": "GLOBAL_QUOTE",
         "alias": "GQ",
-        "description": "A lightweight alternative to the time series APIs, this service returns the latest price and volume information for a global security of your choice.",
+        "description": "A lightweight alternative to the time series APIs, this service returns the price and volume information for a security of your choice.",
         "required": ["symbol"],
         "optional": ["datatype"]
     }],
@@ -347,7 +336,7 @@
     },
     {
         "function": "MIDPRICE",
-        "description": "(highest high  + lowest low) / 2",
+        "description": "(highest high + lowest low) / 2",
         "required": ["symbol", "interval", "time_period"]
     },
     {

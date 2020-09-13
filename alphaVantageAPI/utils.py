@@ -3,7 +3,12 @@
 import time
 from functools import wraps
 from pathlib import Path
+from time import perf_counter
 
+
+def final_time(stime):
+    time_diff = perf_counter() - stime
+    return f"{time_diff * 1000:2.4f} ms ({time_diff:2.4f} s)"
 
 def is_home(path:Path): # -> bool
     """Determines if the path is a User path or not.

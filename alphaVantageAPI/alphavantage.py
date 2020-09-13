@@ -211,8 +211,8 @@ class AlphaVantage(object):
         # Determine Path
         if function == 'CURRENCY_EXCHANGE_RATE': # ok
             path = f"{self.export_path}/{parameters['from_currency']}{parameters['to_currency']}"
-        elif function == 'SECTOR': # ok
-            path = f"{self.export_path}/sectors"
+        # elif function == 'SECTOR': # ok
+        #     path = f"{self.export_path}/sectors"
         elif function == 'CRYPTO_RATING': #
             path = f"{self.export_path}/{parameters['symbol']}_RATING"
         elif function == 'TIME_SERIES_INTRADAY': #
@@ -262,28 +262,33 @@ class AlphaVantage(object):
             df.iloc[0, -1] = float(df.iloc[0, -1].strip('%')) / 100
         elif function == 'CRYPTO_RATING':
             df = DataFrame.from_dict(response, orient='index')
+            # Clean with index as the requested symbol
+            # df.set_index('symbol', inplace=True)
+            # df['index'] = 'FCAS'
+            # df.rename(columns={'index': 'rating'}, inplace=True)
         elif function == 'SYMBOL_SEARCH':
             if len(response[key]) < 1:
                 return None
             df = DataFrame(response[key])
-        elif function == 'SECTOR':
-            df = DataFrame.from_dict(response)
-            # Remove 'Information' and 'Last Refreshed' Rows
-            df.dropna(axis='index', how='any', thresh=3, inplace=True)
-            # Remove 'Meta Data' Column
-            df.dropna(axis='columns', how='any', thresh=3, inplace=True)
-            # Replace 'NaN' with '0%'
-            df.fillna('0%', inplace=True)
+        # elif function == 'SECTOR':
+        #     df = DataFrame.from_dict(response)
+        #     # Remove 'Information' and 'Last Refreshed' Rows
+        #     df.dropna(axis='index', how='any', thresh=3, inplace=True)
+        #     # Remove 'Meta Data' Column
+        #     df.dropna(axis='columns', how='any', thresh=3, inplace=True)
+        #     # Replace 'NaN' with '0%'
+        #     df.fillna('0%', inplace=True)
         else:
             # Otherwise it is a time-series, also calls df = df.iloc[::-1] below
             df = DataFrame.from_dict(response[key], dtype=float).T
             df.index.rename('date', inplace=True)
 
         # If a 'sector', convert to float otherwise reverse the DataFrame
-        if function == 'SYMBOL_SEARCH':  pass
-        elif function == 'SECTOR':
-            df = df.applymap(lambda x: float(x.strip('%')) / 100)
-        else:
+        # if function == "SYMBOL_SEARCH":  pass
+        # elif function == 'SECTOR':
+        #     df = df.applymap(lambda x: float(x.strip('%')) / 100)
+        # else:
+        if function != "SYMBOL_SEARCH":
             df = df.iloc[::-1]
             df.reset_index(inplace=True)
 
@@ -300,8 +305,8 @@ class AlphaVantage(object):
         """Simplifies DataFrame Column Names given a 'function'."""
         if function == 'CURRENCY_EXCHANGE_RATE':
             column_names = ['refreshed', 'from', 'from_name', 'to', 'to_name', 'rate', 'tz']
-        elif function == 'SECTOR':
-            column_names = ['RT', '1D', '5D', '1M', '3M', 'YTD', '1Y', '3Y', '5Y', '10Y']
+        # elif function == 'SECTOR':
+        #     column_names = ['RT', '1D', '5D', '1M', '3M', 'YTD', '1Y', '3Y', '5Y', '10Y']
         elif function == 'CRYPTO_RATING':
             column_names = [re.sub(r'\d+(|\w). ', '', name) for name in df.columns]
         elif function == 'SYMBOL_SEARCH':
@@ -403,12 +408,12 @@ class AlphaVantage(object):
         return download if download is not None else None
 
 
-    def sectors(self, **kwargs) -> DataFrame or None:
-        """Simple wrapper to _av_api_call method to request sector performances."""
-        parameters = {'function':'SECTOR'}
+    # def sectors(self, **kwargs) -> DataFrame or None:
+    #     """Simple wrapper to _av_api_call method to request sector performances."""
+    #     parameters = {'function':'SECTOR'}
 
-        download = self._av_api_call(parameters, **kwargs)
-        return download if download is not None else None
+    #     download = self._av_api_call(parameters, **kwargs)
+    #     return download if download is not None else None
 
 
     def digital(self, symbol:str, market:str = 'USD', function:str = 'CD', **kwargs) -> DataFrame or None:

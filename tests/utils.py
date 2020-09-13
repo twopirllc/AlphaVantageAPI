@@ -7,15 +7,15 @@ from unittest import mock
 from pathlib import Path
 
 class Constant(object):
-    TEST_DATA_PATH = Path('./tests/test_data')
-    API_KEY_TEST = 'demo'
-    API_DATA_TEST = 'MSFT'
-    API_DIGITAL_TEST = 'BTC'
-    API_FX_TEST = 'EUR'
+    TEST_DATA_PATH = Path("./tests/test_data")
+    API_KEY_TEST = "demo"
+    API_DATA_TEST = "MSFT"
+    API_DIGITAL_TEST = "BTC"
+    API_FX_TEST = "EUR"
 
 
 def load_json(file: str):
-    with Path(file).open('r') as content:
+    with Path(file).open("r") as content:
         json_data = json.load(content)
     content.close()
     return json_data

@@ -5,8 +5,11 @@ import re
 import numpy as np
 import pandas as pd
 
+from time import perf_counter
+
 from os import getenv as os_getenv
 from ._base_pandas_object import *
+from .utils import final_time
 from alphaVantageAPI.alphavantage import AlphaVantage
 
 
@@ -15,24 +18,25 @@ from alphaVantageAPI.alphavantage import AlphaVantage
 _AV_ = AlphaVantage(api_key=None, clean=True)
 
 
-@pd.api.extensions.register_dataframe_accessor('av')
+@pd.api.extensions.register_dataframe_accessor("av")
 class AlphaVantageDownloader(BasePandasObject):
-    def __call__(self, q=None, output_size='compact', timed=False, *args, **kwargs):
+    def __call__(self, q=None, output_size="compact", timed=False, *args, **kwargs):
         try:
             if isinstance(q, str):
                 q = q.lower()
                 fn = getattr(self, q)
 
-                if timed:
-                    stime = time.time()
+                if timed: stime = perf_counter()
 
                 # Run the query
                 query = fn(**kwargs)
 
                 if timed:
-                    time_diff = time.time() - stime
-                    ms = time_diff * 1000
-                    query.timed = f"{ms:2.3f} ms ({time_diff:2.3f} s)"
+                    query.timed = final_time(stime)
+                # if timed:
+                #     time_diff = time.time() - stime
+                #     ms = time_diff * 1000
+                #     query.timed = f"{ms:2.3f} ms ({time_diff:2.3f} s)"
 
                 # Add an alias if passed
                 # if alias:
@@ -40,10 +44,10 @@ class AlphaVantageDownloader(BasePandasObject):
                 
                 return query
             else:
-                self.help(keyword=kwargs.pop('help', None), *args, **kwargs)
+                self.help(keyword=kwargs.pop("help", None), *args, **kwargs)
 
         except:
-            self.help(keyword=kwargs.pop('help', None), *args, **kwargs)
+            self.help(keyword=kwargs.pop("help", None), *args, **kwargs)
         finally:
             self._df = None
 
@@ -74,12 +78,12 @@ class AlphaVantageDownloader(BasePandasObject):
 
     # Securities
     def daily(self, symbol:str, **kwargs) -> pd.DataFrame:
-        self._df = _AV_.data(function='D', symbol=symbol, **kwargs)
+        self._df = _AV_.data(function="D", symbol=symbol, **kwargs)
         return self._df
 
 
     def daily_adjusted(self, symbol:str, **kwargs) -> pd.DataFrame:
-        self._df = _AV_.data(function='DA', symbol=symbol, **kwargs)
+        self._df = _AV_.data(function="DA", symbol=symbol, **kwargs)
         return self._df
 
 
@@ -89,69 +93,69 @@ class AlphaVantageDownloader(BasePandasObject):
 
 
     def monthly(self, symbol:str, **kwargs) -> pd.DataFrame:
-        self._df = _AV_.data(function='M', symbol=symbol, **kwargs)
+        self._df = _AV_.data(function="M", symbol=symbol, **kwargs)
         return self._df
 
 
     def monthly_adjusted(self, symbol:str, **kwargs) -> pd.DataFrame:
-        self._df = _AV_.data(function='MA', symbol=symbol, **kwargs)
+        self._df = _AV_.data(function="MA", symbol=symbol, **kwargs)
         return self._df
 
 
     def weekly(self, symbol:str, **kwargs) -> pd.DataFrame:
-        self._df = _AV_.data(function='W', symbol=symbol, **kwargs)
+        self._df = _AV_.data(function="W", symbol=symbol, **kwargs)
         return self._df
 
 
     def weekly_adjusted(self, symbol:str, **kwargs) -> pd.DataFrame:
-        self._df = _AV_.data(function='WA', symbol=symbol, **kwargs)
+        self._df = _AV_.data(function="WA", symbol=symbol, **kwargs)
         return self._df
 
 
     # Crypto/Digital
-    def digital_daily(self, symbol:str, market:str = 'USD', **kwargs) -> pd.DataFrame:
-        self._df = _AV_.digital(symbol, market=market, function='CD', **kwargs)
+    def digital_daily(self, symbol:str, market:str = "USD", **kwargs) -> pd.DataFrame:
+        self._df = _AV_.digital(symbol, market=market, function="CD", **kwargs)
         return self._df
 
 
     def crypto_rating(self, symbol:str, **kwargs) -> pd.DataFrame:
-        self._df = _AV_.crypto_rating(symbol, function='CR', **kwargs)
+        self._df = _AV_.crypto_rating(symbol, function="CR", **kwargs)
         return self._df
 
 
-    def digital_monthly(self, symbol:str, market:str = 'USD', **kwargs) -> pd.DataFrame:
-        self._df = _AV_.digital(symbol, market=market, function='CM', **kwargs)
+    def digital_monthly(self, symbol:str, market:str = "USD", **kwargs) -> pd.DataFrame:
+        self._df = _AV_.digital(symbol, market=market, function="CM", **kwargs)
         return self._df
 
 
-    def digital_weekly(self, symbol:str, market:str = 'USD', **kwargs) -> pd.DataFrame:
-        self._df = _AV_.digital(symbol, market=market, function='CW', **kwargs)
+    def digital_weekly(self, symbol:str, market:str = "USD", **kwargs) -> pd.DataFrame:
+        self._df = _AV_.digital(symbol, market=market, function="CW", **kwargs)
         return self._df
 
 
     # FX
-    def fx(self, from_currency:str, to_currency:str = 'USD', **kwargs) -> pd.DataFrame:
+    def fx(self, from_currency:str, to_currency:str = "USD", **kwargs) -> pd.DataFrame:
         self._df = _AV_.fxrate(from_currency=from_currency, to_currency=to_currency, **kwargs)
         return self._df
 
 
-    def fx_daily(self, from_symbol:str, to_symbol:str = 'USD', **kwargs) -> pd.DataFrame:
-        self._df = _AV_.fx('FXD', from_symbol=from_symbol, to_symbol=to_symbol, **kwargs)
+    def fx_daily(self, from_symbol:str, to_symbol:str = "USD", **kwargs) -> pd.DataFrame:
+        self._df = _AV_.fx("FXD", from_symbol=from_symbol, to_symbol=to_symbol, **kwargs)
         return self._df
 
 
-    def fx_intraday(self, from_symbol:str, to_symbol:str = 'USD', interval=5, **kwargs) -> pd.DataFrame:
-        self._df = _AV_.fx('FXI', from_symbol=from_symbol, to_symbol=to_symbol, interval=interval, **kwargs)
+    def fx_intraday(self, from_symbol:str, to_symbol:str = "USD", interval=5, **kwargs) -> pd.DataFrame:
+        self._df = _AV_.fx("FXI", from_symbol=from_symbol, to_symbol=to_symbol, interval=interval, **kwargs)
         return self._df
 
 
-    def fx_monthly(self, from_symbol:str, to_symbol:str = 'USD', **kwargs) -> pd.DataFrame:
-        self._df = _AV_.fx('FXM', from_symbol=from_symbol, to_symbol=to_symbol, **kwargs)
+    def fx_monthly(self, from_symbol:str, to_symbol:str = "USD", **kwargs) -> pd.DataFrame:
+        self._df = _AV_.fx("FXM", from_symbol=from_symbol, to_symbol=to_symbol, **kwargs)
         return self._df
 
 
-    def fx_weekly(self, from_symbol:str, to_symbol:str = 'USD', **kwargs) -> pd.DataFrame:
-        self._df = _AV_.fx('FXW', from_symbol=from_symbol, to_symbol=to_symbol, **kwargs)
+    def fx_weekly(self, from_symbol:str, to_symbol:str = "USD", **kwargs) -> pd.DataFrame:
+        self._df = _AV_.fx("FXW", from_symbol=from_symbol, to_symbol=to_symbol, **kwargs)
         return self._df
 
     # Aliases
