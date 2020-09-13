@@ -24,7 +24,7 @@ except ImportError:
 
 
 # Missing API Key Message
-MISSING_API_KEY = '''
+MISSING_API_KEY = """
 [X] The AlphaVantage API key must be provided.
 
 Get a free key from the alphavantage website:
@@ -32,7 +32,7 @@ https://www.alphavantage.co/support/#api-key
 Use: api_key to set your AV API key
 OR
 Set your environment variable AV_API_KEY to your AV API key
-'''
+"""
 
 class AlphaVantage(object):
     """AlphaVantage Class
@@ -45,37 +45,37 @@ class AlphaVantage(object):
     ----------
     api_key: str = None
     premium: bool = False
-    output_size: str = 'compact'
-    datatype: str = 'json'
+    output_size: str = "compact"
+    datatype: str = "json"
     export: bool = False
-    export_path: str = '~/av_data'
-    output: str = 'csv'
+    export_path: str = "~/av_data"
+    output: str = "csv"
     clean: bool = False
     proxy: dict = dict()
     
     Examples
     --------
     >>> from alphaVantageAPI.alphavantage import AlphaVantage
-    >>> av = AlphaVantage(api_key='your API key')"""
+    >>> av = AlphaVantage(api_key="your API key")"""
 
-    API_NAME = 'AlphaVantage'
-    END_POINT = 'https://www.alphavantage.co/query'
+    API_NAME = "AlphaVantage"
+    END_POINT = "https://www.alphavantage.co/query"
     DEBUG = False
 
     def __init__(self,
             api_key:str = None,
             premium:bool = False,
             export:bool = False,
-            export_path:str = '~/av_data',
-            output:str = 'csv',
-            datatype:str = 'json',
-            output_size:str = 'compact',
+            export_path:str = "~/av_data",
+            output:str = "csv",
+            datatype:str = "json",
+            output_size:str = "compact",
             clean:bool = False,
             proxy:dict = {}
         ) -> None:
 
         # Load API json file        
-        api_file = Path(PurePath(__file__).parent / 'data/api.json')
+        api_file = Path(PurePath(__file__).parent / "data/api.json")
         self._load_api(api_file)
         
         # Initialize Class properties
@@ -111,43 +111,43 @@ class AlphaVantage(object):
     def _load_api(self, api_file:Path) -> None:
         """Load API from a JSON file."""
         if api_file.exists():
-            with api_file.open('r') as content:
+            with api_file.open("r") as content:
                 api = json.load(content)
             content.close()
 
             self.__api = api
             self._api_lists()
         else:
-            raise ValueError(f'{api_file} does not exist.')
+            raise ValueError(f"{api_file} does not exist.")
 
 
     def _api_lists(self) -> None:
         """Initialize lists based on API."""
-        self.series = [x for x in self.__api['series']]
-        self.__api_series = [x['function'] for x in self.series]
-        self.__api_function = {x['alias']: x['function'] for x in self.__api['series']}
+        self.series = [x for x in self.__api["series"]]
+        self.__api_series = [x["function"] for x in self.series]
+        self.__api_function = {x["alias"]: x["function"] for x in self.__api["series"]}
         self.__api_function_inv = {v: k for k, v in self.__api_function.items()}
-        self.__api_datatype = self.__api['datatype']
-        self.__api_outputsize = self.__api['outputsize']
-        self.__api_series_interval = self.__api['series_interval']
+        self.__api_datatype = self.__api["datatype"]
+        self.__api_outputsize = self.__api["outputsize"]
+        self.__api_series_interval = self.__api["series_interval"]
 
-        self.indicators = [x for x in self.__api['indicator']]
-        self.__api_indicator = [x['function'] for x in self.indicators]
-        self.__api_indicator_matype = self.__api['matype']
+        self.indicators = [x for x in self.__api["indicator"]]
+        self.__api_indicator = [x["function"] for x in self.indicators]
+        self.__api_indicator_matype = self.__api["matype"]
 
 
     def _function_alias(self, function:str) -> str:
-        """Returns the function alias for the given 'function'."""
+        """Returns the function alias for the given "function."""
         return self.__api_function_inv[function] if function in self.__api_function_inv else function
 
 
     def _parameters(self, function:str, kind:str) -> list:
         """Returns 'required' or 'optional' parameters for a 'function'."""
         result = []
-        if kind in ['required', 'optional']:
+        if kind in ["required", "optional"]:
             try:
                 all_functions = self.series + self.indicators
-                result = [x[kind] for x in all_functions if kind in x and function == x['function']].pop()
+                result = [x[kind] for x in all_functions if kind in x and function == x["function"]].pop()
             except IndexError as ex:
                 pass
         return result
@@ -155,10 +155,10 @@ class AlphaVantage(object):
 
     def _av_api_call(self, parameters:dict, timeout:int = 60, **kwargs) -> DataFrame or json or None:
         """Main method to handle AlphaVantage API call request and response."""
-        proxies = kwargs['proxies'] if 'proxies' in kwargs else self.proxy
+        proxies = kwargs["proxies"] if "proxies" in kwargs else self.proxy
 
         # Everything is ok so far, add the AV API Key
-        parameters['apikey'] = self.api_key
+        parameters["apikey"] = self.api_key
 
         if not self.premium and self._api_call_count > 0:
                 time.sleep(15.01)
@@ -183,16 +183,16 @@ class AlphaVantage(object):
             print(f"[X] Request Failed: {response.status_code}.\nText:\n{response.text}\n{parameters['function']}")
 
         # If 'json' datatype, return as 'json'. Otherwise return text response for 'csv'
-        if self.datatype == 'json':
+        if self.datatype == "json":
             response = response.json()
         else:
             response = response.text
 
         self._response_history.append(parameters)
         # **Underdevelopment
-        # self._response_history.append({'last': time.localtime(), 'parameters': parameters})
-        if self.datatype == 'json':
-            response = self._to_dataframe(parameters['function'], response)
+        # self._response_history.append({"last": time.localtime(), "parameters": parameters})
+        if self.datatype == "json":
+            response = self._to_dataframe(parameters["function"], response)
 
         if self._api_call_count < 1:
             self._api_call_count += 1
@@ -209,68 +209,68 @@ class AlphaVantage(object):
         parameters = self.last()
 
         # Determine Path
-        if function == 'CURRENCY_EXCHANGE_RATE': # ok
+        if function == "CURRENCY_EXCHANGE_RATE": # ok
             path = f"{self.export_path}/{parameters['from_currency']}{parameters['to_currency']}"
-        # elif function == 'SECTOR': # ok
+        # elif function == "SECTOR": # ok
         #     path = f"{self.export_path}/sectors"
-        elif function == 'CRYPTO_RATING': #
+        elif function == "CRYPTO_RATING": #
             path = f"{self.export_path}/{parameters['symbol']}_RATING"
-        elif function == 'TIME_SERIES_INTRADAY': #
+        elif function == "TIME_SERIES_INTRADAY": #
             path = f"{self.export_path}/{parameters['symbol']}_{parameters['interval']}"
-        elif short_function.startswith('C') and len(short_function) == 2:
+        elif short_function.startswith("C") and len(short_function) == 2:
             path = f"{self.export_path}/{parameters['symbol']}{parameters['market']}"
         elif function in self.__api_indicator:
             path = f"{self.export_path}/{parameters['symbol']}_{parameters['interval'][0].upper()}_{short_function}"
-            if 'series_type' in parameters:
+            if "series_type" in parameters:
                 path += f"_{parameters['series_type'][0].upper()}"
-            if 'time_period' in parameters:
+            if "time_period" in parameters:
                 path += f"_{parameters['time_period']}"
         else:
             path = f"{self.export_path}/{parameters['symbol']}_{short_function}"
         path += f".{self.output}"
 
         # Export desired format
-        if self.output == 'csv':
+        if self.output == "csv":
             df.to_csv(path)
-        elif self.output == 'json':
+        elif self.output == "json":
             df.to_json(path)
-        elif self.output == 'pkl':
+        elif self.output == "pkl":
             df.to_pickle(path)
-        elif self.output == 'html':
+        elif self.output == "html":
             df.to_html(path)
-        elif self.output == 'txt':
+        elif self.output == "txt":
             Path(path).write_text(df.to_string())
-        elif _EXCEL_ and self.output == 'xlsx':
-            df.to_excel(path, sheet_name = parameters['function'])
+        elif _EXCEL_ and self.output == "xlsx":
+            df.to_excel(path, sheet_name = parameters["function"])
 
 
     def _to_dataframe(self, function:str, response:dict) -> DataFrame:
         """Converts json response into a Pandas DataFrame given a 'function'"""
         try:
             json_keys = response.keys()
-            key = [x for x in json_keys if not x.startswith('Meta Data')].pop()# or None
+            key = [x for x in json_keys if not x.startswith("Meta Data")].pop()# or None
         except IndexError as ie:
             print(f" [X] Download failed.  Check the AV documentation for correct parameters: https://www.alphavantage.co/documentation/")
             sys.exit(1)
 
-        if function == 'CURRENCY_EXCHANGE_RATE':
-            df = DataFrame.from_dict(response, orient='index')
-            df.set_index('6. Last Refreshed', inplace=True)
-        elif function == 'GLOBAL_QUOTE':
-            df = DataFrame.from_dict(response, orient='index')
+        if function == "CURRENCY_EXCHANGE_RATE":
+            df = DataFrame.from_dict(response, orient="index")
+            df.set_index("6. Last Refreshed", inplace=True)
+        elif function == "GLOBAL_QUOTE":
+            df = DataFrame.from_dict(response, orient="index")
             # Convert change_percent to decimal (float)
-            df.iloc[0, -1] = float(df.iloc[0, -1].strip('%')) / 100
-        elif function == 'CRYPTO_RATING':
-            df = DataFrame.from_dict(response, orient='index')
+            df.iloc[0, -1] = float(df.iloc[0, -1].strip("%")) / 100
+        elif function == "CRYPTO_RATING":
+            df = DataFrame.from_dict(response, orient="index")
             # Clean with index as the requested symbol
-            # df.set_index('symbol', inplace=True)
-            # df['index'] = 'FCAS'
-            # df.rename(columns={'index': 'rating'}, inplace=True)
-        elif function == 'SYMBOL_SEARCH':
+            # df.set_index("symbol", inplace=True)
+            # df["index"] = "FCAS"
+            # df.rename(columns={"index": "rating"}, inplace=True)
+        elif function == "SYMBOL_SEARCH":
             if len(response[key]) < 1:
                 return None
             df = DataFrame(response[key])
-        # elif function == 'SECTOR':
+        # elif function == "SECTOR":
         #     df = DataFrame.from_dict(response)
         #     # Remove 'Information' and 'Last Refreshed' Rows
         #     df.dropna(axis='index', how='any', thresh=3, inplace=True)
@@ -281,12 +281,12 @@ class AlphaVantage(object):
         else:
             # Otherwise it is a time-series, also calls df = df.iloc[::-1] below
             df = DataFrame.from_dict(response[key], dtype=float).T
-            df.index.rename('date', inplace=True)
+            df.index.rename("date", inplace=True)
 
         # If a 'sector', convert to float otherwise reverse the DataFrame
         # if function == "SYMBOL_SEARCH":  pass
-        # elif function == 'SECTOR':
-        #     df = df.applymap(lambda x: float(x.strip('%')) / 100)
+        # elif function == "SECTOR":
+        #     df = df.applymap(lambda x: float(x.strip("%")) / 100)
         # else:
         if function != "SYMBOL_SEARCH":
             df = df.iloc[::-1]
@@ -303,19 +303,17 @@ class AlphaVantage(object):
 
     def _simplify_dataframe_columns(self, function:str, df:DataFrame) -> DataFrame or None:
         """Simplifies DataFrame Column Names given a 'function'."""
-        if function == 'CURRENCY_EXCHANGE_RATE':
-            column_names = ['refreshed', 'from', 'from_name', 'to', 'to_name', 'rate', 'tz']
-        # elif function == 'SECTOR':
-        #     column_names = ['RT', '1D', '5D', '1M', '3M', 'YTD', '1Y', '3Y', '5Y', '10Y']
-        elif function == 'CRYPTO_RATING':
-            column_names = [re.sub(r'\d+(|\w). ', '', name) for name in df.columns]
-        elif function == 'SYMBOL_SEARCH':
-            column_names = ['symbol', 'name', 'type', 'region', 'market_open', 'market_close', 'tz', 'currency', 'match']
+        if function == "CURRENCY_EXCHANGE_RATE":
+            column_names = ["refreshed", "from", "from_name", "to", "to_name", "rate", "tz"]
+        elif function == "CRYPTO_RATING":
+            column_names = [re.sub(r'\d+(|\w). ', "", name) for name in df.columns]
+        elif function == "SYMBOL_SEARCH":
+            column_names = ["symbol", "name", "type", "region", "market_open", "market_close", "tz", "currency", "match"]
         else:
-            column_names = [re.sub(r'\d+(|\w). ', '', name) for name in df.columns]
-            column_names = [re.sub(r' amount', '', name) for name in column_names]
-            column_names = [re.sub(r'adjusted', 'adj', name) for name in column_names]
-            column_names = [re.sub(r' ', '_', name) for name in column_names]
+            column_names = [re.sub(r'\d+(|\w). ', "", name) for name in df.columns]
+            column_names = [re.sub(r' amount', "", name) for name in column_names]
+            column_names = [re.sub(r'adjusted', "adj", name) for name in column_names]
+            column_names = [re.sub(r' ', "_", name) for name in column_names]
 
         df.columns = column_names
         return df
@@ -331,7 +329,7 @@ class AlphaVantage(object):
 
         symbols = set()
         for file in saved_files:
-            file_stem_desc = file.stem.split('_')
+            file_stem_desc = file.stem.split("_")
             if len(file_stem_desc) == 2:
                 # ticker = file_stem_desc[0]
                 # interval = file_stem_desc[1]
@@ -340,50 +338,50 @@ class AlphaVantage(object):
 
 
     # Public Methods
-    def fxrate(self, from_currency:str, to_currency:str = 'USD', **kwargs) -> DataFrame or None:
+    def fxrate(self, from_currency:str, to_currency:str = "USD", **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for currency requests."""
         parameters = {
-            'function': 'CURRENCY_EXCHANGE_RATE',
-            'from_currency': from_currency.upper(),
-            'to_currency': to_currency.upper()
+            "function": "CURRENCY_EXCHANGE_RATE",
+            "from_currency": from_currency.upper(),
+            "to_currency": to_currency.upper()
         }
 
         download = self._av_api_call(parameters, **kwargs)
         return download if download is not None else None
 
 
-    def fx(self, function:str, from_symbol:str = 'EUR', to_symbol:str = 'USD', **kwargs) -> DataFrame or None:
+    def fx(self, function:str, from_symbol:str = "EUR", to_symbol:str = "USD", **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for currency requests."""
-        if function.upper() not in ['FXD', 'FXI', 'FXM', 'FXW', 'FX_DAILY', 'FX_INTRADAY', 'FX_MONTHLY', 'FX_WEEKLY']:
+        if function.upper() not in ["FXD", "FXI", "FXM", "FXW", "FX_DAILY", "FX_INTRADAY", "FX_MONTHLY", "FX_WEEKLY"]:
             return None
         else:
             function = self.__api_function[function]
 
         parameters = {
-            'function': function.upper(),
-            'from_symbol': from_symbol.upper(),
-            'to_symbol': to_symbol.upper()
+            "function": function.upper(),
+            "from_symbol": from_symbol.upper(),
+            "to_symbol": to_symbol.upper()
         }
 
-        interval = kwargs.pop('interval', None)
+        interval = kwargs.pop("interval", None)
         if interval is not None:
             if isinstance(interval, str) and interval in self.__api_series_interval:
-                parameters['interval'] = interval
-            elif isinstance(interval, int) and interval in [int(re.sub(r'min', '', x)) for x in self.__api_series_interval]:
-                parameters['interval'] = '{}min'.format(interval)
+                parameters["interval"] = interval
+            elif isinstance(interval, int) and interval in [int(re.sub(r'min', "", x)) for x in self.__api_series_interval]:
+                parameters["interval"] = "{}min".format(interval)
             else:
                 return None
 
         if function not in self.__api_indicator:
-            parameters['datatype'] = self.datatype
-            parameters['outputsize'] = self.output_size
+            parameters["datatype"] = self.datatype
+            parameters["outputsize"] = self.output_size
 
-        required_parameters = self._parameters(parameters['function'], 'required')
+        required_parameters = self._parameters(parameters["function"], "required")
         for required in required_parameters:
             if required in kwargs:
                 parameters[required] = kwargs[required]
 
-        optional_parameters = self._parameters(parameters['function'], 'optional')
+        optional_parameters = self._parameters(parameters["function"], "optional")
         for option in optional_parameters:
             if option in kwargs:
                 _validate_parameters(self.__api_indicator_matype, option, parameters, **kwargs)
@@ -394,7 +392,7 @@ class AlphaVantage(object):
 
     def global_quote(self, symbol:str, **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for global_quote requests."""
-        parameters = {'function': 'GLOBAL_QUOTE', 'symbol': symbol.upper()}
+        parameters = {"function": "GLOBAL_QUOTE", "symbol": symbol.upper()}
 
         download = self._av_api_call(parameters, **kwargs)
         return download if download is not None else None
@@ -402,37 +400,29 @@ class AlphaVantage(object):
 
     def search(self, keywords:str, **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for search requests."""
-        parameters = {'function': 'SYMBOL_SEARCH', 'keywords': keywords}
+        parameters = {"function": "SYMBOL_SEARCH", "keywords": keywords}
 
         download = self._av_api_call(parameters, **kwargs)
         return download if download is not None else None
 
 
-    # def sectors(self, **kwargs) -> DataFrame or None:
-    #     """Simple wrapper to _av_api_call method to request sector performances."""
-    #     parameters = {'function':'SECTOR'}
-
-    #     download = self._av_api_call(parameters, **kwargs)
-    #     return download if download is not None else None
-
-
-    def digital(self, symbol:str, market:str = 'USD', function:str = 'CD', **kwargs) -> DataFrame or None:
+    def digital(self, symbol:str, market:str = "USD", function:str = "CD", **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for digital currency requests."""
         parameters = {
-            'function': self.__api_function[function.upper()],
-            'symbol': symbol.upper(),
-            'market': market.upper()
+            "function": self.__api_function[function.upper()],
+            "symbol": symbol.upper(),
+            "market": market.upper()
         }
 
         download = self._av_api_call(parameters, **kwargs)
         return download if download is not None else None
 
 
-    def crypto_rating(self, symbol:str, function:str = 'CR', **kwargs) -> DataFrame or None:
+    def crypto_rating(self, symbol:str, function:str = "CR", **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for digital currency rating requests."""
         parameters = {
-            'function': self.__api_function[function.upper()],
-            'symbol': symbol.upper(),
+            "function": self.__api_function[function.upper()],
+            "symbol": symbol.upper(),
         }
 
         download = self._av_api_call(parameters, **kwargs)
@@ -442,16 +432,16 @@ class AlphaVantage(object):
     def intraday(self, symbol:str, interval=5, **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for intraday requests."""
         parameters = {
-            'function': 'TIME_SERIES_INTRADAY',
-            'symbol': symbol.upper(),
-            'datatype': self.datatype,
-            'outputsize': self.output_size
+            "function": "TIME_SERIES_INTRADAY",
+            "symbol": symbol.upper(),
+            "datatype": self.datatype,
+            "outputsize": self.output_size
         }
         
         if isinstance(interval, str) and interval in self.__api_series_interval:
-            parameters['interval'] = interval
-        elif isinstance(interval, int) and interval in [int(re.sub(r'min', '', x)) for x in self.__api_series_interval]:
-            parameters['interval'] = '{}min'.format(interval)
+            parameters["interval"] = interval
+        elif isinstance(interval, int) and interval in [int(re.sub(r'min', "", x)) for x in self.__api_series_interval]:
+            parameters["interval"] = "{}min".format(interval)
         else:
             return None
 
@@ -478,23 +468,23 @@ class AlphaVantage(object):
         try:
             function = self.__api_function[function] if function not in self.__api_indicator else function
         except KeyError:
-            print(f'[X] Perhaps \'function\' and \'symbol\' are interchanged!? function={function} and symbol={symbol}')
+            print(f"[X] Perhaps \'function\' and \'symbol\' are interchanged!? function={function} and symbol={symbol}")
             function, symbol = symbol, function
             self.data(function, symbol, **kwargs)
             # return None
 
-        parameters = {'function': function, 'symbol': symbol}
+        parameters = {"function": function, "symbol": symbol}
 
         if function not in self.__api_indicator:
-            parameters['datatype'] = self.datatype
-            parameters['outputsize'] = self.output_size
+            parameters["datatype"] = self.datatype
+            parameters["outputsize"] = self.output_size
 
-        required_parameters = self._parameters(parameters['function'], 'required')
+        required_parameters = self._parameters(parameters["function"], "required")
         for required in required_parameters:
             if required in kwargs:
                 parameters[required] = kwargs[required]
 
-        optional_parameters = self._parameters(parameters['function'], 'optional')
+        optional_parameters = self._parameters(parameters["function"], "optional")
         for option in optional_parameters:
             if option in kwargs:
                 _validate_parameters(self.__api_indicator_matype, option, parameters, **kwargs)
@@ -513,18 +503,18 @@ class AlphaVantage(object):
             print(f"{AlphaVantage.__name__} Help: Input a function name for more infomation on 'required'\nAvailable Functions:\n")
             _functions()
             _indicators()
-        elif keyword == 'aliases':
+        elif keyword == "aliases":
             print(f"Aliases:")
             _aliases()
-        elif keyword == 'functions':
+        elif keyword == "functions":
             _functions()
-        elif keyword == 'indicators':
+        elif keyword == "indicators":
             _indicators()
         else:
             keyword = keyword.upper()
-            required = self._parameters(keyword, 'required')
-            optional = self._parameters(keyword, 'optional')
-            description = [x for x in self.series + self.indicators if x['function'] == keyword][0]['description']
+            required = self._parameters(keyword, "required")
+            optional = self._parameters(keyword, "optional")
+            description = [x for x in self.series + self.indicators if x["function"] == keyword][0]["description"]
 
             print(f"\n   Function: {keyword}")
             print(f"Description: {description}")
@@ -550,7 +540,7 @@ class AlphaVantage(object):
     @api_key.setter
     def api_key(self, value:str) -> None:
         if value is None:
-            self.__apikey = os.getenv('AV_API_KEY')
+            self.__apikey = os.getenv("AV_API_KEY")
         elif isinstance(value, str) and value:
             self.__apikey = value
         else:
@@ -583,7 +573,7 @@ class AlphaVantage(object):
             path = Path(value)
             if is_home(path):
                 # ~/ab/cd -> /ab/cd
-                user_subdir = '/'.join(path.parts[1:])
+                user_subdir = "/".join(path.parts[1:])
                 self.__export_path = Path.home().joinpath(user_subdir)
             else:
                 self.__export_path = path
@@ -610,8 +600,8 @@ class AlphaVantage(object):
 
     @output.setter
     def output(self, value:str) -> None:
-        output_type = ['csv', 'json', 'pkl', 'html', 'txt']
-        output_type.append('xlsx') if _EXCEL_ else None
+        output_type = ["csv", "json", "pkl", "html", "txt"]
+        output_type.append("xlsx") if _EXCEL_ else None
 
         if value is not None and value.lower() in output_type:
             self.__output = value.lower()

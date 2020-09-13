@@ -13,7 +13,7 @@ from .utils import final_time
 from alphaVantageAPI.alphavantage import AlphaVantage
 
 
-# Load an instance of AV with user's environment variable 'AV_API_KEY'
+# Load an instance of AV with user's environment variable "AV_API_KEY"
 # Force Clean
 _AV_ = AlphaVantage(api_key=None, clean=True)
 
