@@ -304,7 +304,7 @@ class AlphaVantage(object):
     def _simplify_dataframe_columns(self, function:str, df:DataFrame) -> DataFrame or None:
         """Simplifies DataFrame Column Names given a 'function'."""
         if function == "CURRENCY_EXCHANGE_RATE":
-            column_names = ["refreshed", "from", "from_name", "to", "to_name", "rate", "tz"]
+            column_names = ["refreshed", "from", "from_name", "to", "to_name", "rate", "tz", "bid", "ask"]
         elif function == "CRYPTO_RATING":
             column_names = [re.sub(r'\d+(|\w). ', "", name) for name in df.columns]
         elif function == "SYMBOL_SEARCH":
@@ -338,18 +338,6 @@ class AlphaVantage(object):
 
 
     # Public Methods
-    def fxrate(self, from_currency:str, to_currency:str = "USD", **kwargs) -> DataFrame or None:
-        """Simple wrapper to _av_api_call method for currency requests."""
-        parameters = {
-            "function": "CURRENCY_EXCHANGE_RATE",
-            "from_currency": from_currency.upper(),
-            "to_currency": to_currency.upper()
-        }
-
-        download = self._av_api_call(parameters, **kwargs)
-        return download if download is not None else None
-
-
     def fx(self, function:str, from_symbol:str = "EUR", to_symbol:str = "USD", **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for currency requests."""
         if function.upper() not in ["FXD", "FXI", "FXM", "FXW", "FX_DAILY", "FX_INTRADAY", "FX_MONTHLY", "FX_WEEKLY"]:
@@ -385,6 +373,18 @@ class AlphaVantage(object):
         for option in optional_parameters:
             if option in kwargs:
                 _validate_parameters(self.__api_indicator_matype, option, parameters, **kwargs)
+
+        download = self._av_api_call(parameters, **kwargs)
+        return download if download is not None else None
+
+
+    def fxrate(self, from_currency:str, to_currency:str = "USD", **kwargs) -> DataFrame or None:
+        """Simple wrapper to _av_api_call method for currency requests."""
+        parameters = {
+            "function": "CURRENCY_EXCHANGE_RATE",
+            "from_currency": from_currency.upper(),
+            "to_currency": to_currency.upper()
+        }
 
         download = self._av_api_call(parameters, **kwargs)
         return download if download is not None else None

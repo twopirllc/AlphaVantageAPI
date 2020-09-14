@@ -70,12 +70,6 @@ class AlphaVantageDownloader(BasePandasObject):
         return self._df
 
 
-    # Sectors
-    def sectors(self, **kwargs) -> pd.DataFrame:
-        self._df = _AV_.sectors(**kwargs)
-        return self._df
-
-
     # Securities
     def daily(self, symbol:str, **kwargs) -> pd.DataFrame:
         self._df = _AV_.data(function="D", symbol=symbol, **kwargs)
@@ -134,10 +128,9 @@ class AlphaVantageDownloader(BasePandasObject):
 
 
     # FX
-    def fx(self, from_currency:str, to_currency:str = "USD", **kwargs) -> pd.DataFrame:
+    def fxrate(self, from_currency:str, to_currency:str = "USD", **kwargs) -> pd.DataFrame:
         self._df = _AV_.fxrate(from_currency=from_currency, to_currency=to_currency, **kwargs)
         return self._df
-
 
     def fx_daily(self, from_symbol:str, to_symbol:str = "USD", **kwargs) -> pd.DataFrame:
         self._df = _AV_.fx("FXD", from_symbol=from_symbol, to_symbol=to_symbol, **kwargs)
@@ -161,7 +154,6 @@ class AlphaVantageDownloader(BasePandasObject):
     # Aliases
     CR = crypto_rating
     GQ = global_quote
-    S = sectors    
 
     D = daily
     DA = daily_adjusted
@@ -175,7 +167,7 @@ class AlphaVantageDownloader(BasePandasObject):
     CM = digital_monthly
     CW = digital_weekly
 
-    FX = fx
+    FX = fxrate
     FXD = fx_daily
     FXI = fx_intraday
     FXM = fx_monthly
