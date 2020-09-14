@@ -28,6 +28,7 @@ class TestAlphaVantageAPI(TestCase):
         cls.digital_parameters = {"function":"DIGITAL_CURRENCY_DAILY", "symbol":C.API_DIGITAL_TEST, "market":"CNY"}
         cls.digital_rating_parameters = {"function":"CRYPTO_RATING", "symbols":C.API_DIGITAL_TEST}
         cls.global_quote_parameters = {"function":"GLOBAL_QUOTE", "symbols":C.API_DIGITAL_TEST}
+        cls.overview_parameters = {"function":"OVERVIEW", "symbols":C.API_FUNDA_TEST}
 
         # json files of sample data
         cls.json_fx = load_json(cls.test_data_path / "mock_fx.json")
@@ -37,6 +38,7 @@ class TestAlphaVantageAPI(TestCase):
         cls.json_digital = load_json(cls.test_data_path / "mock_digital.json")
         cls.json_digital_rating = load_json(cls.test_data_path / "mock_digital_rating.json")
         cls.json_global_quote = load_json(cls.test_data_path / "mock_global_quote.json")
+        cls.json_overview = load_json(cls.test_data_path / "mock_overview.json")
 
         # Pandas DataFrames of sample data
         cls.df_fx = av._to_dataframe("CURRENCY_EXCHANGE_RATE", cls.json_fx)
@@ -46,6 +48,7 @@ class TestAlphaVantageAPI(TestCase):
         cls.df_digital = av._to_dataframe("DIGITAL_CURRENCY_DAILY", cls.json_digital)
         cls.df_digital_rating = av._to_dataframe("CRYPTO_RATING", cls.json_digital_rating)
         cls.df_global_quote = av._to_dataframe("GLOBAL_QUOTE", cls.json_global_quote)
+        cls.df_overview = av._to_dataframe("OVERVIEW", cls.json_overview)
 
 
     @classmethod
@@ -60,6 +63,7 @@ class TestAlphaVantageAPI(TestCase):
         del cls.digital_parameters
         del cls.digital_rating_parameters
         del cls.global_quote_parameters
+        del cls.overview_parameters
 
         del cls.json_fx
         # del cls.json_sectors
@@ -68,6 +72,7 @@ class TestAlphaVantageAPI(TestCase):
         del cls.json_digital
         del cls.json_digital_rating
         del cls.json_global_quote
+        del cls.json_overview
 
         del cls.df_fx
         # del cls.df_sectors
@@ -76,6 +81,7 @@ class TestAlphaVantageAPI(TestCase):
         del cls.df_digital
         del cls.df_digital_rating
         del cls.df_global_quote
+        del cls.df_overview
 
 
     def setUp(self):
@@ -338,6 +344,30 @@ class TestAlphaVantageAPI(TestCase):
         self.assertEqual(mock_to_dataframe.call_count, 0)
         self.assertIsInstance(av_api_call(), dict)
 
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
+    @patch("alphaVantageAPI.alphavantage.requests.get")
+    def test_av_api_call_overview(self, mock_requests_get, mock_to_dataframe):
+        mock_requests_get.return_value = _mock_response(json_data=self.json_overview)
+        mock_to_dataframe.return_value = self.df_overview
+
+        av_api_call = self.av._av_api_call(self.overview_parameters)
+
+        self.assertEqual(mock_requests_get.call_count, 1)
+        self.assertEqual(mock_to_dataframe.call_count, 1)
+        self.assertIsInstance(mock_to_dataframe(), DataFrame)
+
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
+    @patch("alphaVantageAPI.alphavantage.requests.get")
+    def test_av_api_call_overview_csv(self, mock_requests_get, mock_to_dataframe):
+        self.av.datatype = "csv"
+
+        mock_requests_get.return_value = _mock_response(text_data=self.json_overview)
+
+        av_api_call = self.av._av_api_call(self.overview_parameters)
+
+        self.assertEqual(mock_requests_get.call_count, 1)
+        self.assertEqual(mock_to_dataframe.call_count, 0)
+        self.assertIsInstance(av_api_call(), dict)
 
     # save_df tests
     # @patch("alphaVantageAPI.alphavantage.AlphaVantage.last")

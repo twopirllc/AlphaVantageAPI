@@ -191,6 +191,8 @@ class TestAlphaVantageAPIProperties(TestCase):
         self.assertEqual(self.av._function_alias("GLOBAL_QUOTE"), "GQ")
         self.assertEqual(self.av._function_alias("CRYPTO_RATING"), "CR")
 
+        self.assertEqual(self.av._function_alias("OVERVIEW"), "OVER")
+
         self.assertEqual(self.av._function_alias("SMA"), "SMA")
         self.assertEqual(self.av._function_alias("DEMA"), "DEMA")
         ### and more indicators ...

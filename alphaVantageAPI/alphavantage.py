@@ -104,8 +104,6 @@ class AlphaVantage(object):
                     self.export_path.mkdir(parents=True)
             except OSError as ex:
                 raise
-            except PermissionError as ex:
-                raise
 
 
     def _load_api(self, api_file:Path) -> None:
@@ -161,7 +159,7 @@ class AlphaVantage(object):
         parameters["apikey"] = self.api_key
 
         if not self.premium and self._api_call_count > 0:
-                time.sleep(15.01)
+            time.sleep(15.0001)
 
         # Ready to Go. Format and get request response
         try:
@@ -191,7 +189,10 @@ class AlphaVantage(object):
         self._response_history.append(parameters)
         # **Underdevelopment
         # self._response_history.append({"last": time.localtime(), "parameters": parameters})
-        if self.datatype == "json":
+        if parameters['function'] in ["INCOME_STATEMENT", "BALANCE_SHEET", "CASH_FLOW"]:
+            print(f"[i] parameters: {parameters}")
+            response = self._to_dataframe(parameters["function"], response)
+        elif self.datatype == "json":
             response = self._to_dataframe(parameters["function"], response)
 
         if self._api_call_count < 1:
@@ -211,8 +212,8 @@ class AlphaVantage(object):
         # Determine Path
         if function == "CURRENCY_EXCHANGE_RATE": # ok
             path = f"{self.export_path}/{parameters['from_currency']}{parameters['to_currency']}"
-        # elif function == "SECTOR": # ok
-        #     path = f"{self.export_path}/sectors"
+        elif function == "OVERVIEW": #
+            path = f"{self.export_path}/{parameters['symbol']}"
         elif function == "CRYPTO_RATING": #
             path = f"{self.export_path}/{parameters['symbol']}_RATING"
         elif function == "TIME_SERIES_INTRADAY": #
@@ -260,6 +261,8 @@ class AlphaVantage(object):
             df = DataFrame.from_dict(response, orient="index")
             # Convert change_percent to decimal (float)
             df.iloc[0, -1] = float(df.iloc[0, -1].strip("%")) / 100
+        elif function == "OVERVIEW": #
+            df = DataFrame.from_dict(response, orient="index")
         elif function == "CRYPTO_RATING":
             df = DataFrame.from_dict(response, orient="index")
             # Clean with index as the requested symbol
@@ -305,6 +308,8 @@ class AlphaVantage(object):
         """Simplifies DataFrame Column Names given a 'function'."""
         if function == "CURRENCY_EXCHANGE_RATE":
             column_names = ["refreshed", "from", "from_name", "to", "to_name", "rate", "tz", "bid", "ask"]
+        elif function == "OVERVIEW":
+            column_names = ["item", "value"]
         elif function == "CRYPTO_RATING":
             column_names = [re.sub(r'\d+(|\w). ', "", name) for name in df.columns]
         elif function == "SYMBOL_SEARCH":
@@ -449,6 +454,13 @@ class AlphaVantage(object):
         return download if download is not None else None
 
 
+    def overview(self, symbol:str, **kwargs) -> DataFrame or None:
+        """Simple wrapper to _av_api_call method for overview requests."""
+        parameters = {"function": "OVERVIEW", "symbol": symbol.upper()}
+        download = self._av_api_call(parameters, **kwargs)
+        return download if download is not None else None
+
+
     def data(self, function:str, symbol:str = None, **kwargs) -> DataFrame or list or None:
         """Simple wrapper to _av_api_call method for an equity or indicator."""
         # Process a symbol list and return a list of DataFrames
@@ -493,6 +505,7 @@ class AlphaVantage(object):
         return download if download is not None else None
 
 
+
     def help(self, keyword:str = None) -> None:
         """Simple help system to print 'required' or 'optional' parameters based on a keyword."""
         def _functions(): print(f"   Functions:\n    {', '.join(self.__api_series)}")
@@ -506,10 +519,8 @@ class AlphaVantage(object):
         elif keyword == "aliases":
             print(f"Aliases:")
             _aliases()
-        elif keyword == "functions":
-            _functions()
-        elif keyword == "indicators":
-            _indicators()
+        elif keyword == "functions": _functions()
+        elif keyword == "indicators": _indicators()
         else:
             keyword = keyword.upper()
             required = self._parameters(keyword, "required")
