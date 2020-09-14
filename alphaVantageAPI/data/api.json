@@ -126,6 +126,41 @@
         "description": "A lightweight alternative to the time series APIs, this service returns the price and volume information for a security of your choice.",
         "required": ["symbol"],
         "optional": ["datatype"]
+    },
+    {
+        "function": "OVERVIEW",
+        "alias": "OVER",
+        "description": "This API returns the company information, financial ratios, and other key metrics for the equity specified. Data is generally refreshed on the same day a company reports its latest earnings and financials.",
+        "required": ["symbol"],
+        "optional": ["datatype"]
+    },
+    {
+        "function": "INCOME_STATEMENT",
+        "alias": "IS",
+        "description": "This API returns the annual and quarterly income statements for the company of interest. Data is generally refreshed on the same day a company reports its latest earnings and financials.",
+        "required": ["symbol"],
+        "optional": ["datatype"]
+    },
+    {
+        "function": "BALANCE_SHEET",
+        "alias": "BS",
+        "description": "This API returns the annual and quarterly balance sheets for the company of interest. Data is generally refreshed on the same day a company reports its latest earnings and financials.",
+        "required": ["symbol"],
+        "optional": ["datatype"]
+    },
+    {
+        "function": "CASH_FLOW",
+        "alias": "CF",
+        "description": "This API returns the annual and quarterly cash flows for the company of interest. Data is generally refreshed on the same day a company reports its latest earnings and financials.",
+        "required": ["symbol"],
+        "optional": ["datatype"]
+    },
+    {
+        "function": "LISTING_STATUS",
+        "alias": "LS",
+        "description": "This API returns a list of active or delisted US stocks, either as of the latest trading day or at a specific time in history. The endpoint is positioned to facilitate equity research on asset lifecycle and survivorship.",
+        "required": ["symbol"],
+        "optional": ["datatype"]
     }],
 "indicator":[
     {
