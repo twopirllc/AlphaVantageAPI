@@ -48,11 +48,10 @@ class AlphaVantageDownloader(BasePandasObject):
 
 
     # Global Quote
-    def global_quote(self, symbol:str, **kwargs) -> pd.DataFrame:
-        self._df = _AV_.global_quote(symbol, **kwargs)
+    def quote(self, symbol:str, **kwargs) -> pd.DataFrame:
+        self._df = _AV_.quote(symbol, **kwargs)
         self._df.name = symbol.upper()
         return self._df
-
 
     # Search
     def search(self, keywords:str, **kwargs) -> pd.DataFrame:
@@ -67,46 +66,55 @@ class AlphaVantageDownloader(BasePandasObject):
         self._df.name = symbol.upper()
         return self._df
 
+    def balance(self, symbol:str, **kwargs) -> pd.DataFrame:
+        result = _AV_.balance(symbol, **kwargs)
+        self._df.name = result[0].name = result[1].name = symbol.upper()
+        return result[0], result[1]
+
+    def cashflow(self, symbol:str, **kwargs) -> pd.DataFrame:
+        result = _AV_.cashflow(symbol, **kwargs)
+        self._df.name = result[0].name = result[1].name = symbol.upper()
+        return result[0], result[1]
+
+    def income(self, symbol:str, **kwargs) -> pd.DataFrame:
+        result = _AV_.income(symbol, **kwargs)
+        self._df.name = result[0].name = result[1].name = symbol.upper()
+        return result[0], result[1]
+
 
     # Securities
     def daily(self, symbol:str, **kwargs) -> pd.DataFrame:
-        self._df = _AV_.data(function="D", symbol=symbol, **kwargs)
+        self._df = _AV_.data(symbol=symbol, function="D", **kwargs)
         self._df.name = symbol.upper()
         return self._df
-
 
     def daily_adjusted(self, symbol:str, **kwargs) -> pd.DataFrame:
-        self._df = _AV_.data(function="DA", symbol=symbol, **kwargs)
+        self._df = _AV_.data(symbol=symbol, function="DA", **kwargs)
         self._df.name = symbol.upper()
         return self._df
-
 
     def intraday(self, symbol:str, interval=5, **kwargs) -> pd.DataFrame:
         self._df = _AV_.intraday(symbol, interval=interval, **kwargs)
         self._df.name = symbol.upper()
         return self._df
 
-
     def monthly(self, symbol:str, **kwargs) -> pd.DataFrame:
-        self._df = _AV_.data(function="M", symbol=symbol, **kwargs)
+        self._df = _AV_.data(symbol=symbol, function="M", **kwargs)
         self._df.name = symbol.upper()
         return self._df
-
 
     def monthly_adjusted(self, symbol:str, **kwargs) -> pd.DataFrame:
-        self._df = _AV_.data(function="MA", symbol=symbol, **kwargs)
+        self._df = _AV_.data(symbol=symbol, function="MA", **kwargs)
         self._df.name = symbol.upper()
         return self._df
-
 
     def weekly(self, symbol:str, **kwargs) -> pd.DataFrame:
-        self._df = _AV_.data(function="W", symbol=symbol, **kwargs)
+        self._df = _AV_.data(symbol=symbol, function="W", **kwargs)
         self._df.name = symbol.upper()
         return self._df
 
-
     def weekly_adjusted(self, symbol:str, **kwargs) -> pd.DataFrame:
-        self._df = _AV_.data(function="WA", symbol=symbol, **kwargs)
+        self._df = _AV_.data(symbol=symbol, function="WA", **kwargs)
         self._df.name = symbol.upper()
         return self._df
 
@@ -127,7 +135,6 @@ class AlphaVantageDownloader(BasePandasObject):
         self._df.name = f"{symbol.upper()}.{market.upper()}"
         return self._df
 
-
     def digital_weekly(self, symbol:str, market:str = "USD", **kwargs) -> pd.DataFrame:
         self._df = _AV_.digital(symbol, market=market, function="CW", **kwargs)
         self._df.name = f"{symbol.upper()}.{market.upper()}"
@@ -141,33 +148,34 @@ class AlphaVantageDownloader(BasePandasObject):
         return self._df
 
     def fx_daily(self, from_symbol:str, to_symbol:str = "USD", **kwargs) -> pd.DataFrame:
-        self._df = _AV_.fx("FXD", from_symbol=from_symbol, to_symbol=to_symbol, **kwargs)
+        self._df = _AV_.fx(from_symbol=from_symbol, to_symbol=to_symbol, function="FXD", **kwargs)
         self._df.name = f"{from_symbol.upper()}.{to_symbol.upper()}"
         return self._df
-
 
     def fx_intraday(self, from_symbol:str, to_symbol:str = "USD", interval=5, **kwargs) -> pd.DataFrame:
-        self._df = _AV_.fx("FXI", from_symbol=from_symbol, to_symbol=to_symbol, interval=interval, **kwargs)
+        self._df = _AV_.fx(from_symbol=from_symbol, to_symbol=to_symbol, function="FXI", interval=interval, **kwargs)
         self._df.name = f"{from_symbol.upper()}.{to_symbol.upper()}"
         return self._df
-
 
     def fx_monthly(self, from_symbol:str, to_symbol:str = "USD", **kwargs) -> pd.DataFrame:
-        self._df = _AV_.fx("FXM", from_symbol=from_symbol, to_symbol=to_symbol, **kwargs)
+        self._df = _AV_.fx(from_symbol=from_symbol, to_symbol=to_symbol, function="FXM", **kwargs)
         self._df.name = f"{from_symbol.upper()}.{to_symbol.upper()}"
         return self._df
-
 
     def fx_weekly(self, from_symbol:str, to_symbol:str = "USD", **kwargs) -> pd.DataFrame:
-        self._df = _AV_.fx("FXW", from_symbol=from_symbol, to_symbol=to_symbol, **kwargs)
+        self._df = _AV_.fx(from_symbol=from_symbol, to_symbol=to_symbol, function="FXW", **kwargs)
         self._df.name = f"{from_symbol.upper()}.{to_symbol.upper()}"
         return self._df
+
 
     # Aliases
     CR = crypto_rating
-    GQ = global_quote
+    Q = quote
 
     OV = overview
+    BS = balance
+    CF = cashflow
+    IS = income
 
     D = daily
     DA = daily_adjusted
@@ -186,6 +194,15 @@ class AlphaVantageDownloader(BasePandasObject):
     FXI = fx_intraday
     FXM = fx_monthly
     FXW = fx_weekly
+
+
+    @property
+    def api_key(self) -> str:
+        return _AV_.api_key
+
+    @api_key.setter
+    def api_key(self, value:str) -> None:
+        _AV_.api_key = value
 
 
     @property
@@ -238,7 +255,7 @@ class AlphaVantageDownloader(BasePandasObject):
         return _AV_.proxy
 
     @proxy.setter
-    def proxy(self, value:str) -> None:
+    def proxy(self, value:dict) -> None:
         _AV_.proxy = value
 
 

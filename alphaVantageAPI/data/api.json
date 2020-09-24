@@ -122,7 +122,7 @@
     },
     {
         "function": "GLOBAL_QUOTE",
-        "alias": "GQ",
+        "alias": "Q",
         "description": "A lightweight alternative to the time series APIs, this service returns the price and volume information for a security of your choice.",
         "required": ["symbol"],
         "optional": ["datatype"]

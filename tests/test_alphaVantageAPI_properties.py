@@ -187,11 +187,21 @@ class TestAlphaVantageAPIProperties(TestCase):
         self.assertEqual(self.av._function_alias("DIGITAL_CURRENCY_MONTHLY"), "CM")
 
         self.assertEqual(self.av._function_alias("CURRENCY_EXCHANGE_RATE"), "FX")
+        self.assertEqual(self.av._function_alias("FX_DAILY"), "FXD")
+        self.assertEqual(self.av._function_alias("FX_INTRADAY"), "FXI")
+        self.assertEqual(self.av._function_alias("FX_WEEKLY"), "FXW")
+        self.assertEqual(self.av._function_alias("FX_MONTHLY"), "FXM")
 
-        self.assertEqual(self.av._function_alias("GLOBAL_QUOTE"), "GQ")
+
+        self.assertEqual(self.av._function_alias("GLOBAL_QUOTE"), "Q")
         self.assertEqual(self.av._function_alias("CRYPTO_RATING"), "CR")
 
+        self.assertEqual(self.av._function_alias("LISTING_STATUS"), "LS")
         self.assertEqual(self.av._function_alias("OVERVIEW"), "OVER")
+        self.assertEqual(self.av._function_alias("INCOME_STATEMENT"), "IS")
+        self.assertEqual(self.av._function_alias("BALANCE_SHEET"), "BS")
+        self.assertEqual(self.av._function_alias("CASH_FLOW"), "CF")
+
 
         self.assertEqual(self.av._function_alias("SMA"), "SMA")
         self.assertEqual(self.av._function_alias("DEMA"), "DEMA")

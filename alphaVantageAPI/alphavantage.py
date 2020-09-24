@@ -11,7 +11,7 @@ import pprint
 
 from pathlib import Path, PurePath
 from functools import wraps
-from pandas import DataFrame
+from pandas import DataFrame, DatetimeIndex
 from .utils import is_home
 from .validate_parameters import _validate_parameters
 
@@ -146,7 +146,7 @@ class AlphaVantage(object):
             try:
                 all_functions = self.series + self.indicators
                 result = [x[kind] for x in all_functions if kind in x and function == x["function"]].pop()
-            except IndexError as ex:
+            except IndexError:
                 pass
         return result
 
@@ -187,12 +187,9 @@ class AlphaVantage(object):
             response = response.text
 
         self._response_history.append(parameters)
-        # **Underdevelopment
+        # **Underdevelopment**
         # self._response_history.append({"last": time.localtime(), "parameters": parameters})
-        if parameters['function'] in ["INCOME_STATEMENT", "BALANCE_SHEET", "CASH_FLOW"]:
-            print(f"[i] parameters: {parameters}")
-            response = self._to_dataframe(parameters["function"], response)
-        elif self.datatype == "json":
+        if self.datatype == "json":
             response = self._to_dataframe(parameters["function"], response)
 
         if self._api_call_count < 1:
@@ -201,7 +198,113 @@ class AlphaVantage(object):
         return response
 
 
-    def _save_df(self, function:str, df:DataFrame) -> None:
+    def _to_dataframe(self, function:str, response:dict) -> DataFrame:
+        """Converts json response into a Pandas DataFrame given a 'function'"""
+        try:
+            json_keys = response.keys()
+            key = [x for x in json_keys if not x.startswith("Meta Data")].pop()
+        except IndexError:
+            print(f" [X] Download failed.  Check the AV documentation for correct parameters: https://www.alphavantage.co/documentation/")
+            sys.exit(1)
+
+        reports = None
+        if function == "CRYPTO_RATING":
+            df = DataFrame.from_dict(response, orient="index")
+        elif function == "GLOBAL_QUOTE":
+            df = DataFrame.from_dict(response, orient="index")
+        elif function == "CURRENCY_EXCHANGE_RATE":
+            df = DataFrame.from_dict(response, orient="index")
+        elif function == "SYMBOL_SEARCH":
+            if len(response[key]) < 1:
+                return None
+            df = DataFrame(response[key])
+        elif function == "OVERVIEW": #
+            df = DataFrame.from_dict(response, orient="index")
+        elif function == "INCOME_STATEMENT": #
+            quarterlydf = DataFrame.from_dict(response["quarterlyReports"])
+            quarterlydf.set_index("fiscalDateEnding", inplace=True)
+
+            annuallydf = DataFrame.from_dict(response["annualReports"])
+            annuallydf.set_index("fiscalDateEnding", inplace=True)
+
+            reports = [quarterlydf, annuallydf]
+        elif function == "BALANCE_SHEET": #
+            quarterlydf = DataFrame.from_dict(response["quarterlyReports"])
+            quarterlydf.set_index("fiscalDateEnding", inplace=True)
+
+            annuallydf = DataFrame.from_dict(response["annualReports"])
+            annuallydf.set_index("fiscalDateEnding", inplace=True)
+
+            reports = [quarterlydf, annuallydf]
+        elif function == "CASH_FLOW": #
+            quarterlydf = DataFrame.from_dict(response["quarterlyReports"])
+            quarterlydf.set_index("fiscalDateEnding", inplace=True)
+
+            annuallydf = DataFrame.from_dict(response["annualReports"])
+            annuallydf.set_index("fiscalDateEnding", inplace=True)
+
+            reports = [quarterlydf, annuallydf]
+        else:
+            # Otherwise it is a time-series, also calls df = df.iloc[::-1] below
+            df = DataFrame.from_dict(response[key], dtype=float).T
+            df.index.rename("date", inplace=True)
+
+        # Handle Reports / Search / GC / 
+        if reports is not None and len(reports) > 0:
+            if self.export:
+                self._save_df(function, reports[0], report_freq="Quarterly")
+                self._save_df(function, reports[1], report_freq="Annually")
+            return reports
+        else:                
+            if function != "SYMBOL_SEARCH":
+                df = df.iloc[::-1]
+                df.reset_index(inplace=True)
+
+            if self.clean:
+                df = self._simplify_dataframe_columns(function, df)
+
+                if function in ["SYMBOL_SEARCH"]: pass
+                elif function == "CURRENCY_EXCHANGE_RATE":
+                    df.set_index("refreshed", inplace=True)
+                elif function == "CRYPTO_RATING":
+                    df.drop(["index"], axis=1, inplace=True)
+                    df.set_index("symbol", inplace=True)
+                elif function == "GLOBAL_QUOTE":
+                    df.drop(["index"], axis=1, inplace=True)
+                    df.set_index("symbol", inplace=True)
+                elif function != "OVERVIEW":
+                    df.set_index(DatetimeIndex(df["date"]), inplace=True)
+                    df.drop(["date"], axis=1, inplace=True)
+                else:
+                    df.set_index("item", inplace=True)
+
+            if self.export:
+                self._save_df(function, df)
+
+        return df
+
+
+    def _simplify_dataframe_columns(self, function:str, df:DataFrame) -> DataFrame or None:
+        """Simplifies DataFrame Column Names given a 'function'."""
+        if function == "CURRENCY_EXCHANGE_RATE":
+            column_names = ["index", "from", "from_name", "to", "to_name", "rate", "refreshed", "tz", "bid", "ask"]
+        elif function == "OVERVIEW":
+            column_names = ["item", "value"]
+        elif function in ["CRYPTO_RATING", "GLOBAL_QUOTE"]:
+            column_names = [re.sub(r'\d+(|\w). ', "", name) for name in df.columns]
+        elif function == "SYMBOL_SEARCH":
+            column_names = ["symbol", "name", "type", "region", "market_open", "market_close", "tz", "currency", "match"]
+        else:
+            column_names = [re.sub(r'\d+(|\w). ', "", name) for name in df.columns]
+            column_names = [re.sub(r' amount', "", name) for name in column_names]
+            column_names = [re.sub(r'adjusted', "adj", name) for name in column_names]
+            column_names = [re.sub(r' ', "_", name) for name in column_names]
+
+        df.columns = column_names
+        return df
+
+
+    def _save_df(self, function:str, df:DataFrame, **kwargs) -> None:
         """Save Pandas DataFrame to a file type given a 'function'."""
         # Get the alias for the 'function' so filenames are short
         short_function = self._function_alias(function)
@@ -209,11 +312,29 @@ class AlphaVantage(object):
         # Get the 'parameters' from the last AV api call since it was successful
         parameters = self.last()
 
+        report_freq = kwargs.pop("report_freq", None)
         # Determine Path
         if function == "CURRENCY_EXCHANGE_RATE": # ok
             path = f"{self.export_path}/{parameters['from_currency']}{parameters['to_currency']}"
+        elif function in ["FXD", "FXM", "FXW", "FX_DAILY", "FX_MONTHLY", "FX_WEEKLY"]:
+            path = f"{self.export_path}/{parameters['from_symbol']}{parameters['to_symbol']}_{short_function.replace('FX', '')}"
+        elif function in ["FXI", "FX_INTRADAY"]:
+            path = f"{self.export_path}/{parameters['from_symbol']}{parameters['to_symbol']}_{parameters['interval']}"
+        elif function in ["CD", "CW", "CM", "DIGITAL_CURRENCY_DAILY", "DIGITAL_CURRENCY_WEEKLY", "DIGITAL_CURRENCY_MONTHLY"]:
+            path = f"{self.export_path}/{parameters['symbol']}{parameters['market']}_{short_function.replace('C', '')}"
         elif function == "OVERVIEW": #
             path = f"{self.export_path}/{parameters['symbol']}"
+        elif function == "SYMBOL_SEARCH": #
+            path = f"{self.export_path}/SEARCH_{parameters['keywords']}"
+        elif function == "INCOME_STATEMENT": #
+            if isinstance(report_freq, str):
+                path = f"{self.export_path}/{parameters['symbol']}_IS_{report_freq}"
+        elif function == "BALANCE_SHEET": #
+            if isinstance(report_freq, str):
+                path = f"{self.export_path}/{parameters['symbol']}_BS_{report_freq}"
+        elif function == "CASH_FLOW": #
+            if isinstance(report_freq, str):
+                path = f"{self.export_path}/{parameters['symbol']}_CF_{report_freq}"
         elif function == "CRYPTO_RATING": #
             path = f"{self.export_path}/{parameters['symbol']}_RATING"
         elif function == "TIME_SERIES_INTRADAY": #
@@ -245,105 +366,8 @@ class AlphaVantage(object):
             df.to_excel(path, sheet_name = parameters["function"])
 
 
-    def _to_dataframe(self, function:str, response:dict) -> DataFrame:
-        """Converts json response into a Pandas DataFrame given a 'function'"""
-        try:
-            json_keys = response.keys()
-            key = [x for x in json_keys if not x.startswith("Meta Data")].pop()# or None
-        except IndexError as ie:
-            print(f" [X] Download failed.  Check the AV documentation for correct parameters: https://www.alphavantage.co/documentation/")
-            sys.exit(1)
-
-        if function == "CURRENCY_EXCHANGE_RATE":
-            df = DataFrame.from_dict(response, orient="index")
-            df.set_index("6. Last Refreshed", inplace=True)
-        elif function == "GLOBAL_QUOTE":
-            df = DataFrame.from_dict(response, orient="index")
-            # Convert change_percent to decimal (float)
-            df.iloc[0, -1] = float(df.iloc[0, -1].strip("%")) / 100
-        elif function == "OVERVIEW": #
-            df = DataFrame.from_dict(response, orient="index")
-        elif function == "CRYPTO_RATING":
-            df = DataFrame.from_dict(response, orient="index")
-            # Clean with index as the requested symbol
-            # df.set_index("symbol", inplace=True)
-            # df["index"] = "FCAS"
-            # df.rename(columns={"index": "rating"}, inplace=True)
-        elif function == "SYMBOL_SEARCH":
-            if len(response[key]) < 1:
-                return None
-            df = DataFrame(response[key])
-        # elif function == "SECTOR":
-        #     df = DataFrame.from_dict(response)
-        #     # Remove 'Information' and 'Last Refreshed' Rows
-        #     df.dropna(axis='index', how='any', thresh=3, inplace=True)
-        #     # Remove 'Meta Data' Column
-        #     df.dropna(axis='columns', how='any', thresh=3, inplace=True)
-        #     # Replace 'NaN' with '0%'
-        #     df.fillna('0%', inplace=True)
-        else:
-            # Otherwise it is a time-series, also calls df = df.iloc[::-1] below
-            df = DataFrame.from_dict(response[key], dtype=float).T
-            df.index.rename("date", inplace=True)
-
-        # If a 'sector', convert to float otherwise reverse the DataFrame
-        # if function == "SYMBOL_SEARCH":  pass
-        # elif function == "SECTOR":
-        #     df = df.applymap(lambda x: float(x.strip("%")) / 100)
-        # else:
-        if function != "SYMBOL_SEARCH":
-            df = df.iloc[::-1]
-            df.reset_index(inplace=True)
-
-        if self.clean:
-            df = self._simplify_dataframe_columns(function, df)
-        
-        if self.export:
-            self._save_df(function, df)
-
-        return df
-
-
-    def _simplify_dataframe_columns(self, function:str, df:DataFrame) -> DataFrame or None:
-        """Simplifies DataFrame Column Names given a 'function'."""
-        if function == "CURRENCY_EXCHANGE_RATE":
-            column_names = ["refreshed", "from", "from_name", "to", "to_name", "rate", "tz", "bid", "ask"]
-        elif function == "OVERVIEW":
-            column_names = ["item", "value"]
-        elif function == "CRYPTO_RATING":
-            column_names = [re.sub(r'\d+(|\w). ', "", name) for name in df.columns]
-        elif function == "SYMBOL_SEARCH":
-            column_names = ["symbol", "name", "type", "region", "market_open", "market_close", "tz", "currency", "match"]
-        else:
-            column_names = [re.sub(r'\d+(|\w). ', "", name) for name in df.columns]
-            column_names = [re.sub(r' amount', "", name) for name in column_names]
-            column_names = [re.sub(r'adjusted', "adj", name) for name in column_names]
-            column_names = [re.sub(r' ', "_", name) for name in column_names]
-
-        df.columns = column_names
-        return df
-
-
-    def _saved_symbols(self, kind:str = None) -> list:
-        """Returns a list of saved symbols beginning with: 'ticker_interval'"""
-        if kind and isinstance(kind, str):
-            files = Path(self.export_path).glob(f"*.{kind}")
-        else:
-            files = Path(self.export_path).glob(f"*.{self.output}")
-        saved_files = sorted(files)
-
-        symbols = set()
-        for file in saved_files:
-            file_stem_desc = file.stem.split("_")
-            if len(file_stem_desc) == 2:
-                # ticker = file_stem_desc[0]
-                # interval = file_stem_desc[1]
-                symbols.add(f"{file_stem_desc[0]}_{file_stem_desc[1]}")
-        return list(symbols)
-
-
     # Public Methods
-    def fx(self, function:str, from_symbol:str = "EUR", to_symbol:str = "USD", **kwargs) -> DataFrame or None:
+    def fx(self, from_symbol:str = "EUR", to_symbol:str = "USD", function:str = "FXD", **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for currency requests."""
         if function.upper() not in ["FXD", "FXI", "FXM", "FXW", "FX_DAILY", "FX_INTRADAY", "FX_MONTHLY", "FX_WEEKLY"]:
             return None
@@ -383,19 +407,19 @@ class AlphaVantage(object):
         return download if download is not None else None
 
 
-    def fxrate(self, from_currency:str, to_currency:str = "USD", **kwargs) -> DataFrame or None:
+    def fxrate(self, from_symbol:str, to_symbol:str = "USD", **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for currency requests."""
         parameters = {
             "function": "CURRENCY_EXCHANGE_RATE",
-            "from_currency": from_currency.upper(),
-            "to_currency": to_currency.upper()
+            "from_currency": from_symbol.upper(),
+            "to_currency": to_symbol.upper()
         }
 
         download = self._av_api_call(parameters, **kwargs)
         return download if download is not None else None
 
 
-    def global_quote(self, symbol:str, **kwargs) -> DataFrame or None:
+    def quote(self, symbol:str, **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for global_quote requests."""
         parameters = {"function": "GLOBAL_QUOTE", "symbol": symbol.upper()}
 
@@ -454,36 +478,54 @@ class AlphaVantage(object):
         return download if download is not None else None
 
 
+    # Company Information
     def overview(self, symbol:str, **kwargs) -> DataFrame or None:
-        """Simple wrapper to _av_api_call method for overview requests."""
+        """Simple wrapper to _av_api_call method for Company Overview requests."""
         parameters = {"function": "OVERVIEW", "symbol": symbol.upper()}
         download = self._av_api_call(parameters, **kwargs)
         return download if download is not None else None
 
 
-    def data(self, function:str, symbol:str = None, **kwargs) -> DataFrame or list or None:
+    def balance(self, symbol:str, **kwargs) -> DataFrame or None:
+        """Simple wrapper to _av_api_call method for Balance Sheet requests."""
+        parameters = {"function": "BALANCE_SHEET", "symbol": symbol.upper()}
+        download = self._av_api_call(parameters, **kwargs)
+        return download if download is not None else None
+
+
+    def cashflow(self, symbol:str, **kwargs) -> DataFrame or None:
+        """Simple wrapper to _av_api_call method for Cash Flow requests."""
+        parameters = {"function": "CASH_FLOW", "symbol": symbol.upper()}
+        download = self._av_api_call(parameters, **kwargs)
+        return download if download is not None else None
+
+
+    def income(self, symbol:str, **kwargs) -> DataFrame or None:
+        """Simple wrapper to _av_api_call method for Income Statement requests."""
+        parameters = {"function": "INCOME_STATEMENT", "symbol": symbol.upper()}
+        download = self._av_api_call(parameters, **kwargs)
+        return download if download is not None else None
+
+
+    def data(self, symbol:str, function:str = "D", **kwargs) -> DataFrame or list or None:
         """Simple wrapper to _av_api_call method for an equity or indicator."""
+        if isinstance(symbol, str):
+            symbol = symbol.upper()
+
+        # TODO: Refactor for multithreading
         # Process a symbol list and return a list of DataFrames
         if isinstance(symbol, list) and len(symbol) > 1:
             # Create list: symbols, with all elements Uppercase from the list: symbol
             symbols = list(map(str.upper, symbol))
             # Call self.data for each ticker in the list: symbols
-            return [self.data(function, ticker, **kwargs) for ticker in symbols]
-
-        # Simple Bandaid for an odd occuring Exception
-        try:
-            symbol = symbol.upper()
-        except AttributeError:
-            pass
-        function = function.upper()
+            return {ticker: self.data(ticker, function, **kwargs) for ticker in symbols}
 
         try:
             function = self.__api_function[function] if function not in self.__api_indicator else function
         except KeyError:
             print(f"[X] Perhaps \'function\' and \'symbol\' are interchanged!? function={function} and symbol={symbol}")
-            function, symbol = symbol, function
-            self.data(function, symbol, **kwargs)
-            # return None
+            function, symbol = symbol.upper(), function.upper()
+            self.data(symbol, function, **kwargs)
 
         parameters = {"function": function, "symbol": symbol}
 
