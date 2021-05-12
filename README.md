@@ -1,14 +1,20 @@
+[![Python Version](https://img.shields.io/pypi/pyversions/alphaVantage-api.svg)](https://pypi.org/project/alphaVantage-api/)
+[![PyPi Version](https://img.shields.io/pypi/v/alphaVantage-api.svg)](https://pypi.org/project/alphaVantage-api/)
+[![Package Status](https://img.shields.io/pypi/status/alphaVantage-api.svg)](https://pypi.org/project/alphaVantage-api/)
+[![Downloads](https://img.shields.io/pypi/dm/alphaVantage-api.svg?style=flat)](https://pypistats.org/packages/alphaVantage-api)
 # AlphaVantageAPI
-*An Opinionated AlphaVantage API Wrapper in Python 3.7*
+*An Opinionated AlphaVantage API Wrapper in Python 3.9*
 
-Access to the AlphaVantage requires a free API key, that can be found at http://www.alphavantage.co/support/#api-key.
 
+<br/>
 
 ## Description
-This API was designed to simplify the process of aquiring **free** financial data for retail traders and investors. It only requires **Pandas** since it is a common Data Manipulation Package to facility cleaning and export data into a variety of file formats such as: _csv_ (default), _json_, _pkl_, _html_, and _txt_. If the _openpyxl_ package is also installed, it can also be saved as an **Excel** file format: _xlsx_.
+This API has been designed to simplify the process of aquiring financial data from [AlphaVantage](http://www.alphavantage.co/support/#api-key). It's only requires **requests** and **Pandas**. This package can cleang and export data into a variety of file formats such as: _csv_ (default), _json_, _pkl_, _html_, and _txt_ with assistance of **Pandas**. If the **openpyxl** package is also installed, it can also be saved as an **Excel** file format: _xlsx_.
 
+<br/>
 
-## Main Features
+## Features
+* Access to AlphaVantage requires an [**API key**](http://www.alphavantage.co/support/#api-key). API Keys are **free**.
 * Built with Pandas for a simpler ETL pipeline.
 * Available export formats: _csv_ (default), _json_, _pkl_, _html_, _txt_, and _xlsx_ (if _openpyxl_ package is installed)
 * Extended the Pandas DataFrame with extension 'av'.  See the _*Extension Example*_ below.
@@ -18,32 +24,61 @@ This API was designed to simplify the process of aquiring **free** financial dat
 * A help method to reduce looking up 'required' and 'optional' parameters for each function.
 * A call_history method to return all successful API calls.
 
+<br/>
 
 ## What's New?
 * **There are some breaking changes!** Please see the _Classic Example_ and the _DataFrame Extension Example_ below.
 * AlphaVantage has added Fundamental Data: _Company Overview_, _Balance Sheet_, _Cash Flow_, and _Income Statement_.
+* Updated to fix ```urllib3``` security vulnerability.
+
+<br/>
 
 ## What's Gone?
 * AlphaVantage has depreciated ```batch```, ```digital_intraday```, and ```sectors```.  
 
+<br/>
+
 ## Need Real Time Intraday Data?
 **AlphaVantage** has partnered with [**Polygon.io**](https://polygon.io/) with partner code: ```ALPHAV```.
 
-# Installation
-```shell
-$ pip install pandas
+<br/><br/>
+
+**Installation**
+===================
+
+Stable
+------
+The ```pip``` version is the last most stable release. Version: *1.0.27*
+```sh
 $ pip install alphaVantage-api
+```
+
+Latest Version
+--------------
+Best choice! Version: *1.0.27*
+```sh
+$ pip install -U git+https://github.com/twopirllc/AlphaVantageAPI
 $ pip install openpyxl # For Excel export
 ```
 
-## For the most up to date version
-<!-- Source installation: -->
-```shell
-$ git clone https://github.com/twopirllc/AlphaVantageAPI.git
+Excel Export
+------------
+```sh
+$ pip install openpyxl
 ```
 
-# Alpha Vantage Class
-## Parameter Defaults
+
+<br/><br/>
+
+**Programming Conventions**
+===========================
+There are two ways of utilizing AlphaVantageAPI. The _Standard_ Class way or as a Pandas DataFrame Extension 'av'.
+
+_Standard_
+====================
+This is the Object/Class way. Instantiate a Class with predefined parameters and then make calls.
+
+### Parameter Defaults
 ```python
 api_key: str     = None
 premium: bool    = False
@@ -56,29 +91,30 @@ clean: bool      = False
 proxy: dict      = {}
 ```
 
-# API Parameter Descriptions
+## API Parameter Descriptions
 
-## **api_key**
+### **api_key**
 If None, then do not forget to set your environment variable AV_API_KEY to API key. Otherwise set it in the class constructor.  If you have a Premium API key, do not forget to set the premium property to True as well.
-## **premium**
+### **premium**
 Got premium?  Excellent! You do not need to wait _15.0001 seconds_ between each API call.
-## **output_size**
+### **output_size**
 The other option is 'full'. See AlphaVantage API documentation for more details.
-## **datatype**
+### **datatype**
 The preferred request type. See AlphaVantage API documentation for more details.
-## **export**
+### **export**
 Set it to True if you want to save the file locally according to the export_path property.
-## **export_path**
+### **export_path**
 The path of where you want to save the data.
-## **output**
+### **output**
 How to save/export the data locally. Other options are 'json', 'pkl', 'html', and 'txt'.  If _openpyxl_ is installed, then you can save as 'xlsz'.
-## **clean**
+### **clean**
 Simplifies the column header names for instance: "1. open" -> "open".
-## **proxy**
+### **proxy**
 See requests API documentation for more details.
 
+<br/><br/>
 
-# **Example**: Classic Class Behavior
+# **Example**: Class(ic) Behavior
 
 ## Initialization
 ```python
@@ -86,6 +122,24 @@ import alphaVantageAPI as AV
 
 # Initialize the AlphaVantage Class with default values
 av = AV.AlphaVantage(
+        api_key=None,
+        premium=False,
+        output_size="compact",
+        datatype='json',
+        export=False,
+        export_path="~/av_data",
+        output="csv",
+        clean=False,
+        proxy={}
+    )
+```
+
+### OR
+
+```python
+from alphaVantageAPI import AlphaVantage
+
+av = AlphaVantage(
         api_key=None,
         premium=False,
         output_size="compact",
@@ -113,7 +167,7 @@ av.help("TIME_SERIES_DAILY")
 av.help("BBANDS")
 ```
 
-## Classic Usage
+## Class Usage
 ```python
 import pandas as pd
 import alphaVantageAPI as AV
@@ -155,15 +209,15 @@ fx_D_df = av.fx(from_symbol=base_fx, to_symbol=to_fx, function="FXD") # Daily
 fx_W_df = av.fx(from_symbol=base_fx, to_symbol=to_fx, function="FXW") # Weekly
 fx_M_df = av.fx(from_symbol=base_fx, to_symbol=to_fx, function="FXM") # Monthly
 
-## Crypto Rating
+# Crypto Rating
 btc_rating_df = av.crypto_rating(symbol=crypto) # == ds.crypto_rating(crypto)
 
-## Digital/Crypto
+# Digital/Crypto
 btc_usd_D_df = av.digital(symbol=crypto, market=base_fx, function="CD") # Daily
 btc_usd_W_df = av.digital(symbol=crypto, market=base_fx, function="CW") # Weekly
 btc_usd_M_df = av.digital(symbol=crypto, market=base_fx, function="CM") # Monthly
 
-## Generic Equity/ETF calls
+# Generic Equity/ETF calls
 ticker_I5_df = av.intraday(symbol=ticker, interval=5) # Intraday as int
 ticker_I60_df = av.intraday(symbol=ticker, interval="60min") # Intraday as str
 ticker_D_df = av.data(symbol=ticker, function="D") # Daily
@@ -183,10 +237,11 @@ ticker_STOCH_df = av.data("STOCH", symbols[2], interval="daily", series_type="cl
 
 # List of symbols Daily
 symbols = ["AAPL", "MSFT", "XLK"]
-techs = av.data(symbols, "D")  # returns dict of DataFrames
+# returns dict of DataFrames: {"ABC": pd.DataFrame(), ..
+techs = av.data(symbols, "D").}
 [print(techs[s]) for s in symbols]
 
-## Call History
+# History of Successful Calls to AlphaVantage
 history = pd.DataFrame(av.call_history())
 print(history)
 ```
@@ -201,6 +256,7 @@ history_df = pd.DataFrame(history_list)[["symbol", "function", "interval", "time
 print(history_df)
 ```
 
+<br/>
 
 # **Example**: DataFrame Extension 'av' Behavior
 
@@ -220,34 +276,45 @@ df = pd.DataFrame()
 ## Setting properties
 Same as the Class properties above. Use the 'av' extension to change them prior to requesting data or adjusting on the fly
 ```python
-# API KEY
-df.av.api_key = "DEMO" # Default: None
-# Premium
-df.av.premium = False # Default: False
-# Clean
-df.av.clean = True # Default: False
-# Export
-df.av.export = True # Default: False
-# Outpsize
-df.av.output_size = "full" # Default: "compact"
-# Retrieval format
-df.av.datatype = "json" # Default: "json"
-# Path to save output format
-df.av.export_path = "~/av_data" # Default: "~/av_data"
-# Final output format
-df.av.output = "csv" # Default: "csv"
-# Proxy to use
-df.av.proxy = {} # Default: {}
+# Your API KEY. Default: None
+df.av.api_key = "DEMO"
+
+# Whether you have a Premium Account. Default: False
+df.av.premium = False
+
+# Simplify OHLCV columns. Default: False
+df.av.clean = True
+
+# Whether to export (save locally). Default: False
+df.av.export = True
+
+# Output Size: "compact" or "full". Default: "compact"
+df.av.output_size = "full"
+
+# Retrieval Format. Default: "json"
+df.av.datatype = "json"
+
+# Export Path to save output format. Default: "~/av_data"
+df.av.export_path = "~/av_data"
+
+# Final output format. Default: "csv"
+df.av.output = "csv"
+
+# Proxy to use. Default: {}
+df.av.proxy = {}
 ```
 
 ## Help!
 ```python
 # Help: lists all the functions and indicators AlphaVantage API supports
 df.av.help()
+
 # Print 'function' aliases
 df.av.help("aliases")
+
 # Help with a specific API function
 df.av.help("TIME_SERIES_DAILY")
+
 # Help with an indicator
 df.av.help("BBANDS")
 ```
@@ -287,10 +354,10 @@ ticker_quarterly_cashflow, ticker_annual_cashflow = df.av.cashflow(ticker)
 ticker_quarterly_income, ticker_annual_income = df.av.income(ticker)
 
 # FX / Currency
-fx_I5_df = df.av.fx_intraday(base_fx, to_currency=to_fx, interval=5) # Intraday as int
+fx_I5_df = df.av.fx_intraday(base_fx, to_currency=to_fx, interval=5)        # Intraday as int
 fx_I60_df = df.av.fx_intraday(base_fx, to_currency=to_fx, interval="60min") # Intraday as str
-fx_D_df = df.av.fx_daily(base_fx, to_currency=to_fx) # Daily
-fx_W_df = df.av.fx_weekly(base_fx, to_currency=to_fx) # Weekly
+fx_D_df = df.av.fx_daily(base_fx, to_currency=to_fx)   # Daily
+fx_W_df = df.av.fx_weekly(base_fx, to_currency=to_fx)  # Weekly
 fx_M_df = df.av.fx_monthly(base_fx, to_currency=to_fx) # Monthly
 
 # Crypto Rating
@@ -298,31 +365,31 @@ btc_rating_df = df.av.crypto_rating(crypto)
 btc_rating_df.av.name # returns "BTC"
 
 ## Digital/Crypto
-btc_usd_D_df = df.av.digital_daily(crypto, market=base_fx) # Daily
+btc_usd_D_df = df.av.digital_daily(crypto, market=base_fx)   # Daily
 btc_usd_D_df.av.name # returns "BTC.USD"
-btc_usd_W_df = df.av.digital_weekly(crypto, market=base_fx) # Weekly
+btc_usd_W_df = df.av.digital_weekly(crypto, market=base_fx)  # Weekly
 btc_usd_M_df = df.av.digital_monthly(crypto, market=base_fx) # Monthly
 
 ## Equities/ ETFs
-ticker_I5_df = df.av.intraday(ticker, interval=5) # Intraday as int
+ticker_I5_df = df.av.intraday(ticker, interval=5)        # Intraday as int
 ticker_I5_df.av.name # returns "MSFT"
 ticker_I60_df = df.av.intraday(ticker, interval="60min") # Intraday as str
-ticker_D_df = df.av.daily(ticker) # Daily
-ticker_DA_df = df.av.daily_adjusted(ticker) # Daily Adjusted
-ticker_W_df = df.av.weekly(ticker) # Weekly
-ticker_WA_df = df.av.weekly_adjusted(ticker) # Weekly Adjusted
-ticker_M_df = df.av.monthly(ticker) # Monthly
-ticker_MA_df = df.av.monthly_adjusted(ticker) # Monthly Adjusted
+ticker_D_df = df.av.daily(ticker)                        # Daily
+ticker_DA_df = df.av.daily_adjusted(ticker)              # Daily Adjusted
+ticker_W_df = df.av.weekly(ticker)                       # Weekly
+ticker_WA_df = df.av.weekly_adjusted(ticker)             # Weekly Adjusted
+ticker_M_df = df.av.monthly(ticker)                      # Monthly
+ticker_MA_df = df.av.monthly_adjusted(ticker)            # Monthly Adjusted
 ```
 
-
+<br/>
 
 # Contributing
+
 Contributions are welcome and I am open to new ideas or implementations.
 
+<br/>
+
 # Inspiration
-If this module does not suit your style or workflow, consider some of the following *AlphaVantage API Python Wrapper* implementations by:
 
-Romel Torres: https://github.com/RomelTorres/alpha_vantage
-
-portfoliome: https://github.com/portfoliome/alphavantage
+If this module does not suit your style or workflow, consider some of the following *AlphaVantage API Python Wrapper* implementations by: [Romel Torres](https://github.com/RomelTorres/alpha_vantage) or [portfoliome](https://github.com/portfoliome/alphavantage)
