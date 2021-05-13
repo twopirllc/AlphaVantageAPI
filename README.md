@@ -48,14 +48,14 @@ This API has been designed to simplify the process of aquiring financial data fr
 
 Stable
 ------
-The ```pip``` version is the last most stable release. Version: *1.0.27*
+The ```pip``` version is the last most stable release. Version: *1.0.28*
 ```sh
 $ pip install alphaVantage-api
 ```
 
 Latest Version
 --------------
-Best choice! Version: *1.0.27*
+Best choice! Version: *1.0.28*
 ```sh
 $ pip install -U git+https://github.com/twopirllc/AlphaVantageAPI
 $ pip install openpyxl # For Excel export
