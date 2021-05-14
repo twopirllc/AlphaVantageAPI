@@ -4,7 +4,7 @@ long_description = "An Opinionated AlphaVantage API Wrapper in Python 3.9 and co
 
 setup(
     name="alphaVantage_api",
-    version="1.0.29",
+    version="1.0.30",
     description=long_description,
     long_description=long_description,
     author="Kevin Johnson",
@@ -17,8 +17,6 @@ setup(
     include_package_data=True,
     classifiers=[
         "Development Status :: 5 - Production/Stable",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
