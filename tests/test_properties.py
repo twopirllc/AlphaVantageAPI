@@ -202,6 +202,9 @@ class TestAlphaVantageAPIProperties(TestCase):
         self.assertEqual(self.av._function_alias("BALANCE_SHEET"), "BS")
         self.assertEqual(self.av._function_alias("CASH_FLOW"), "CF")
 
+        self.assertEqual(self.av._function_alias("EARNINGS_CALENDAR"), "EC")
+        self.assertEqual(self.av._function_alias("IPO_CALENDAR"), "IC")
+
 
         self.assertEqual(self.av._function_alias("SMA"), "SMA")
         self.assertEqual(self.av._function_alias("DEMA"), "DEMA")

@@ -2,7 +2,7 @@ from alphaVantageAPI.alphavantage import AlphaVantage
 
 from unittest import TestCase
 from unittest.mock import patch
-from pandas import DataFrame
+from pandas import DataFrame, read_csv
 
 from .utils import Path
 from .utils import Constant as C
@@ -25,7 +25,6 @@ class TestAlphaVantageAPI(TestCase):
         cls.fx_intraday_parameters = {"function":"FX_INTRADAY", "from_currency":"EUR", "to_currency":"USD"}
         cls.fx_monthly_parameters = {"function":"FX_MONTHLY", "from_currency":"EUR", "to_currency":"USD"}
         cls.fx_weekly_parameters = {"function":"FX_WEEKLY", "from_currency":"EUR", "to_currency":"USD"}
-        # cls.sector_parameters = {"function":"SECTOR"}
         cls.data_parameters = {"function":"TIME_SERIES_DAILY_ADJUSTED", "symbol":C.API_DATA_TEST}
         cls.intraday_parameters = {"function":"TIME_SERIES_INTRADAY", "symbol":C.API_DATA_TEST}
         cls.indicator_parameters = {"function":"RSI", "symbol":C.API_DATA_TEST, "interval":"weekly", "series_type":"open", "time_period":10}
@@ -37,13 +36,16 @@ class TestAlphaVantageAPI(TestCase):
         cls.income_parameters = {"function":"INCOME_STATEMENT", "symbols":C.API_FUNDA_TEST}
         cls.cashflow_parameters = {"function":"CASH_FLOW", "symbols":C.API_FUNDA_TEST}
 
+        cls.earnings_parameters = {"function": "EARNINGS_CALENDAR"}
+        cls.ipos_parameters = {"function": "IPO_CALENDAR"}
+        cls.listing_parameters = {"function": "LISTING_STATUS"}
+
         # json files of sample data
         cls.json_fx = load_json(cls.test_data_path / "mock_fx.json")
         cls.json_fx_daily = load_json(cls.test_data_path / "mock_fx_daily.json")
         cls.json_fx_intraday = load_json(cls.test_data_path / "mock_fx_intraday.json")
         cls.json_fx_monthly = load_json(cls.test_data_path / "mock_fx_monthly.json")
         cls.json_fx_weekly = load_json(cls.test_data_path / "mock_fx_weekly.json")
-        # cls.json_sectors = load_json(cls.test_data_path / "mock_sectors.json")
         cls.json_data = load_json(cls.test_data_path / "mock_data.json")
         cls.json_indicator = load_json(cls.test_data_path / "mock_indicator.json")
         cls.json_digital = load_json(cls.test_data_path / "mock_digital.json")
@@ -54,13 +56,18 @@ class TestAlphaVantageAPI(TestCase):
         cls.json_income = load_json(cls.test_data_path / "mock_income_statement.json")
         cls.json_cashflow = load_json(cls.test_data_path / "mock_cash_flow.json")
 
+        # csv files of sample data
+        cls.csv_earnings_cal = read_csv(cls.test_data_path / "mock_earnings_cal.csv")
+        cls.csv_ipos_cal = read_csv(cls.test_data_path / "mock_ipos_cal.csv")
+        cls.csv_delisted = read_csv(cls.test_data_path / "mock_delisted_status.csv")
+        cls.csv_listed = read_csv(cls.test_data_path / "mock_listed_status.csv")
+
         # Pandas DataFrames of sample data
         cls.df_fx = av._to_dataframe("CURRENCY_EXCHANGE_RATE", cls.json_fx)
         cls.df_fx_daily = av._to_dataframe("FX_DAILY", cls.json_fx_daily)
         cls.df_fx_intraday = av._to_dataframe("FX_INTRADAY", cls.json_fx_intraday)
         cls.df_fx_monthly = av._to_dataframe("FX_MONTHLY", cls.json_fx_monthly)
         cls.df_fx_weekly = av._to_dataframe("FX_WEEKLY", cls.json_fx_weekly)
-        # cls.df_sectors = av._to_dataframe("SECTOR", cls.json_sectors)
         cls.df_data = av._to_dataframe("TIME_SERIES_DAILY_ADJUSTED", cls.json_data)
         cls.df_indicator = av._to_dataframe("RSI", cls.json_indicator)
         cls.df_digital = av._to_dataframe("DIGITAL_CURRENCY_DAILY", cls.json_digital)
@@ -70,6 +77,11 @@ class TestAlphaVantageAPI(TestCase):
         cls.df_balance = av._to_dataframe("BALANCE_SHEET", cls.json_balance)
         cls.df_income = av._to_dataframe("INCOME_STATEMENT", cls.json_income)
         cls.df_cashflow = av._to_dataframe("CASH_FLOW", cls.json_cashflow)
+
+        cls.df_earnings = DataFrame(cls.csv_earnings_cal)
+        cls.df_ipos = DataFrame(cls.csv_ipos_cal)
+        cls.df_delisted = DataFrame(cls.csv_delisted)
+        cls.df_listed = DataFrame(cls.csv_listed)
 
 
     @classmethod
@@ -93,12 +105,15 @@ class TestAlphaVantageAPI(TestCase):
         del cls.income_parameters
         del cls.cashflow_parameters
 
+        del cls.earnings_parameters
+        del cls.ipos_parameters
+        del cls.listing_parameters
+
         del cls.json_fx
         del cls.json_fx_daily
         del cls.json_fx_intraday
         del cls.json_fx_monthly
         del cls.json_fx_weekly
-        # del cls.json_sectors
         del cls.json_data
         del cls.json_indicator
         del cls.json_digital
@@ -114,7 +129,6 @@ class TestAlphaVantageAPI(TestCase):
         del cls.df_fx_intraday
         del cls.df_fx_monthly
         del cls.df_fx_weekly
-        # del cls.df_sectors
         del cls.df_data
         del cls.df_indicator
         del cls.df_digital
@@ -125,6 +139,10 @@ class TestAlphaVantageAPI(TestCase):
         del cls.df_income
         del cls.df_cashflow
 
+        del cls.csv_earnings_cal
+        del cls.csv_ipos_cal
+        del cls.csv_delisted
+        del cls.csv_listed
 
     def setUp(self):
         self.av = AlphaVantage(api_key=C.API_KEY_TEST)
@@ -583,7 +601,6 @@ class TestAlphaVantageAPI(TestCase):
         self.assertEqual(mock_requests_get.call_count, 1)
         self.assertEqual(mock_to_dataframe.call_count, 0)
         self.assertIsInstance(av_api_call(), dict)
-
 
 
     # save_df tests

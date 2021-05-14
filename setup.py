@@ -4,12 +4,12 @@ long_description = "An Opinionated AlphaVantage API Wrapper in Python 3.9 and co
 
 setup(
     name="alphaVantage_api",
-    version="1.0.28",
+    version="1.0.29",
     description=long_description,
     long_description=long_description,
     author="Kevin Johnson",
     author_email="appliedmathkj@gmail.com",
-    keywords="AlphaVantage, API, Equities, FOREX, Digital/Crypto, Technical Analysis, Technicals, Fundamentals",
+    keywords="AlphaVantage, API, Equities, FOREX, Digital/Crypto, Technical Analysis, Technicals, Fundamentals, Earnings Calendar, IPO Calendar, Listing Status",
     url="https://github.com/twopirllc/AlphaVantageAPI",
     license="MIT",
     packages=["alphaVantageAPI"],

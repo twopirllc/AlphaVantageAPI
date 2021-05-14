@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-import time
-import math
-import re
-import numpy as np
 import pandas as pd
 
 from time import perf_counter
@@ -22,11 +18,10 @@ _AV_ = AlphaVantage(api_key=None, clean=True)
 class AlphaVantageDownloader(BasePandasObject):
     _df = pd.DataFrame()
 
-    def __call__(self, q=None, output_size="compact", timed=False, *args, **kwargs):
+    def __call__(self, q=None, timed=False, *args, **kwargs):
         try:
             if isinstance(q, str):
-                q = q.lower()
-                fn = getattr(self, q)
+                fn = getattr(self, q.lower())
 
                 if timed: stime = perf_counter()
                 query = fn(**kwargs)
@@ -59,6 +54,24 @@ class AlphaVantageDownloader(BasePandasObject):
         self._df.name = keywords.upper()
         return self._df
 
+    # Earnings Calendar
+    def earnings(self, symbol:str = None, **kwargs) -> pd.DataFrame:
+        self._df = _AV_.earnings(symbol=symbol, **kwargs)
+        return self._df
+
+    # IPO Calendar
+    def ipos(self, **kwargs) -> pd.DataFrame:
+        self._df = _AV_.ipos(**kwargs)
+        return self._df
+
+    # Listing State
+    def delisted(self, date:str = None, **kwargs):
+        self._df = _AV_.listed(date=date, state="delisted", **kwargs)
+        return self._df
+
+    def listed(self, date:str = None, **kwargs):
+        self._df = _AV_.listed(date=date, **kwargs)
+        return self._df
 
     # Company Information
     def overview(self, symbol:str, **kwargs) -> pd.DataFrame:
@@ -176,6 +189,9 @@ class AlphaVantageDownloader(BasePandasObject):
     BS = balance
     CF = cashflow
     IS = income
+
+    EC = earnings
+    IC = ipos
 
     D = daily
     DA = daily_adjusted

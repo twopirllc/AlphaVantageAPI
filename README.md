@@ -9,7 +9,16 @@
 <br/>
 
 ## Description
-This API has been designed to simplify the process of aquiring financial data from [AlphaVantage](http://www.alphavantage.co/support/#api-key). It's only requires **requests** and **Pandas**. This package can cleang and export data into a variety of file formats such as: _csv_ (default), _json_, _pkl_, _html_, and _txt_ with assistance of **Pandas**. If the **openpyxl** package is also installed, it can also be saved as an **Excel** file format: _xlsx_.
+This API has been designed to simplify the process of aquiring financial data from [AlphaVantage](http://www.alphavantage.co/support/#api-key) and only depends on the **requests** and **Pandas** packages. This package can clean and export data into a variety of file formats such as: _csv_ (default), _json_, _pkl_, _html_, and _txt_ with assistance of **Pandas**. If the **openpyxl** package is also installed, it can also be saved as an **Excel** file format: _xlsx_.
+
+<br/>
+
+## AlphaVantage Support and Contact
+* Email: support@alphavantage.co
+* [Slack](https://alphavantage.herokuapp.com/)
+* [Twitter: @alpha_vantage](https://twitter.com/alpha_vantage)
+* [Medium-AlphaVantage](https://medium.com/alpha-vantage)
+* Community events: https://alphavhack.devpost.com/
 
 <br/>
 
@@ -27,9 +36,9 @@ This API has been designed to simplify the process of aquiring financial data fr
 <br/>
 
 ## What's New?
+**!!!** Updated ```requirements.txt``` to fix ```urllib3``` security vulnerability. **!!!**
 * **There are some breaking changes!** Please see the _Classic Example_ and the _DataFrame Extension Example_ below.
-* AlphaVantage has added Fundamental Data: _Company Overview_, _Balance Sheet_, _Cash Flow_, and _Income Statement_.
-* Updated to fix ```urllib3``` security vulnerability.
+* AlphaVantage has added Fundamental Data: _Company Overview_, _Balance Sheet_, _Cash Flow_, _Income Statement_, _Earnings Calendar_, _IPO Calendar_ and _Listing Status_.
 
 <br/>
 
@@ -48,17 +57,16 @@ This API has been designed to simplify the process of aquiring financial data fr
 
 Stable
 ------
-The ```pip``` version is the last most stable release. Version: *1.0.28*
+The ```pip``` version is the last most stable release. Version: *1.0.29*
 ```sh
 $ pip install alphaVantage-api
 ```
 
 Latest Version
 --------------
-Best choice! Version: *1.0.28*
+Best choice! Version: *1.0.29*
 ```sh
 $ pip install -U git+https://github.com/twopirllc/AlphaVantageAPI
-$ pip install openpyxl # For Excel export
 ```
 
 Excel Export
@@ -94,23 +102,48 @@ proxy: dict      = {}
 ## API Parameter Descriptions
 
 ### **api_key**
+```
 If None, then do not forget to set your environment variable AV_API_KEY to API key. Otherwise set it in the class constructor.  If you have a Premium API key, do not forget to set the premium property to True as well.
+```
 ### **premium**
-Got premium?  Excellent! You do not need to wait _15.0001 seconds_ between each API call.
+```
+Got premium?  Excellent! You do not need to wait 15.0001 seconds between each API call.
+```
+
 ### **output_size**
+```
 The other option is 'full'. See AlphaVantage API documentation for more details.
+```
+
 ### **datatype**
+```
 The preferred request type. See AlphaVantage API documentation for more details.
+```
+
 ### **export**
+```
 Set it to True if you want to save the file locally according to the export_path property.
+```
+
 ### **export_path**
+```
 The path of where you want to save the data.
+```
+
 ### **output**
+```
 How to save/export the data locally. Other options are 'json', 'pkl', 'html', and 'txt'.  If _openpyxl_ is installed, then you can save as 'xlsz'.
+```
+
 ### **clean**
+```
 Simplifies the column header names for instance: "1. open" -> "open".
+```
+
 ### **proxy**
+```
 See requests API documentation for more details.
+```
 
 <br/><br/>
 
@@ -118,27 +151,9 @@ See requests API documentation for more details.
 
 ## Initialization
 ```python
-import alphaVantageAPI as AV
-
-# Initialize the AlphaVantage Class with default values
-av = AV.AlphaVantage(
-        api_key=None,
-        premium=False,
-        output_size="compact",
-        datatype='json',
-        export=False,
-        export_path="~/av_data",
-        output="csv",
-        clean=False,
-        proxy={}
-    )
-```
-
-### OR
-
-```python
 from alphaVantageAPI import AlphaVantage
 
+# Initialize the AlphaVantage Class with default values
 av = AlphaVantage(
         api_key=None,
         premium=False,
@@ -189,6 +204,39 @@ found_symbols = av.search(query)
 # Global Quote
 quote_df = av.quote(ticker)
 
+
+# Earnings Calendar
+# The "horizon" is how many months out to look for Earnings. Options include:
+#   "3month", "6month", "12month". Default: "3month"
+# Optionally can use "symbol".
+#   Default: Returns all symbols with Earnings based on the "horizon".
+
+ # All symbols with Earnings in 3 months
+earnings_df = av.earnings()
+# All symbols with Earnings in 6 months
+earnings6mo_df = av.earnings(horizon="6month")
+
+# Earnings Calendar in 3 months for 'symbol'
+earnings_ticker_df = av.earnings(symbol=ticker)
+# Earnings Calendar in 6 months for 'symbol'
+earnings6mo_ticker_df = av.earnings(symbol=ticker, horizon="6month")
+
+# IPO Calendar
+ipos_df = av.ipos()
+
+
+# Listing Status
+# Optionally can use "state". Options: "active" or "delisted".
+#   Default: "active".
+# Optionally can use "date". Options: None or "YYYY-MM-DD".
+#   Default: None
+listed_df = av.listed()
+listedon_df = av.listed(date="2013-08-03")
+
+delisted_df = av.listed(state="delisted")
+delistedon_df = av.listed(state="delisted", date="2009-02-14")
+
+
 # Company Overview
 overview_df = av.overview(ticker)
 
@@ -200,6 +248,7 @@ AnnuallyBSdf = balance_list[1]
 
 cashflow_list = av.cashflow(ticker) # Cash Flow
 income_list = av.income(ticker)     # Income Statement
+
 
 # FX / Currency
 fx_rate_df = av.fxrate(from_symbol=base_fx, to_symbol=to_fx) # Rate
@@ -345,8 +394,33 @@ found_symbols = df.av.search(query)
 quote_df = df.av.Q(ticker) # => df.av.quote(ticker)
 quote_df.av.name # returns "MSFT"
 
-## Company Information
+# Company Information
 ticker_overview = df.av.overview(ticker)
+
+# Earnings Calendar
+# The "horizon" is how many months out to look for Earnings. Options include:
+#   "3month", "6month", "12month". Default: "3month"
+# Optionally can use "symbol".
+#   Default: Returns all symbols with Earnings based on the "horizon".
+earnings_df = df.av.earnings()
+earnings6month_df = df.av.earnings(horizon="6month")
+earnings12month_ticker_df = df.av.earnings(symbol=ticker, horizon="12month")
+
+# IPO Calendar
+ipos_df = df.av.ipos()
+
+
+# Listing Status
+# Optionally can use "state". Options: "active" or "delisted".
+#   Default: "active".
+# Optionally can use "date". Options: None or "YYYY-MM-DD".
+#   Default: None
+listed_df = df.av.listed()
+listedon_df = df.av.listed(date="2013-08-03")
+
+delisted_df = df.av.listed(state="delisted")
+delistedon_df = df.av.listed(state="delisted", date="2009-02-14")
+
 
 # Balance Sheet, Cash Flow, and the Income Statement each return two DataFrames
 ticker_quarterly_balance, ticker_annual_balance = df.av.balance(ticker)
@@ -364,13 +438,13 @@ fx_M_df = df.av.fx_monthly(base_fx, to_currency=to_fx) # Monthly
 btc_rating_df = df.av.crypto_rating(crypto)
 btc_rating_df.av.name # returns "BTC"
 
-## Digital/Crypto
+# Digital/Crypto
 btc_usd_D_df = df.av.digital_daily(crypto, market=base_fx)   # Daily
 btc_usd_D_df.av.name # returns "BTC.USD"
 btc_usd_W_df = df.av.digital_weekly(crypto, market=base_fx)  # Weekly
 btc_usd_M_df = df.av.digital_monthly(crypto, market=base_fx) # Monthly
 
-## Equities/ ETFs
+# Equities/ ETFs
 ticker_I5_df = df.av.intraday(ticker, interval=5)        # Intraday as int
 ticker_I5_df.av.name # returns "MSFT"
 ticker_I60_df = df.av.intraday(ticker, interval="60min") # Intraday as str

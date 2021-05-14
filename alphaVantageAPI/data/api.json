@@ -5,6 +5,8 @@
     "series_type": ["open", "high", "low", "close"],
     "indicator_interval": ["1min", "5min", "15min", "30min", "60min", "daily", "weekly", "monthly"],
     "matype": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+    "horizon": ["3month", "6month", "12month"],
+    "listing_state": ["active", "delisted"],
     "series":[
     {
         "function": "TIME_SERIES_INTRADAY",
@@ -158,9 +160,19 @@
     {
         "function": "LISTING_STATUS",
         "alias": "LS",
-        "description": "This API returns a list of active or delisted US stocks, either as of the latest trading day or at a specific time in history. The endpoint is positioned to facilitate equity research on asset lifecycle and survivorship.",
-        "required": ["symbol"],
-        "optional": ["datatype"]
+        "description": "This API returns a list of active or delisted US stocks and ETFs, either as of the latest trading day or at a specific time in history. The endpoint is positioned to facilitate equity research on asset lifecycle and survivorship.",
+        "optional": ["date", "state"]
+    },
+    {
+        "function": "EARNINGS_CALENDAR",
+        "alias": "EC",
+        "description": "This API returns a list of company earnings expected in the next 3, 6, or 12 months. Available Horizons: '3month', '6month', '12month'. Default: '3month'",
+        "optional": ["symbol", "horizon"]
+    },
+    {
+        "function": "IPO_CALENDAR",
+        "alias": "IC",
+        "description": "This API returns a list of IPOs expected in the next 3 months."
     }],
 "indicator":[
     {

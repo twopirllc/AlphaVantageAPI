@@ -7,7 +7,7 @@ init:
     pip install -r requirements.txt
 
 test_api:
-    python -m unittest -v tests/test_alphaVantageAPI.py
+    python -m unittest -v tests/test_api.py
 
 test_props:
-    python -m unittest -v tests/test_alphaVantageAPI_properties.py
+    python -m unittest -v tests/test_properties.py
