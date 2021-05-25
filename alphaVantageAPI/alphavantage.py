@@ -10,8 +10,10 @@ from pprint import pprint
 from re import sub as re_sub
 from sys import exit as sys_exit
 from time import sleep as tsleep
+from io import StringIO
 
 from pandas import DataFrame, DatetimeIndex
+import pandas as pd
 
 from .utils import is_home
 from .validate import _validate
@@ -259,13 +261,13 @@ class AlphaVantage(object):
             df = DataFrame.from_dict(response[key], dtype=float).T
             df.index.rename("date", inplace=True)
 
-        # Handle Reports / Search / GC / 
+        # Handle Reports / Search / GC /
         if reports is not None and len(reports) > 0:
             if self.export:
                 self._save_df(function, reports[0], report_freq="Quarterly")
                 self._save_df(function, reports[1], report_freq="Annually")
             return reports
-        else:                
+        else:
             if function != "SYMBOL_SEARCH":
                 df = df.iloc[::-1]
                 df.reset_index(inplace=True)
@@ -502,6 +504,31 @@ class AlphaVantage(object):
         return download if download is not None else None
 
 
+    def intraday_extended(self, symbol:str, interval=5, slice="year1month1", **kwargs) -> DataFrame or None:
+        """Simple wrapper to _av_api_call method for intraday requests."""
+        parameters = {
+            "function": "TIME_SERIES_INTRADAY_EXTENDED",
+            "symbol": symbol.upper(),
+            "datatype": self.datatype,
+            "outputsize": self.output_size,
+            "slice": slice.lower()
+        }
+
+        if isinstance(interval, str) and interval in self.__api_series_interval:
+            parameters["interval"] = interval
+        elif isinstance(interval, int) and interval in [int(re_sub(r'min', "", x)) for x in self.__api_series_interval]:
+            parameters["interval"] = "{}min".format(interval)
+        else:
+            return None
+        old_datatype = self.datatype
+        self.datatype = "csv"
+        download = self._av_api_call(parameters, **kwargs)
+        self.datatype = old_datatype
+        df = pd.read_csv(StringIO(download))[::-1].set_index('time')
+        df.index = pd.to_datetime(df.index)
+        return df if download is not None else None
+
+
     def earnings(self, symbol:str = None, **kwargs) -> DataFrame or None:
         """Simple wrapper to _av_api_call method for Earnings Calendar requests."""
         parameters = {"function": "EARNINGS_CALENDAR"}
@@ -716,8 +743,8 @@ class AlphaVantage(object):
                 self.__export_path = Path.home().joinpath(user_subdir)
             else:
                 self.__export_path = path
-            
-            # Initialize the export_path 
+
+            # Initialize the export_path
             self._init_export_path()
 
 
