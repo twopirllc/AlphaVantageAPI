@@ -74,7 +74,7 @@ $ pip install alphaVantage-api
 
 Latest Version
 --------------
-Best choice! Version: *1.0.32*
+Best choice! Version: *1.0.33*
 ```sh
 $ pip install -U git+https://github.com/twopirllc/AlphaVantageAPI
 ```

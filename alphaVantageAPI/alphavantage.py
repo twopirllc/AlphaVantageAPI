@@ -445,7 +445,7 @@ class AlphaVantage(object):
 
 
     def fxrate(self, from_symbol:str, to_symbol:str = "USD", **kwargs) -> DataFrame or None:
-        """Simple wrapper to _av_api_call method for FX Rate requests."""
+        """Simple wrapper to _av_api_call method for Digital Currency Rate requests."""
         parameters = {
             "function": "CURRENCY_EXCHANGE_RATE",
             "from_currency": from_symbol.upper(),

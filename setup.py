@@ -4,7 +4,7 @@ long_description = "An Opinionated AlphaVantage API Wrapper in Python 3.9 and co
 
 setup(
     name="alphaVantage_api",
-    version="1.0.32",
+    version="1.0.33",
     description=long_description,
     long_description=long_description,
     author="Kevin Johnson",
