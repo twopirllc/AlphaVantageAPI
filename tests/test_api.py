@@ -25,20 +25,22 @@ class TestAlphaVantageAPI(TestCase):
         cls.fx_intraday_parameters = {"function":"FX_INTRADAY", "from_currency":"EUR", "to_currency":"USD"}
         cls.fx_monthly_parameters = {"function":"FX_MONTHLY", "from_currency":"EUR", "to_currency":"USD"}
         cls.fx_weekly_parameters = {"function":"FX_WEEKLY", "from_currency":"EUR", "to_currency":"USD"}
-        cls.data_parameters = {"function":"TIME_SERIES_DAILY_ADJUSTED", "symbol":C.API_DATA_TEST}
-        cls.intraday_parameters = {"function":"TIME_SERIES_INTRADAY", "symbol":C.API_DATA_TEST}
-        cls.indicator_parameters = {"function":"RSI", "symbol":C.API_DATA_TEST, "interval":"weekly", "series_type":"open", "time_period":10}
-        cls.digital_parameters = {"function":"DIGITAL_CURRENCY_DAILY", "symbol":C.API_DIGITAL_TEST, "market":"CNY"}
-        cls.digital_rating_parameters = {"function":"CRYPTO_RATING", "symbols":C.API_DIGITAL_TEST}
-        cls.global_quote_parameters = {"function":"GLOBAL_QUOTE", "symbols":C.API_DIGITAL_TEST}
-        cls.overview_parameters = {"function":"OVERVIEW", "symbols":C.API_FUNDA_TEST}
-        cls.balance_parameters = {"function":"BALANCE_SHEET", "symbols":C.API_FUNDA_TEST}
-        cls.income_parameters = {"function":"INCOME_STATEMENT", "symbols":C.API_FUNDA_TEST}
-        cls.cashflow_parameters = {"function":"CASH_FLOW", "symbols":C.API_FUNDA_TEST}
+        cls.data_parameters = {"function":"TIME_SERIES_DAILY_ADJUSTED", "symbol": C.API_DATA_TEST}
+        cls.intraday_parameters = {"function":"TIME_SERIES_INTRADAY", "symbol": C.API_DATA_TEST}
+        cls.indicator_parameters = {"function":"RSI", "symbol": C.API_DATA_TEST, "interval":"weekly", "series_type":"open", "time_period":10}
+        cls.digital_parameters = {"function":"DIGITAL_CURRENCY_DAILY", "symbol": C.API_DIGITAL_TEST, "market":"CNY"}
+        cls.digital_rating_parameters = {"function":"CRYPTO_RATING", "symbols": C.API_DIGITAL_TEST}
+        cls.global_quote_parameters = {"function":"GLOBAL_QUOTE", "symbols": C.API_DIGITAL_TEST}
+        cls.overview_parameters = {"function":"OVERVIEW", "symbols": C.API_FUNDA_TEST}
+        cls.balance_parameters = {"function":"BALANCE_SHEET", "symbols": C.API_FUNDA_TEST}
+        cls.income_parameters = {"function":"INCOME_STATEMENT", "symbols": C.API_FUNDA_TEST}
+        cls.cashflow_parameters = {"function":"CASH_FLOW", "symbols": C.API_FUNDA_TEST}
 
         cls.earnings_parameters = {"function": "EARNINGS_CALENDAR"}
         cls.ipos_parameters = {"function": "IPO_CALENDAR"}
         cls.listing_parameters = {"function": "LISTING_STATUS"}
+
+        cls.intraday_ext_parameters = {"function": "TIME_SERIES_INTRADAY_EXTENDED", "symbol": C.API_FUNDA_TEST, "interval": 15}
 
         # json files of sample data
         cls.json_fx = load_json(cls.test_data_path / "mock_fx.json")
@@ -62,6 +64,10 @@ class TestAlphaVantageAPI(TestCase):
         cls.csv_delisted = read_csv(cls.test_data_path / "mock_delisted_status.csv")
         cls.csv_listed = read_csv(cls.test_data_path / "mock_listed_status.csv")
 
+        cls.csv_intra_ext_adj = read_csv(cls.test_data_path / "mock_intra_ext_adj_15min_y1m1.csv")
+        cls.csv_intra_ext_adj_slice = read_csv(cls.test_data_path / "mock_intra_ext_adj_15min_y1m2.csv")
+        cls.csv_intra_ext_raw_slice = read_csv(cls.test_data_path / "mock_intra_ext_raw_60min_y1m3.csv")
+
         # Pandas DataFrames of sample data
         cls.df_fx = av._to_dataframe("CURRENCY_EXCHANGE_RATE", cls.json_fx)
         cls.df_fx_daily = av._to_dataframe("FX_DAILY", cls.json_fx_daily)
@@ -78,10 +84,14 @@ class TestAlphaVantageAPI(TestCase):
         cls.df_income = av._to_dataframe("INCOME_STATEMENT", cls.json_income)
         cls.df_cashflow = av._to_dataframe("CASH_FLOW", cls.json_cashflow)
 
+
         cls.df_earnings = DataFrame(cls.csv_earnings_cal)
         cls.df_ipos = DataFrame(cls.csv_ipos_cal)
         cls.df_delisted = DataFrame(cls.csv_delisted)
         cls.df_listed = DataFrame(cls.csv_listed)
+        cls.df_intraday_ext_adj = DataFrame(cls.csv_intra_ext_adj)
+        cls.df_intraday_ext_adj_slice = DataFrame(cls.csv_intra_ext_adj_slice)
+        cls.df_intraday_ext_raw_slice = DataFrame(cls.csv_intra_ext_raw_slice)
 
 
     @classmethod
@@ -96,6 +106,7 @@ class TestAlphaVantageAPI(TestCase):
         # del cls.sector_parameters
         del cls.data_parameters
         del cls.intraday_parameters
+        del cls.intraday_ext_parameters
         del cls.indicator_parameters
         del cls.digital_parameters
         del cls.digital_rating_parameters
@@ -131,6 +142,9 @@ class TestAlphaVantageAPI(TestCase):
         del cls.df_fx_weekly
         del cls.df_data
         del cls.df_indicator
+        del cls.df_intraday_ext_adj
+        del cls.df_intraday_ext_adj_slice
+        del cls.df_intraday_ext_raw_slice
         del cls.df_digital
         del cls.df_digital_rating
         del cls.df_global_quote
@@ -143,6 +157,10 @@ class TestAlphaVantageAPI(TestCase):
         del cls.csv_ipos_cal
         del cls.csv_delisted
         del cls.csv_listed
+        del cls.csv_intra_ext_adj
+        del cls.csv_intra_ext_adj_slice
+        del cls.csv_intra_ext_raw_slice
+
 
     def setUp(self):
         self.av = AlphaVantage(api_key=C.API_KEY_TEST)
@@ -186,7 +204,7 @@ class TestAlphaVantageAPI(TestCase):
     # av_api_call tests
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_fx(self, mock_requests_get, mock_to_dataframe):
+    def test_fx(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_fx)
         mock_to_dataframe.return_value = self.df_fx
 
@@ -198,7 +216,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_fx_csv(self, mock_requests_get, mock_to_dataframe):
+    def test_fx_csv(self, mock_requests_get, mock_to_dataframe):
         self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.json_fx)
@@ -211,7 +229,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_fx_daily(self, mock_requests_get, mock_to_dataframe):
+    def test_fx_daily(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_fx_daily)
         mock_to_dataframe.return_value = self.df_fx_daily
 
@@ -223,7 +241,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_fx_daily_csv(self, mock_requests_get, mock_to_dataframe):
+    def test_fx_daily_csv(self, mock_requests_get, mock_to_dataframe):
         self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.json_fx_daily)
@@ -236,7 +254,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_fx_intraday(self, mock_requests_get, mock_to_dataframe):
+    def test_fx_intraday(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_fx_intraday)
         mock_to_dataframe.return_value = self.df_fx
 
@@ -248,7 +266,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_fx_intraday_csv(self, mock_requests_get, mock_to_dataframe):
+    def test_fx_intraday_csv(self, mock_requests_get, mock_to_dataframe):
         self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.json_fx_intraday)
@@ -261,7 +279,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_fx_monthly(self, mock_requests_get, mock_to_dataframe):
+    def test_fx_monthly(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_fx_monthly)
         mock_to_dataframe.return_value = self.df_fx_monthly
 
@@ -273,7 +291,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_fx_monthly_csv(self, mock_requests_get, mock_to_dataframe):
+    def test_fx_monthly_csv(self, mock_requests_get, mock_to_dataframe):
         self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.json_fx_monthly)
@@ -286,7 +304,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_fx_weekly(self, mock_requests_get, mock_to_dataframe):
+    def test_fx_weekly(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_fx_weekly)
         mock_to_dataframe.return_value = self.df_fx_weekly
 
@@ -298,7 +316,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_fx_weekly_csv(self, mock_requests_get, mock_to_dataframe):
+    def test_fx_weekly_csv(self, mock_requests_get, mock_to_dataframe):
         self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.json_fx_weekly)
@@ -311,7 +329,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_data(self, mock_requests_get, mock_to_dataframe):
+    def test_data(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_data)
         mock_to_dataframe.return_value = self.df_data
 
@@ -323,7 +341,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_data_csv(self, mock_requests_get, mock_to_dataframe):
+    def test_data_csv(self, mock_requests_get, mock_to_dataframe):
         self.av.datatype = "csv"
         mock_requests_get.return_value = _mock_response(text_data=self.json_data)
 
@@ -336,7 +354,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_intraday(self, mock_requests_get, mock_to_dataframe):
+    def test_intraday(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_data)
         mock_to_dataframe.return_value = self.df_data
 
@@ -348,7 +366,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_intraday_csv(self, mock_requests_get, mock_to_dataframe):
+    def test_intraday_csv(self, mock_requests_get, mock_to_dataframe):
         self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.json_data)
@@ -362,7 +380,50 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_indicator(self, mock_requests_get, mock_to_dataframe):
+    def test_intraday_ext_adj_csv(self, mock_requests_get, mock_to_dataframe):
+        mock_requests_get.return_value = _mock_response(text_data=self.csv_intra_ext_adj)
+        mock_to_dataframe.return_value = self.df_intraday_ext_adj
+
+        av_api_call = self.av._av_api_call(self.intraday_ext_parameters)
+
+        self.assertEqual(mock_requests_get.call_count, 1)
+        self.assertEqual(mock_to_dataframe.call_count, 1)
+        self.assertIsInstance(mock_to_dataframe(), DataFrame)
+
+
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
+    @patch("alphaVantageAPI.alphavantage.requests.get")
+    def test_intraday_ext_adj_slice_csv(self, mock_requests_get, mock_to_dataframe):
+        mock_requests_get.return_value = _mock_response(text_data=self.csv_intra_ext_adj_slice)
+        mock_to_dataframe.return_value = self.df_intraday_ext_adj_slice
+
+        _params = self.intraday_ext_parameters.copy()
+        _params.update({"interval": 15, "slice": "year1month2"})
+        av_api_call = self.av._av_api_call(_params)
+
+        self.assertEqual(mock_requests_get.call_count, 1)
+        self.assertEqual(mock_to_dataframe.call_count, 1)
+        self.assertIsInstance(mock_to_dataframe(), DataFrame)
+
+
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
+    @patch("alphaVantageAPI.alphavantage.requests.get")
+    def test_intraday_ext_raw_slice_csv(self, mock_requests_get, mock_to_dataframe):
+        mock_requests_get.return_value = _mock_response(text_data=self.csv_intra_ext_raw_slice)
+        mock_to_dataframe.return_value = self.df_intraday_ext_raw_slice
+
+        _params = self.intraday_ext_parameters.copy()
+        _params.update({"interval": 60, "slice": "year1month3", "adjusted": False})
+        av_api_call = self.av._av_api_call(_params)
+
+        self.assertEqual(mock_requests_get.call_count, 1)
+        self.assertEqual(mock_to_dataframe.call_count, 1)
+        self.assertIsInstance(mock_to_dataframe(), DataFrame)
+
+
+    @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
+    @patch("alphaVantageAPI.alphavantage.requests.get")
+    def test_indicator(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_indicator)
         mock_to_dataframe.return_value = self.df_indicator
 
@@ -374,7 +435,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_indicator_csv(self, mock_requests_get, mock_to_dataframe):
+    def test_indicator_csv(self, mock_requests_get, mock_to_dataframe):
         self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.json_indicator)
@@ -388,7 +449,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_digital(self, mock_requests_get, mock_to_dataframe):
+    def test_digital(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_digital)
         mock_to_dataframe.return_value = self.df_digital
 
@@ -400,7 +461,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_digital_csv(self, mock_requests_get, mock_to_dataframe):
+    def test_digital_csv(self, mock_requests_get, mock_to_dataframe):
         self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.json_digital)
@@ -414,7 +475,7 @@ class TestAlphaVantageAPI(TestCase):
 # 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_digital_rating(self, mock_requests_get, mock_to_dataframe):
+    def test_digital_rating(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_digital_rating)
         mock_to_dataframe.return_value = self.df_digital_rating
 
@@ -426,7 +487,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_digital_rating_csv(self, mock_requests_get, mock_to_dataframe):
+    def test_digital_rating_csv(self, mock_requests_get, mock_to_dataframe):
         self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.json_digital_rating)
@@ -440,7 +501,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_global_quote(self, mock_requests_get, mock_to_dataframe):
+    def test_global_quote(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_global_quote)
         mock_to_dataframe.return_value = self.df_global_quote
 
@@ -452,7 +513,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_global_quote_csv(self, mock_requests_get, mock_to_dataframe):
+    def test_global_quote_csv(self, mock_requests_get, mock_to_dataframe):
         self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.json_global_quote)
@@ -466,7 +527,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_overview(self, mock_requests_get, mock_to_dataframe):
+    def test_overview(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_overview)
         mock_to_dataframe.return_value = self.df_overview
 
@@ -478,7 +539,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_overview_csv(self, mock_requests_get, mock_to_dataframe):
+    def test_overview_csv(self, mock_requests_get, mock_to_dataframe):
         self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.json_overview)
@@ -492,7 +553,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_overview(self, mock_requests_get, mock_to_dataframe):
+    def test_overview(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_overview)
         mock_to_dataframe.return_value = self.df_overview
 
@@ -504,7 +565,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_overview_csv(self, mock_requests_get, mock_to_dataframe):
+    def test_overview_csv(self, mock_requests_get, mock_to_dataframe):
         self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.json_overview)
@@ -518,7 +579,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_balance_sheet(self, mock_requests_get, mock_to_dataframe):
+    def test_balance_sheet(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_balance)
         mock_to_dataframe.return_value = self.df_balance
 
@@ -533,7 +594,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_balance_sheet_csv(self, mock_requests_get, mock_to_dataframe):
+    def test_balance_sheet_csv(self, mock_requests_get, mock_to_dataframe):
         self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.json_balance)
@@ -547,7 +608,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_income_statement(self, mock_requests_get, mock_to_dataframe):
+    def test_income_statement(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_income)
         mock_to_dataframe.return_value = self.df_income
 
@@ -562,7 +623,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_income_statement_csv(self, mock_requests_get, mock_to_dataframe):
+    def test_income_statement_csv(self, mock_requests_get, mock_to_dataframe):
         self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.json_income)
@@ -576,7 +637,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_cashflow(self, mock_requests_get, mock_to_dataframe):
+    def test_cashflow(self, mock_requests_get, mock_to_dataframe):
         mock_requests_get.return_value = _mock_response(json_data=self.json_cashflow)
         mock_to_dataframe.return_value = self.df_cashflow
 
@@ -591,7 +652,7 @@ class TestAlphaVantageAPI(TestCase):
 
     @patch("alphaVantageAPI.alphavantage.AlphaVantage._to_dataframe")
     @patch("alphaVantageAPI.alphavantage.requests.get")
-    def test_av_api_call_cashflow_csv(self, mock_requests_get, mock_to_dataframe):
+    def test_cashflow_csv(self, mock_requests_get, mock_to_dataframe):
         self.av.datatype = "csv"
 
         mock_requests_get.return_value = _mock_response(text_data=self.cashflow_parameters)

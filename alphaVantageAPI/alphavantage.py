@@ -10,10 +10,8 @@ from pprint import pprint
 from re import sub as re_sub
 from sys import exit as sys_exit
 from time import sleep as tsleep
-from io import StringIO
 
 from pandas import DataFrame, DatetimeIndex
-import pandas as pd
 
 from .utils import is_home
 from .validate import _validate
@@ -133,6 +131,7 @@ class AlphaVantage(object):
         self.__api_listing_state = self.__api["listing_state"]
         self.__api_outputsize = self.__api["outputsize"]
         self.__api_series_interval = self.__api["series_interval"]
+        self.__api_slice = self.__api["slice"]
 
         self.indicators = [x for x in self.__api["indicator"]]
         self.__api_indicator = [x["function"] for x in self.indicators]
@@ -196,7 +195,8 @@ class AlphaVantage(object):
         if self.datatype == "json":
             response = self._to_dataframe(parameters["function"], response)
         else:
-            _csv_functions = ["EARNINGS_CALENDAR", "IPO_CALENDAR", "LISTING_STATUS"]
+            _TSIE = "TIME_SERIES_INTRADAY_EXTENDED"
+            _csv_functions = ["EARNINGS_CALENDAR", "IPO_CALENDAR", "LISTING_STATUS", _TSIE]
             if parameters["function"] in _csv_functions:
                 response = response.replace("\r", "")
                 response = DataFrame(
@@ -204,6 +204,12 @@ class AlphaVantage(object):
                     columns=[x for x in response.split("\n")[0].split(",")]
                 )
                 response = response.mask(response.eq("None")).dropna()
+            
+            if parameters["function"] == _TSIE:
+                response = response.iloc[::-1]
+                response.set_index(DatetimeIndex(response["time"]), inplace=True)
+                response.drop(["time"], axis=1, inplace=True)
+                response.index.name = "datetime"
 
         if self._api_call_count < 1:
             self._api_call_count += 1
@@ -336,6 +342,10 @@ class AlphaVantage(object):
             path = f"{self.export_path}/{parameters['from_symbol']}{parameters['to_symbol']}_{parameters['interval']}"
         elif function in ["CD", "CW", "CM", "DIGITAL_CURRENCY_DAILY", "DIGITAL_CURRENCY_WEEKLY", "DIGITAL_CURRENCY_MONTHLY"]:
             path = f"{self.export_path}/{parameters['symbol']}{parameters['market']}_{short_function.replace('C', '')}"
+        elif function == "TIME_SERIES_INTRADAY_EXTENDED":
+            ie_slice = re_sub(r'month', "M",  re_sub(r'year', "Y", parameters['slice']))
+            ie_adjusted = "_ADJ" if parameters['adjusted'] == "true" else ""
+            path = f"{self.export_path}/{parameters['symbol']}_{short_function}_{parameters['interval']}_{ie_slice}{ie_adjusted}"
         elif function == "OVERVIEW": #
             path = f"{self.export_path}/{parameters['symbol']}"
         elif function == "SYMBOL_SEARCH": #
@@ -352,7 +362,8 @@ class AlphaVantage(object):
         elif function == "CRYPTO_RATING": #
             path = f"{self.export_path}/{parameters['symbol']}_RATING"
         elif function == "TIME_SERIES_INTRADAY": #
-            path = f"{self.export_path}/{parameters['symbol']}_{parameters['interval']}"
+            i_adjusted = "_ADJ" if parameters['adjusted'] == "true" else ""
+            path = f"{self.export_path}/{parameters['symbol']}_{parameters['interval']}{i_adjusted}"
         elif short_function.startswith("C") and len(short_function) == 2:
             path = f"{self.export_path}/{parameters['symbol']}{parameters['market']}"
         elif function in self.__api_indicator:
@@ -394,7 +405,7 @@ class AlphaVantage(object):
 
     # Public Methods
     def fx(self, from_symbol:str = "EUR", to_symbol:str = "USD", function:str = "FXD", **kwargs) -> DataFrame or None:
-        """Simple wrapper to _av_api_call method for currency requests."""
+        """Simple wrapper to _av_api_call method for FX requests."""
         if function.upper() not in ["FXD", "FXI", "FXM", "FXW", "FX_DAILY", "FX_INTRADAY", "FX_MONTHLY", "FX_WEEKLY"]:
             return None
         else:
@@ -411,7 +422,7 @@ class AlphaVantage(object):
             if isinstance(interval, str) and interval in self.__api_series_interval:
                 parameters["interval"] = interval
             elif isinstance(interval, int) and interval in [int(re_sub(r'min', "", x)) for x in self.__api_series_interval]:
-                parameters["interval"] = "{}min".format(interval)
+                parameters["interval"] = f"{interval}min"
             else:
                 return None
 
@@ -434,7 +445,7 @@ class AlphaVantage(object):
 
 
     def fxrate(self, from_symbol:str, to_symbol:str = "USD", **kwargs) -> DataFrame or None:
-        """Simple wrapper to _av_api_call method for currency requests."""
+        """Simple wrapper to _av_api_call method for FX Rate requests."""
         parameters = {
             "function": "CURRENCY_EXCHANGE_RATE",
             "from_currency": from_symbol.upper(),
@@ -446,7 +457,7 @@ class AlphaVantage(object):
 
 
     def quote(self, symbol:str, **kwargs) -> DataFrame or None:
-        """Simple wrapper to _av_api_call method for global_quote requests."""
+        """Simple wrapper to _av_api_call method for Global Quote requests."""
         parameters = {"function": "GLOBAL_QUOTE", "symbol": symbol.upper()}
 
         download = self._av_api_call(parameters, **kwargs)
@@ -454,7 +465,7 @@ class AlphaVantage(object):
 
 
     def search(self, keywords:str, **kwargs) -> DataFrame or None:
-        """Simple wrapper to _av_api_call method for search requests."""
+        """Simple wrapper to _av_api_call method for Search requests."""
         parameters = {"function": "SYMBOL_SEARCH", "keywords": keywords}
 
         download = self._av_api_call(parameters, **kwargs)
@@ -462,7 +473,7 @@ class AlphaVantage(object):
 
 
     def digital(self, symbol:str, market:str = "USD", function:str = "CD", **kwargs) -> DataFrame or None:
-        """Simple wrapper to _av_api_call method for digital currency requests."""
+        """Simple wrapper to _av_api_call method for Digital Currency requests."""
         parameters = {
             "function": self.__api_function[function.upper()],
             "symbol": symbol.upper(),
@@ -474,7 +485,7 @@ class AlphaVantage(object):
 
 
     def crypto_rating(self, symbol:str, function:str = "CR", **kwargs) -> DataFrame or None:
-        """Simple wrapper to _av_api_call method for digital currency rating requests."""
+        """Simple wrapper to _av_api_call method for Digital Currency Rating requests."""
         parameters = {
             "function": self.__api_function[function.upper()],
             "symbol": symbol.upper(),
@@ -484,19 +495,20 @@ class AlphaVantage(object):
         return download if download is not None else None
 
 
-    def intraday(self, symbol:str, interval=5, **kwargs) -> DataFrame or None:
-        """Simple wrapper to _av_api_call method for intraday requests."""
+    def intraday(self, symbol:str, interval=5, adjusted=True, **kwargs) -> DataFrame or None:
+        """Simple wrapper to _av_api_call method for Intraday requests."""
         parameters = {
             "function": "TIME_SERIES_INTRADAY",
             "symbol": symbol.upper(),
             "datatype": self.datatype,
-            "outputsize": self.output_size
+            "outputsize": self.output_size,
+            "adjusted": "true" if adjusted else "false"
         }
         
         if isinstance(interval, str) and interval in self.__api_series_interval:
             parameters["interval"] = interval
         elif isinstance(interval, int) and interval in [int(re_sub(r'min', "", x)) for x in self.__api_series_interval]:
-            parameters["interval"] = "{}min".format(interval)
+            parameters["interval"] = f"{interval}min"
         else:
             return None
 
@@ -504,29 +516,30 @@ class AlphaVantage(object):
         return download if download is not None else None
 
 
-    def intraday_extended(self, symbol:str, interval=5, slice="year1month1", **kwargs) -> DataFrame or None:
-        """Simple wrapper to _av_api_call method for intraday requests."""
+    def intraday_extended(self, symbol:str, interval=5, slice="year1month1", adjusted=True, **kwargs) -> DataFrame or None:
+        """Simple wrapper to _av_api_call method for Intraday Extended requests."""
         parameters = {
             "function": "TIME_SERIES_INTRADAY_EXTENDED",
             "symbol": symbol.upper(),
-            "datatype": self.datatype,
-            "outputsize": self.output_size,
-            "slice": slice.lower()
+            "adjusted": "true" if adjusted else "false"
         }
 
         if isinstance(interval, str) and interval in self.__api_series_interval:
             parameters["interval"] = interval
         elif isinstance(interval, int) and interval in [int(re_sub(r'min', "", x)) for x in self.__api_series_interval]:
-            parameters["interval"] = "{}min".format(interval)
+            parameters["interval"] = f"{interval}min"
         else:
             return None
-        old_datatype = self.datatype
-        self.datatype = "csv"
+
+        if isinstance(slice, str) and slice.lower() in self.__api_slice:
+            parameters["slice"] = slice.lower()
+
+        self.datatype = "csv" # Returns csv by default
         download = self._av_api_call(parameters, **kwargs)
-        self.datatype = old_datatype
-        df = pd.read_csv(StringIO(download))[::-1].set_index('time')
-        df.index = pd.to_datetime(df.index)
-        return df if download is not None else None
+
+        if self.export:
+            self._save_df(parameters["function"], download)
+        return download if download is not None else None
 
 
     def earnings(self, symbol:str = None, **kwargs) -> DataFrame or None:
@@ -621,7 +634,7 @@ class AlphaVantage(object):
 
 
     def data(self, symbol:str, function:str = "D", **kwargs) -> DataFrame or list or None:
-        """Simple wrapper to _av_api_call method for an equity or indicator."""
+        """Simple wrapper to _av_api_call method for an Equity or Indicator."""
         if isinstance(symbol, str):
             symbol = symbol.upper()
 

@@ -2,6 +2,7 @@
 [![PyPi Version](https://img.shields.io/pypi/v/alphaVantage-api.svg)](https://pypi.org/project/alphaVantage-api/)
 [![Package Status](https://img.shields.io/pypi/status/alphaVantage-api.svg)](https://pypi.org/project/alphaVantage-api/)
 [![Downloads](https://img.shields.io/pypi/dm/alphaVantage-api.svg?style=flat)](https://pypistats.org/packages/alphaVantage-api)
+[![Contributors](https://img.shields.io/badge/contributors-3-orange.svg?style=flat)](#contributors-)
 # AlphaVantageAPI
 *An Opinionated AlphaVantage API Wrapper in Python 3.9*
 
@@ -22,6 +23,14 @@ This API has been designed to simplify the process of aquiring financial data fr
 
 <br/>
 
+# Contributing
+
+Contributions are welcome and I am open to new ideas or implementations. Thank you!
+
+* [Sciguymjm](https://github.com/Sciguymjm)
+
+<br/>
+
 ## Features
 * Access to AlphaVantage requires an [**API key**](http://www.alphavantage.co/support/#api-key). API Keys are **free**.
 * Built with Pandas for a simpler ETL pipeline.
@@ -37,6 +46,7 @@ This API has been designed to simplify the process of aquiring financial data fr
 
 ## What's New?
 **!!!** Updated ```requirements.txt``` to fix ```urllib3``` security vulnerability. **!!!**
+* Added _Intraday Extended_
 * **There are some breaking changes!** Please see the _Classic Example_ and the _DataFrame Extension Example_ below.
 * AlphaVantage has added Fundamental Data: _Company Overview_, _Balance Sheet_, _Cash Flow_, _Income Statement_, _Earnings Calendar_, _IPO Calendar_ and _Listing Status_.
 
@@ -64,7 +74,7 @@ $ pip install alphaVantage-api
 
 Latest Version
 --------------
-Best choice! Version: *1.0.31*
+Best choice! Version: *1.0.32*
 ```sh
 $ pip install -U git+https://github.com/twopirllc/AlphaVantageAPI
 ```
@@ -269,6 +279,9 @@ btc_usd_M_df = av.digital(symbol=crypto, market=base_fx, function="CM") # Monthl
 # Generic Equity/ETF calls
 ticker_I5_df = av.intraday(symbol=ticker, interval=5) # Intraday as int
 ticker_I60_df = av.intraday(symbol=ticker, interval="60min") # Intraday as str
+ticker_IE5_df = av.intraday_extended(symbol=ticker, interval=5) # Adjusted Intraday Extended. Default slice: "year1month1"
+ticker_IE30_df = av.intraday_extended(symbol=ticker, interval="30min", slice="year2month6") # Adjusted Intraday Extended with slice
+ticker_IE60_R_df = av.intraday_extended(symbol=ticker, interval=60, slice="year2month1", adjusted=False) # Raw Intraday Extended with slice
 ticker_D_df = av.data(symbol=ticker, function="D") # Daily
 ticker_DA_df = av.data(symbol=ticker, function="DA") # Daily Adjusted
 ticker_W_df = av.data(symbol=ticker, function="W") # Weekly
@@ -448,6 +461,10 @@ btc_usd_M_df = df.av.digital_monthly(crypto, market=base_fx) # Monthly
 ticker_I5_df = df.av.intraday(ticker, interval=5)        # Intraday as int
 ticker_I5_df.av.name # returns "MSFT"
 ticker_I60_df = df.av.intraday(ticker, interval="60min") # Intraday as str
+ticker_IE5_df = df.av.intraday_ext(ticker, interval=5) # Adjusted Intraday Extended. Default slice: "year1month1"
+ticker_IE30_df = df.av.intraday_ext(ticker, interval="30min", slice="year2month6") # Adjusted Intraday Extended with slice
+ticker_IE60_R_df = df.av.intraday_ext(ticker, interval=60, slice="year2month1", adjusted=False) # Raw Intraday Extended with slice
+
 ticker_D_df = df.av.daily(ticker)                        # Daily
 ticker_DA_df = df.av.daily_adjusted(ticker)              # Daily Adjusted
 ticker_W_df = df.av.weekly(ticker)                       # Weekly
@@ -455,12 +472,6 @@ ticker_WA_df = df.av.weekly_adjusted(ticker)             # Weekly Adjusted
 ticker_M_df = df.av.monthly(ticker)                      # Monthly
 ticker_MA_df = df.av.monthly_adjusted(ticker)            # Monthly Adjusted
 ```
-
-<br/>
-
-# Contributing
-
-Contributions are welcome and I am open to new ideas or implementations.
 
 <br/>
 

@@ -111,6 +111,11 @@ class AlphaVantageDownloader(BasePandasObject):
         self._df.name = symbol.upper()
         return self._df
 
+    def intraday_ext(self, symbol:str, interval=5, slice="year1month1", **kwargs) -> pd.DataFrame:
+        self._df = _AV_.intraday_extended(symbol, interval=interval, slice=slice, **kwargs)
+        self._df.name = symbol.upper()
+        return self._df
+
     def monthly(self, symbol:str, **kwargs) -> pd.DataFrame:
         self._df = _AV_.data(symbol=symbol, function="M", **kwargs)
         self._df.name = symbol.upper()
@@ -196,6 +201,7 @@ class AlphaVantageDownloader(BasePandasObject):
     D = daily
     DA = daily_adjusted
     I = intraday
+    IE = intraday_ext
     M = monthly
     MA = monthly_adjusted
     W = weekly

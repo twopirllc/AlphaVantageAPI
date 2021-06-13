@@ -28,8 +28,8 @@ def _mock_response(status=200, text_data=None, json_data=None, raise_for_status=
         mock_response.raise_for_status.side_effect = raise_for_status
     
     mock_response.status_code = status
-    if text_data:
+    if text_data is not None:
         mock_response.text = mock.Mock(return_value=text_data)
-    elif json_data:
+    elif json_data is not None:
         mock_response.json = mock.Mock(return_value=json_data)
     return mock_response

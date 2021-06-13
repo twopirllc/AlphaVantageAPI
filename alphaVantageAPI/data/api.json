@@ -7,13 +7,21 @@
     "matype": [0, 1, 2, 3, 4, 5, 6, 7, 8],
     "horizon": ["3month", "6month", "12month"],
     "listing_state": ["active", "delisted"],
+    "slice": ["year1month1", "year1month2", "year1month3", "year1month4", "year1month5", "year1month6", "year1month7", "year1month8", "year1month9", "year1month10", "year1month11", "year1month12", "year2month1", "year2month2", "year2month3", "year2month4", "year2month5", "year2month6", "year2month7", "year2month8", "year2month9", "year2month10", "year2month11", "year2month12"],
     "series":[
     {
         "function": "TIME_SERIES_INTRADAY",
         "alias": "I",
         "description": "This API returns intraday time series of the equity specified, covering extended trading hours where applicable (e.g., 4:00am to 8:00pm Eastern Time for the US market). The intraday data (open, high, low, close, volume) is computed directly from the Securities Information Processor (SIP) market-aggregated data feed.",
         "required": ["symbol", "interval"],
-        "optional": ["outputsize", "datatype"]
+        "optional": ["outputsize", "datatype", "adjusted"]
+    },
+    {
+        "function": "TIME_SERIES_INTRADAY_EXTENDED",
+        "alias": "IE",
+        "description": "This API returns historical intraday time series for the trailing 2 years, covering over 2 million data points per ticker. The intraday data is derived from the Securities Information Processor (SIP) market-aggregated data. You can query both raw (as-traded) and split/dividend-adjusted intraday data from this endpoint. Common use cases for this API include data visualization, trading simulation/backtesting, and machine learning and deep learning applications with a longer horizon.",
+        "required": ["symbol", "interval", "slice"],
+        "optional": ["adjusted"]
     },
     {
         "function": "TIME_SERIES_DAILY",
