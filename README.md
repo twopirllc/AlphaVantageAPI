@@ -55,11 +55,6 @@ Contributions are welcome and I am open to new ideas or implementations. Thank y
 ## What's Gone?
 * AlphaVantage has depreciated ```batch```, ```digital_intraday```, and ```sectors```.  
 
-<br/>
-
-## Need Real Time Intraday Data?
-**AlphaVantage** has partnered with [**Polygon.io**](https://polygon.io/) with partner code: ```ALPHAV```.
-
 <br/><br/>
 
 **Installation**
@@ -112,48 +107,31 @@ proxy: dict      = {}
 ## API Parameter Descriptions
 
 ### **api_key**
-```
-If None, then do not forget to set your environment variable AV_API_KEY to API key. Otherwise set it in the class constructor.  If you have a Premium API key, do not forget to set the premium property to True as well.
-```
+* If None, then do not forget to set your environment variable AV_API_KEY to API key. Otherwise set it in the class constructor.  If you have a Premium API key, do not forget to set the premium property to True as well.
+
 ### **premium**
-```
-Got premium?  Excellent! You do not need to wait 15.0001 seconds between each API call.
-```
+* *Got premium?  Excellent! You do not need to wait 15.0001 seconds between each API call.
 
 ### **output_size**
-```
-The other option is 'full'. See AlphaVantage API documentation for more details.
-```
+* The other option is 'full'. See AlphaVantage API documentation for more details.
 
 ### **datatype**
-```
-The preferred request type. See AlphaVantage API documentation for more details.
-```
+* The preferred request type. See AlphaVantage API documentation for more details.
 
 ### **export**
-```
-Set it to True if you want to save the file locally according to the export_path property.
-```
+* *Set it to True if you want to save the file locally according to the export_path property.
 
 ### **export_path**
-```
-The path of where you want to save the data.
-```
+* The path of where you want to save the data.
 
 ### **output**
-```
-How to save/export the data locally. Other options are 'json', 'pkl', 'html', and 'txt'.  If _openpyxl_ is installed, then you can save as 'xlsz'.
-```
+* How to save/export the data locally. Other options are 'json', 'pkl', 'html', and 'txt'.  If _openpyxl_ is installed, then you can save as 'xlsz'.
 
 ### **clean**
-```
-Simplifies the column header names for instance: "1. open" -> "open".
-```
+* Simplifies the column header names for instance: "1. open" -> "open".
 
 ### **proxy**
-```
-See requests API documentation for more details.
-```
+* See requests API documentation for more details.
 
 <br/><br/>
 
